@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="SistemaContable server configuration">
+
+    <!-- Enable features -->
+    <featureManager>
+<!--        <feature>jdbc-4.3</feature> &lt;!&ndash; JDBC 4.3 &ndash;&gt;-->
+<!--        <feature>beanValidation-3.0</feature> &lt;!&ndash; Bean Validation 3.0 &ndash;&gt;-->
+<!--        <feature>mpConfig-3.1</feature>-->
+<!--        <feature>mpHealth-4.0</feature>-->
+        <feature>jakartaee-10.0</feature> <!-- Jakarta EE 10 -->
+    </featureManager>
+
+<!--     Configuración de SSL en el servicio HTTP -->
+    <ssl id="defaultSSLConfig" keyStoreRef="defaultKeyStore" />
+<!--       <httpEndpoint host="*" httpPort="10000" httpsPort="10001" id="defaultHttpEndpoint" />-->
+        <httpEndpoint httpPort="9080"
+                      httpsPort="9434"
+                      id="defaultHttpEndpoint"/>
+<!--    <httpEndpoint httpPort="9083" httpsPort="9443" id="defaultHttpEndpoint"/>-->
+
+    <!-- Automatically expand WAR/EAR files -->
+    <applicationManager autoExpand="true"/>
+
+    <!-- SSL config -->
+    <ssl id="defaultSSLConfig" trustDefaultCerts="true" />
+
+    <dataSource id="defaultDataSource"
+                jdbcDriverRef="postgresql-driver"
+                jndiName="jdbc/sistemaContable"
+                type="javax.sql.ConnectionPoolDataSource"
+                transactional="true">
+<!--        <jdbcDriver libraryRef="postgresql-library" />-->
+        <!-- Configuración de conexión a base de datos de local-->
+                <properties.postgresql
+                        user="postgres"
+                        password="postgresmy"
+                        databaseName="sistema_contable_sic135"
+                        serverName="localhost"
+                        portNumber="5432" />
+    </dataSource>
+
+<!--    <library id="postgresql-library">-->
+<!--        <file name="${server.config.dir}/postgresql-42.7.7.jar" />-->
+<!--    </library>-->
+
+    <!-- Configuración de seguridad -->
+    <basicRegistry id="BasicUserRegistry">
+        <user name="admin" password="admin1234"/>
+        <user name="dev" password="dev1234"/>
+    </basicRegistry>
+
+    <administrator-role>
+        <user>admin</user>
+    </administrator-role>
+
+</server>
