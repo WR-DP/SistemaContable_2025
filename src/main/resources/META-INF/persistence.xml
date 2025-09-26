@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <persistence xmlns="https://jakarta.ee/xml/ns/persistence"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
-             version="3.2">
-    <persistence-unit name="default">
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+             version="3.0">
+
+<!--    <persistence-unit name="SICPu" transaction-type="JTA">-->
+<!--        <jta-data-source>jdbc/sistemaContable</jta-data-source>-->
+<!--        <properties>-->
+<!--            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>-->
+<!--        </properties>-->
+<!--    </persistence-unit>-->
+
+    <persistence-unit name="SICPu" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <class>sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.ArchivoCargado</class>
+        <class>sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Categoria</class>
+        <class>sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Configuracion</class>
+        <class>sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.CuentaContable</class>
+        <class>sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion</class>
+        <class>sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.TransaccionClasificacion</class>
+        <properties>
+            <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+        </properties>
 
     </persistence-unit>
 </persistence>
