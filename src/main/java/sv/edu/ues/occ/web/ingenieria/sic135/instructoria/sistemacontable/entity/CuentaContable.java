@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.Instant;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "cuenta_contable", schema = "public")
@@ -26,8 +24,7 @@ public class CuentaContable {
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
-    @Lob
-    @Column(name = "descripcion")
+    @Column(name = "descripcion", length = Integer.MAX_VALUE)
     private String descripcion;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -42,11 +39,6 @@ public class CuentaContable {
 
     @Column(name = "updated_at")
     private Instant updatedAt;
-
-    @OneToMany(mappedBy = "cuentaPadre")
-    private Set<CuentaContable> cuentaContables = new LinkedHashSet<>();
-    @OneToMany(mappedBy = "cuentaContableDebe")
-    private Set<TransaccionClasificacion> transaccionClasificacions = new LinkedHashSet<>();
 
     public Long getId() {
         return id;
@@ -110,22 +102,6 @@ public class CuentaContable {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public Set<CuentaContable> getCuentaContables() {
-        return cuentaContables;
-    }
-
-    public void setCuentaContables(Set<CuentaContable> cuentaContables) {
-        this.cuentaContables = cuentaContables;
-    }
-
-    public Set<TransaccionClasificacion> getTransaccionClasificacions() {
-        return transaccionClasificacions;
-    }
-
-    public void setTransaccionClasificacions(Set<TransaccionClasificacion> transaccionClasificacions) {
-        this.transaccionClasificacions = transaccionClasificacions;
     }
 
 /*

@@ -20,12 +20,10 @@ public class Configuracion {
     private String clave;
 
     @NotNull
-    @Lob
-    @Column(name = "valor", nullable = false)
+    @Column(name = "valor", nullable = false, length = Integer.MAX_VALUE)
     private String valor;
 
-    @Lob
-    @Column(name = "descripcion")
+    @Column(name = "descripcion", length = Integer.MAX_VALUE)
     private String descripcion;
 
     @Size(max = 20)

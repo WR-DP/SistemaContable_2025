@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.Instant;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "categoria", schema = "public")
@@ -21,8 +19,7 @@ public class Categoria {
     @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
 
-    @Lob
-    @Column(name = "descripcion")
+    @Column(name = "descripcion", length = Integer.MAX_VALUE)
     private String descripcion;
 
     @Size(max = 20)
@@ -35,9 +32,6 @@ public class Categoria {
 
     @Column(name = "created_at")
     private Instant createdAt;
-
-    @OneToMany(mappedBy = "categoria")
-    private Set<TransaccionClasificacion> transaccionClasificacions = new LinkedHashSet<>();
 
     public Long getId() {
         return id;
@@ -85,14 +79,6 @@ public class Categoria {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public Set<TransaccionClasificacion> getTransaccionClasificacions() {
-        return transaccionClasificacions;
-    }
-
-    public void setTransaccionClasificacions(Set<TransaccionClasificacion> transaccionClasificacions) {
-        this.transaccionClasificacions = transaccionClasificacions;
     }
 
 }

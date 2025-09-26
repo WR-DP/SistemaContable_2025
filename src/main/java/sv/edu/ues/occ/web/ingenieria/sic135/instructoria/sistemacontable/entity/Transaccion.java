@@ -3,18 +3,18 @@ package sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
 @Table(name = "transaccion", schema = "public")
 public class Transaccion {
     @Id
+    @ColumnDefault("gen_random_uuid()")
     @Column(name = "id_transaccion", nullable = false)
     private UUID id;
 
@@ -23,8 +23,7 @@ public class Transaccion {
     private LocalDate fecha;
 
     @NotNull
-    @Lob
-    @Column(name = "descripcion", nullable = false)
+    @Column(name = "descripcion", nullable = false, length = Integer.MAX_VALUE)
     private String descripcion;
 
     @NotNull
@@ -47,9 +46,6 @@ public class Transaccion {
 
     @Column(name = "updated_at")
     private Instant updatedAt;
-
-    @OneToMany(mappedBy = "transaccion")
-    private Set<TransaccionClasificacion> transaccionClasificacions = new LinkedHashSet<>();
 
     public UUID getId() {
         return id;
@@ -121,14 +117,6 @@ public class Transaccion {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public Set<TransaccionClasificacion> getTransaccionClasificacions() {
-        return transaccionClasificacions;
-    }
-
-    public void setTransaccionClasificacions(Set<TransaccionClasificacion> transaccionClasificacions) {
-        this.transaccionClasificacions = transaccionClasificacions;
     }
 
 }
