@@ -52,19 +52,16 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.7.3</version>
+            <version>42.7.7</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.primefaces</groupId>
+            <artifactId>primefaces</artifactId>
+            <version>15.0.8</version>
+            <classifier>jakarta</classifier>
         </dependency>
 
-        <dependency>
-            <groupId>org.hibernate.orm</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>6.6.26.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>yasson</artifactId>
-            <version>3.0.3</version>
-        </dependency>
 
         <!-- Dependencias para rest-->
         <dependency>
@@ -108,8 +105,8 @@
                 <artifactId>liberty-maven-plugin</artifactId>
                 <version>3.11.4</version>
                 <configuration>
-                    <configDirectory>/openliberty/wlp/templates/servers</configDirectory>
-                    <serverName>sICServer</serverName>
+                    <configDirectory>src/main/liberty/config</configDirectory>
+                    <serverName>server</serverName>
                     <appsDirectory>dropins</appsDirectory>
                     <looseApplication>true</looseApplication>
                     <stripVersion>true</stripVersion>

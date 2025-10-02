@@ -6,8 +6,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import org.hibernate.annotations.ColumnDefault;
-
 import java.time.Instant;
 import java.util.UUID;
 
@@ -15,7 +13,6 @@ import java.util.UUID;
 @Table(name = "archivo_cargado", schema = "public")
 public class ArchivoCargado {
     @Id
-    @ColumnDefault("gen_random_uuid()")
     @Column(name = "id_archivo_cargado", nullable = false)
     private UUID id;
 

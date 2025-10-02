@@ -3,7 +3,6 @@ package sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -14,7 +13,6 @@ import java.util.UUID;
 @Table(name = "transaccion", schema = "public")
 public class Transaccion {
     @Id
-    @ColumnDefault("gen_random_uuid()")
     @Column(name = "id_transaccion", nullable = false)
     private UUID id;
 
