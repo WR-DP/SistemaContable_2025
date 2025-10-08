@@ -92,7 +92,7 @@ public abstract class DefaultDataAcces <T, ID> implements DAOInterface<T, ID> {
 
     @Override
     public List<T> findRange(int min, int max) throws IllegalArgumentException, IllegalAccessException {
-        if(min < 0 && max < 1){
+        if(min < 0 || max < 1){
             throw new IllegalArgumentException("Parametro no valido: min e max");
         }
         try {
@@ -112,7 +112,7 @@ public abstract class DefaultDataAcces <T, ID> implements DAOInterface<T, ID> {
     }
 
     @Override
-    public int count(T entity) throws IllegalStateException {
+    public int count() throws IllegalStateException {
         EntityManager em= null;
         try{
             em = getEntityManager();
