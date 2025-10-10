@@ -128,4 +128,15 @@ public class ArchivoCargado {
         this.usuarioCarga = usuarioCarga;
     }
 
+    public boolean isEmpty() {
+        return this.id == null;
+    }
+
+    public UUID getIdArchivoCargado() {
+        return id;
+    }
+
+    public java.util.stream.Stream<ArchivoCargado> stream() {
+        return java.util.stream.Stream.of(this);
+    }
 }
