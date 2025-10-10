@@ -135,7 +135,7 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
                 // actualizar lista--> darle el manejo correcto a al IllegalAccessException
                 listaArchivoCargado = archivoCargadoDAO.findRange(0, Integer.MAX_VALUE);
 
-                //IllegalAccessException
+                //este IllegalAccessException
             } catch (IOException | IllegalAccessException e) {
                 mostrarMensajeError("Error al subir el archivo: " + e.getMessage());
             }
