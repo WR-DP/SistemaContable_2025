@@ -14,18 +14,19 @@ public class TransaccionDAO extends DefaultDataAcces<Transaccion, Object> implem
     @PersistenceContext (unitName = "SistemacontablePU")
     private EntityManager em;
 
+    //completar todos los metodos
     public TransaccionDAO() {
         super(Transaccion.class);
     }
 
     @Override
     public EntityManager getEntityManager() {
-        return null;
+        return em;
     }
 
     @Override
     protected Class<Transaccion> getEntityClass() {
-        return null;
+        return Transaccion.class;
     }
 
     @Override
@@ -36,6 +37,11 @@ public class TransaccionDAO extends DefaultDataAcces<Transaccion, Object> implem
     @Override
     public int count() throws IllegalStateException {
         return super.count();
+    }
+
+    //completar el metodo<---------------------------------------------------------------------------
+    public void edit(Transaccion transaccionSeleccionado) {
+        em.merge(transaccionSeleccionado);
     }
 
 }

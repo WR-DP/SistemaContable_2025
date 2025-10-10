@@ -1,6 +1,7 @@
 package sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.boundary.jsf;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
@@ -8,12 +9,16 @@ import jakarta.inject.Named;
 import jakarta.servlet.http.Part;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.ArchivoCargadoDAO;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.DAOInterface;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.TransaccionDAO;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.TransaccionExcelParse;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.ArchivoCargado;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import static org.primefaces.component.message.MessageBase.PropertyKeys.severity;
 
 @Named
 @ViewScoped
@@ -26,6 +31,15 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
     ArchivoCargadoDAO archivoCargadoDAO;
 
 
+    //parseo y reenvio a transaccion
+    @Inject
+    TransaccionExcelParse parser;
+
+    @Inject
+    TransaccionDAO transaccionDAO;
+
+
+
     @Override
     protected FacesContext getFacesContext() {
         return facesContext;
@@ -36,7 +50,6 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
         return archivoCargadoDAO;
     }
 
-    //probar la funcionalidad del retorno del UUID y su compatibilidad con los formatos<-----------------------------
     @Override
     protected String getIdAsText(ArchivoCargado r) {
         if(r != null && r.getIdArchivoCargado() != null){
@@ -64,7 +77,6 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
     private Part archivo;
     private String rutaGuardado;
 
-//arreglar la excepcion<------------------------------------------------------
     @PostConstruct
     @Override
     public void inicializar() throws IllegalAccessException {
@@ -86,8 +98,6 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
         return archivoCargadoDAO;
     }
 
-
-    //verificar que el filtro funcione correctamente, teniendo en cuenta que es String<------------------------------
     @Override
     protected ArchivoCargado buscarRegistroPorId(Object id) {
         if(id != null&& id instanceof String buscado && this.modelo != null){
@@ -105,18 +115,16 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
         if (archivo != null) {
             try (InputStream input = archivo.getInputStream()) {
 
-                // Carpeta destino dentro del servidor -> buscar otra ruta
+                // luego cambiar la ruta<-----------------------------------------------------------------------
                 String folderPath = System.getProperty("user.home") + File.separator + "archivos_subidos";
                 File carpeta = new File(folderPath);
                 if (!carpeta.exists()) {
                     carpeta.mkdirs();
                 }
 
-                // Nombre original y ruta completa
                 String nombreArchivo = archivo.getSubmittedFileName();
                 String rutaCompleta = folderPath + File.separator + nombreArchivo;
 
-                // Guardar el archivo físicamente
                 try (FileOutputStream output = new FileOutputStream(rutaCompleta)) {
                     input.transferTo(output);
                 }
@@ -125,35 +133,35 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
                 ArchivoCargado nuevo = new ArchivoCargado();
                 nuevo.setNombreArchivo(nombreArchivo);
                 nuevo.setRutaArchivo(rutaCompleta);
-                nuevo.setEstado("CARGADO"); // o según tu enum
-
+                nuevo.setEstado("PROCESANDO");
                 archivoCargadoDAO.create(nuevo);
 
-                this.rutaGuardado = rutaCompleta;
-                mostrarMensajeInfo("Archivo cargado correctamente: " + nombreArchivo);
+                //parseado y guardado de transacciones
+                List<Transaccion> transacciones = parser.parsearExcel(rutaCompleta, nuevo);
+                for (Transaccion t : transacciones) {
+                    transaccionDAO.create(t);
+                }
+                mostrarMensaje("Archivo cargado correctamente: " + nombreArchivo, FacesMessage.SEVERITY_INFO);
 
-                // actualizar lista--> darle el manejo correcto a al IllegalAccessException
-                listaArchivoCargado = archivoCargadoDAO.findRange(0, Integer.MAX_VALUE);
+                //listaArchivoCargado = archivoCargadoDAO.findRange(0, Integer.MAX_VALUE);
+//            } catch (IOException | IllegalAccessException e) {
+//                mostrarMensaje("Error al subir el archivo: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
+//            }
 
-                //este IllegalAccessException
-            } catch (IOException | IllegalAccessException e) {
-                mostrarMensajeError("Error al subir el archivo: " + e.getMessage());
+            }catch (Exception e) {
+                mostrarMensaje("Error al subir el archivo: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
             }
         } else {
-            mostrarMensajeAdvertencia("Debe seleccionar un archivo antes de subirlo.");
+            mostrarMensaje("Debe seleccionar un archivo antes de subirlo.", FacesMessage.SEVERITY_WARN);
         }
     }
 
-    //completar los metodos de los mensajes<------------------------------------------------
-    private void mostrarMensajeAdvertencia(String s) {
+    private void mostrarMensaje(String s, FacesMessage.Severity severity) {
+        FacesMessage msj = new FacesMessage();
+        msj.setSeverity(severity);
+        msj.setSummary(s);
+        getFacesContext().addMessage(null, msj);
     }
-
-    private void mostrarMensajeInfo(String s) {
-    }
-
-    private void mostrarMensajeError(String s) {
-    }
-
 
     public Part getArchivo() {
         return archivo;
