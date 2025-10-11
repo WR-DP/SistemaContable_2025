@@ -15,6 +15,7 @@ public class TransaccionDAO extends DefaultDataAcces<Transaccion, Object> implem
     @PersistenceContext(unitName = "SICPu")
     private EntityManager em;
 
+    //completar todos los metodos
     public TransaccionDAO() {
         super(Transaccion.class);
     }
