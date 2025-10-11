@@ -11,7 +11,8 @@ import java.io.Serializable;
 @Stateless
 @LocalBean
 public class ConfiguracionDAO extends  DefaultDataAcces<Configuracion, Object> implements Serializable {
-    @PersistenceContext (unitName = "SistemacontablePU")
+
+    @PersistenceContext(unitName = "SICPu")
     private EntityManager em;
 
     public ConfiguracionDAO() {

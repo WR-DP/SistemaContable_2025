@@ -8,12 +8,14 @@ import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.List;
 import java.util.logging.Logger;
 
 @Stateless
 @LocalBean
 public class ArchivoCargadoDAO extends DefaultDataAcces<ArchivoCargado, Object> implements Serializable {
-    @PersistenceContext(unitName = "SistemacontablePU")
+
+    @PersistenceContext(unitName = "SICPu")
     private EntityManager em;
 
     public ArchivoCargadoDAO() {
@@ -28,6 +30,26 @@ public class ArchivoCargadoDAO extends DefaultDataAcces<ArchivoCargado, Object> 
     @Override
     protected Class<ArchivoCargado> getEntityClass() {
         return ArchivoCargado.class;
+    }
+
+    public List<ArchivoCargado> findAll() {
+        return getEntityManager()
+                .createNamedQuery("ArchivoCargado.findAll", ArchivoCargado.class)
+                .getResultList();
+    }
+
+    public List<ArchivoCargado> findByNombreLike(String nombre) {
+        return getEntityManager()
+                .createNamedQuery("ArchivoCargado.findByNombreLike", ArchivoCargado.class)
+                .setParameter("nombre", nombre)
+                .getResultList();
+    }
+
+    public List<ArchivoCargado> findByUsuario(String usuario) {
+        return getEntityManager()
+                .createNamedQuery("ArchivoCargado.findByUsuario", ArchivoCargado.class)
+                .setParameter("usuario", usuario)
+                .getResultList();
     }
 
     @Override

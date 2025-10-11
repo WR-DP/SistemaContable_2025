@@ -11,7 +11,8 @@ import java.io.Serializable;
 @Stateless
 @LocalBean
 public class TransaccionClasificacionDAO extends DefaultDataAcces<TransaccionClasificacion, Object> implements Serializable {
-    @PersistenceContext (unitName = "SistemacontablePU")
+
+    @PersistenceContext(unitName = "SICPu")
     private EntityManager em;
 
     public TransaccionClasificacionDAO() {
@@ -20,12 +21,12 @@ public class TransaccionClasificacionDAO extends DefaultDataAcces<TransaccionCla
 
     @Override
     public EntityManager getEntityManager() {
-        return null;
+        return em;
     }
 
     @Override
     protected Class<TransaccionClasificacion> getEntityClass() {
-        return null;
+        return TransaccionClasificacion.class;
     }
 
     @Override

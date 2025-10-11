@@ -11,8 +11,9 @@ import java.io.Serializable;
 @Stateless
 @LocalBean
 public class CuentaContableDAO extends DefaultDataAcces<CuentaContable, Object> implements Serializable {
-@PersistenceContext (unitName = "SistemacontablePU")
-private EntityManager em;
+
+    @PersistenceContext(unitName = "SICPu")
+    private EntityManager em;
 
     public CuentaContableDAO() {
         super(CuentaContable.class);
@@ -20,11 +21,11 @@ private EntityManager em;
 
     @Override
     public EntityManager getEntityManager() {
-        return null;
+        return em;
     }
 
     @Override
     protected Class<CuentaContable> getEntityClass() {
-        return null;
+        return CuentaContable.class;
     }
 }

@@ -11,10 +11,10 @@ import java.io.Serializable;
 @Stateless
 @LocalBean
 public class TransaccionDAO extends DefaultDataAcces<Transaccion, Object> implements Serializable {
-    @PersistenceContext (unitName = "SistemacontablePU")
+
+    @PersistenceContext(unitName = "SICPu")
     private EntityManager em;
 
-    //completar todos los metodos
     public TransaccionDAO() {
         super(Transaccion.class);
     }

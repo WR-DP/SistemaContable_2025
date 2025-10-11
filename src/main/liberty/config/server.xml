@@ -21,7 +21,7 @@
                 transactional="true">
         <properties.postgresql
                         user="postgres"
-                        password="postgresmy"
+                        password="lc22004"
                         databaseName="sistema_contable_sic135"
                         serverName="localhost"
                         portNumber="5432" />
