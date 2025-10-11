@@ -1,9 +1,6 @@
 package sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.Instant;
@@ -11,6 +8,11 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "archivo_cargado", schema = "public")
+@NamedQueries({
+        @NamedQuery(name = "ArchivoCargado.findAll", query = "SELECT a FROM ArchivoCargado a ORDER BY a.fechaCarga DESC"),
+        @NamedQuery(name = "ArchivoCargado.findByNombreLike", query = "SELECT a FROM ArchivoCargado a WHERE LOWER(a.nombreArchivo) LIKE LOWER(CONCAT('%', :nombre, '%')) ORDER BY a.fechaCarga DESC"),
+        @NamedQuery(name = "ArchivoCargado.findByUsuario", query = "SELECT a FROM ArchivoCargado a WHERE a.usuarioCarga = :usuario ORDER BY a.fechaCarga DESC")
+})
 public class ArchivoCargado {
     @Id
     @Column(name = "id_archivo_cargado", nullable = false)
@@ -47,6 +49,19 @@ public class ArchivoCargado {
     @Size(max = 100)
     @Column(name = "usuario_carga", length = 100)
     private String usuarioCarga;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID();
+        }
+        if (this.fechaCarga == null) {
+            this.fechaCarga = Instant.now();
+        }
+        if (this.estado == null) {
+            this.estado = "CARGADO";
+        }
+    }
 
     public UUID getId() {
         return id;
