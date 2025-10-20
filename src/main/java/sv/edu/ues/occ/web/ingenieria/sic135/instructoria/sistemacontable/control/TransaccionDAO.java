@@ -7,6 +7,7 @@ import jakarta.persistence.PersistenceContext;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Stateless
 @LocalBean
@@ -43,6 +44,32 @@ public class TransaccionDAO extends DefaultDataAcces<Transaccion, Object> implem
     //completar el metodo<---------------------------------------------------------------------------
     public void edit(Transaccion transaccionSeleccionado) {
         em.merge(transaccionSeleccionado);
+    }
+
+
+    // Metodos para el sistema de clasificaxión
+
+    /**
+     * Obtiene la lista de transacciones que aún no tienen una CuentaContable asignada.
+     * Esto las marca como 'pendientes' de clasificación.
+     * Se asume que la entidad Transacción tiene el campo 'cuentaContable'.
+     * */
+    public List<Transaccion> findTransaccionesPendinetes(){
+        return  em.createQuery("SELECT t FROM  Transaccion t WHERE t.cuentaContable IS NULL ORDER BY  t.fecha",Transaccion.class)
+                .getResultList();
+    }
+
+
+    /**
+     * Busca transacciones pendientes cuya descripción coincide parcialmente con un filtro.
+     * @param filtroDescripcion EL texto  a buscar en la descripcion
+     * @return Lista de transacciones pedientes que coinciden
+     */
+    public List<Transaccion> finndByDescripcion(String filtroDescripcion){
+        String patron = "%"+filtroDescripcion.toLowerCase()+"%";
+        return em.createQuery("SELECT t FROM Transaccion t WHERE LOWER(t.descripcion) LIKE :patron AND t.cuentaContable IS NULL ORDER BY t.fecha", Transaccion.class)
+                .setParameter("patron", patron)
+                .getResultList();
     }
 
 }
