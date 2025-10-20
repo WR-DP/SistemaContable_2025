@@ -5,9 +5,9 @@
         <feature>jakartaee-10.0</feature>
     </featureManager>
 
-        <httpEndpoint httpPort="9081"
-                      httpsPort="9444"
-                      id="defaultHttpEndpoint"/>
+    <httpEndpoint httpPort="9081"
+                  httpsPort="9444"
+                  id="defaultHttpEndpoint"/>
 
     <library id="postgres-library">
         <file name="${server.config.dir}/postgresql-42.7.7.jar" />
@@ -20,11 +20,11 @@
                 type="javax.sql.ConnectionPoolDataSource"
                 transactional="true">
         <properties.postgresql
-                        user="postgres"
-                        password="postgresmy"
-                        databaseName="sistema_contable_sic135"
-                        serverName="localhost"
-                        portNumber="5432" />
+                user="postgres"
+                password="postgresmy"
+                databaseName="sistema_contable_sic135"
+                serverName="localhost"
+                portNumber="5432" />
     </dataSource>
 
     <basicRegistry id="BasicUserRegistry">
@@ -39,4 +39,5 @@
     <applicationManager autoExpand="true"/>
 
     <ssl id="defaultSSLConfig" trustDefaultCerts="true" />
+
 </server>

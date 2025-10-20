@@ -91,9 +91,9 @@ public abstract class DefaultDataAcces <T, ID> implements DAOInterface<T, ID> {
     }
 
     @Override
-    public List<T> findRange(int min, int max) throws IllegalArgumentException, IllegalAccessException {
-        if(min < 0 && max < 1){
-            throw new IllegalArgumentException("Parametro no valido: min e max");
+    public List<T> findRange(int first, int max) throws IllegalArgumentException, IllegalAccessException {
+        if(first < 0 || max < 1){
+            throw new IllegalArgumentException("Parametro no valido");
         }
         try {
             EntityManager em = getEntityManager();
@@ -103,16 +103,16 @@ public abstract class DefaultDataAcces <T, ID> implements DAOInterface<T, ID> {
             CriteriaQuery<T> all = cq.select(root);
 
             TypedQuery<T> allQuery = em.createQuery(cq);
-            allQuery.setFirstResult(min);
+            allQuery.setFirstResult(first);
             allQuery.setMaxResults(max);
             return allQuery.getResultList();
         } catch (Exception ex) {
-            throw new RuntimeException("No se pudo acceder al repositorio",ex);
+            throw new IllegalStateException("No se pudo acceder al repositorio",ex);
         }
     }
 
     @Override
-    public int count(T entity) throws IllegalStateException {
+    public int count() throws IllegalStateException {
         EntityManager em= null;
         try{
             em = getEntityManager();
