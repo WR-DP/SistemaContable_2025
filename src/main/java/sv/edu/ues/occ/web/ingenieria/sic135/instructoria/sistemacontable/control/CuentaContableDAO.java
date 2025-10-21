@@ -5,6 +5,7 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.CuentaContable;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion;
 
 import java.io.Serializable;
 
@@ -27,5 +28,10 @@ public class CuentaContableDAO extends DefaultDataAcces<CuentaContable, Object> 
     @Override
     protected Class<CuentaContable> getEntityClass() {
         return CuentaContable.class;
+    }
+
+    @Override
+    public void edit(Transaccion transaccionSeleccionado) {
+
     }
 }

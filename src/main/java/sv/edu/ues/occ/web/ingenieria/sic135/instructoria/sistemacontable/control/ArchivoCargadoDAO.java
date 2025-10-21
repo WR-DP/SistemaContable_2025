@@ -5,6 +5,7 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.ArchivoCargado;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion;
 
 import java.io.Serializable;
 import java.util.List;
@@ -28,6 +29,11 @@ public class ArchivoCargadoDAO extends DefaultDataAcces<ArchivoCargado, Object> 
     @Override
     protected Class<ArchivoCargado> getEntityClass() {
         return ArchivoCargado.class;
+    }
+
+    @Override
+    public void edit(Transaccion transaccionSeleccionado) {
+
     }
 
     public List<ArchivoCargado> findAll() {
