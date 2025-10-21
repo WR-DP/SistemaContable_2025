@@ -36,6 +36,10 @@ public class Transaccion {
     @JoinColumn(name = "archivo_cargado_id")
     private ArchivoCargado archivoCargado;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name= "cuenta_contable:id")
+    private CuentaContable cuentaContable;
+
     @Column(name = "fila_excel")
     private Integer filaExcel;
 
@@ -115,6 +119,14 @@ public class Transaccion {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public CuentaContable getCuentaContable() {
+        return cuentaContable;
+    }
+
+    public void setCuentaContable(CuentaContable cuentaContable) {
+        this.cuentaContable = cuentaContable;
     }
 
 }
