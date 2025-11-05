@@ -5,6 +5,7 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Categoria;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion;
 
 import java.io.Serializable;
 
@@ -28,16 +29,9 @@ public class CategoriaDAO extends DefaultDataAcces<Categoria, Object> implements
     protected Class<Categoria> getEntityClass() {
         return Categoria.class;
     }
+
     @Override
-    public Categoria findById(Object id) {
-        return super.findById(id);
+    public void edit(Transaccion transaccionSeleccionado) {
+
     }
-    @Override
-    public int count() throws IllegalStateException {
-        return super.count();
-    }
-
-
-
-
 }
