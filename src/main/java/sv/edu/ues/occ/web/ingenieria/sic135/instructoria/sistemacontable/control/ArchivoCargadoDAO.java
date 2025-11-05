@@ -5,6 +5,7 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.ArchivoCargado;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion;
 
 import java.io.Serializable;
 import java.util.List;
@@ -53,16 +54,27 @@ public class ArchivoCargadoDAO extends DefaultDataAcces<ArchivoCargado, Object> 
     }
 
     @Override
-    public ArchivoCargado findById(Object id) {
-        return super.findById(id);
+    public void edit(Transaccion transaccionSeleccionado) {
+
     }
 
-    @Override
-    public int count() throws IllegalStateException {
-        return super.count();
+    public List<ArchivoCargado> findAll() {
+        return getEntityManager()
+                .createNamedQuery("ArchivoCargado.findAll", ArchivoCargado.class)
+                .getResultList();
     }
 
-    //private List<ArchivoCargado> listaArchivoCargado;
+    public List<ArchivoCargado> findByNombreLike(String nombre) {
+        return getEntityManager()
+                .createNamedQuery("ArchivoCargado.findByNombreLike", ArchivoCargado.class)
+                .setParameter("nombre", nombre)
+                .getResultList();
+    }
 
-    private static final Logger log= Logger.getLogger(ArchivoCargadoDAO.class.getName());
+    public List<ArchivoCargado> findByUsuario(String usuario) {
+        return getEntityManager()
+                .createNamedQuery("ArchivoCargado.findByUsuario", ArchivoCargado.class)
+                .setParameter("usuario", usuario)
+                .getResultList();
+    }
 }
