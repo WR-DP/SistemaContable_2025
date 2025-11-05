@@ -129,6 +129,15 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
         }
     }
 
+    /*
+    ->verificar balance contable-> debe de verificar el valance general los corriente, no corriente de activo, pasivo, patrimonio segun las cuentas que se utilizan-> dentro de la vista de la informacion de archivo  para ver si todo cuadra.
+            ->exportar resultados en excel y html-> en la vista principal con commandlik, debe exportar el archivo de todas las transacciones y con un checkbox se puede agregar la exportacion del balance*/
+/*
+facturacion-> facturacion electronica..->¿
+metodos de facturacion y clases necesarias
+vista de facturacion dentro de la principal de transacciones->
+*/
+
     public void crearTransaccionManual() {
         Transaccion nueva = nuevoRegistro();
         nueva.setArchivoCargado(archivoSeleccionado);
