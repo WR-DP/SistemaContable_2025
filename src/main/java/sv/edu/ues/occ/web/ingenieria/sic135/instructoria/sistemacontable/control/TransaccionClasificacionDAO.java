@@ -28,15 +28,4 @@ public class TransaccionClasificacionDAO extends DefaultDataAcces<TransaccionCla
     protected Class<TransaccionClasificacion> getEntityClass() {
         return TransaccionClasificacion.class;
     }
-
-    @Override
-    public TransaccionClasificacion findById(Object id) {
-        return super.findById(id);
-    }
-
-    @Override
-    public int count() throws IllegalStateException {
-        return super.count();
-    }
-
 }
