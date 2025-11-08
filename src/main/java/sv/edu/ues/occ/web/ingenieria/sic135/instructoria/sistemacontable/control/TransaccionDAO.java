@@ -7,6 +7,7 @@ import jakarta.persistence.PersistenceContext;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.List;
 
 @Stateless
@@ -70,5 +71,29 @@ public class TransaccionDAO extends DefaultDataAcces<Transaccion, Object> implem
                 .setParameter("patron", patron)
                 .getResultList();
     }
+
+    public List<Transaccion> findByArchivoId(Object archivoId) {
+        return em.createQuery("""
+        SELECT t FROM Transaccion t
+        WHERE t.archivoCargado.id = :archivoId
+        ORDER BY t.fecha DESC
+    """, Transaccion.class)
+                .setParameter("archivoId", archivoId)
+                .getResultList();
+    }
+
+    public List<Transaccion> findByArchivoIdAndDateRange(Object archivoId, LocalDate desde, LocalDate hasta) {
+        return em.createQuery("""
+        SELECT t FROM Transaccion t
+        WHERE t.archivoCargado.id = :archivoId
+          AND t.fecha BETWEEN :desde AND :hasta
+        ORDER BY t.fecha ASC
+    """, Transaccion.class)
+                .setParameter("archivoId", archivoId)
+                .setParameter("desde", desde)
+                .setParameter("hasta", hasta)
+                .getResultList();
+    }
+
 
 }

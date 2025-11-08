@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-
+<?xml version="1.0" encoding="UTF-8"?>
 <ui:component
         xmlns:ui="jakarta.faces.facelets"
         xmlns:cc="jakarta.faces.composite"
-        xmlns:p="primefaces"
+        xmlns:p="http://primefaces.org/ui"
         xmlns:h="jakarta.faces.html"
-        xmlns:f="jakarta.faces.core"
->
+        xmlns:f="jakarta.faces.core">
+
     <ui:composition>
         <cc:interface>
             <cc:attribute name="formulario"
@@ -21,24 +20,27 @@
         </cc:interface>
 
         <cc:implementation>
-            <h:panelGrid>
+            <h:panelGrid columns="2" style="margin-top:1rem;">
                 <p:commandButton id="btnNuevo"
+                                 value="Nuevo"
+                                 icon="pi pi-plus"
                                  ajax="true"
                                  actionListener="#{cc.attrs.formulario.btnNuevoHandler}"
-                                 value="#{defaultfrm['defaultfrm.new']}"
                                  rendered="#{cc.attrs.formulario.estado == 'NADA'}"
-                                 process="@this" update="#{cc.attrs.actualizar}">
-                </p:commandButton>
+                                 process="@this"
+                                 update="#{cc.attrs.actualizar}"
+                                 styleClass="ui-button-success"/>
+
                 <p:commandButton id="btnCancelar"
+                                 value="Cancelar"
+                                 icon="pi pi-times"
                                  ajax="true"
                                  actionListener="#{cc.attrs.formulario.btnCancelarHandler}"
-                                 value="#{defaultfrm['defaultfrm.cancel']}"
                                  rendered="#{cc.attrs.formulario.estado != 'NADA'}"
-                                 process="@this" update="#{cc.attrs.actualizar}">
-                </p:commandButton>
+                                 process="@this"
+                                 update="#{cc.attrs.actualizar}"
+                                 styleClass="ui-button-secondary"/>
             </h:panelGrid>
         </cc:implementation>
-
     </ui:composition>
-
 </ui:component>

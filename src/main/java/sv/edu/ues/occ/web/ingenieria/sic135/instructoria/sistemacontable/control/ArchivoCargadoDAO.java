@@ -5,12 +5,9 @@ import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.ArchivoCargado;
-import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.List;
-import java.util.logging.Logger;
 
 @Stateless
 @LocalBean
@@ -33,30 +30,20 @@ public class ArchivoCargadoDAO extends DefaultDataAcces<ArchivoCargado, Object> 
         return ArchivoCargado.class;
     }
 
-
-   // @Override
-    public void edit(Transaccion transaccionSeleccionado) {
-
-    }
-
     public List<ArchivoCargado> findAll() {
-        return getEntityManager()
-                .createNamedQuery("ArchivoCargado.findAll", ArchivoCargado.class)
+        return em.createNamedQuery("ArchivoCargado.findAll", ArchivoCargado.class)
                 .getResultList();
     }
 
     public List<ArchivoCargado> findByNombreLike(String nombre) {
-        return getEntityManager()
-                .createNamedQuery("ArchivoCargado.findByNombreLike", ArchivoCargado.class)
+        return em.createNamedQuery("ArchivoCargado.findByNombreLike", ArchivoCargado.class)
                 .setParameter("nombre", nombre)
                 .getResultList();
     }
 
     public List<ArchivoCargado> findByUsuario(String usuario) {
-        return getEntityManager()
-                .createNamedQuery("ArchivoCargado.findByUsuario", ArchivoCargado.class)
+        return em.createNamedQuery("ArchivoCargado.findByUsuario", ArchivoCargado.class)
                 .setParameter("usuario", usuario)
                 .getResultList();
     }
-
 }
