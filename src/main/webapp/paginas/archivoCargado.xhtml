@@ -42,9 +42,7 @@
                 </p:column>
 
                 <p:column headerText="Fecha de Carga">
-                    <h:outputText value="#{a.fechaCarga}">
-                        <f:convertDateTime pattern="yyyy-MM-dd HH:mm" timeZone="America/El_Salvador"/>
-                    </h:outputText>
+                    <h:outputText value="#{a.fechaCarga}" converter="instantConverter"/>
                 </p:column>
 
                 <p:column headerText="Estado">
@@ -62,12 +60,12 @@
 
 
     <ui:define name="contenido-detalle">
-        <h:form id="frmArchivoCargado" rendered="#{archivoCargadoFrm.estado != 'NADA'}">
+        <h:form id="frmArchivoCargado" rendered="#{archivoCargadoFrm.estado != 'NADA'}" enctype="multipart/form-data">
             <p:growl id="msgsDetalle" showDetail="true" life="4000"/>
 
             <p:panelGrid columns="2">
                 <p:outputLabel for="txtId" value="ID:"/>
-                <p:inputText id="txtId" value="#{archivoCargadoFrm.registro.idArchivoCargado}" readonly="true"/>
+                <p:inputText id="txtId" value="#{archivoCargadoFrm.registro.idArchivoCargado}" readonly="true" disabled="true"/>
 
                 <p:outputLabel for="txtNombre" value="Nombre del Archivo:"/>
                 <p:inputText id="txtNombre" value="#{archivoCargadoFrm.registro.nombreArchivo}" required="true"
@@ -116,6 +114,7 @@
                              icon="pi pi-upload"
                              actionListener="#{archivoCargadoFrm.subirArchivo}"
                              update=":pnlTabla :frmArchivoCargado"
+                             ajax="false"
                              styleClass="ui-button-success"
                              style="margin-top:10px;" />
 
