@@ -33,27 +33,8 @@ public class ArchivoCargadoDAO extends DefaultDataAcces<ArchivoCargado, Object> 
         return ArchivoCargado.class;
     }
 
-    public List<ArchivoCargado> findAll() {
-        return getEntityManager()
-                .createNamedQuery("ArchivoCargado.findAll", ArchivoCargado.class)
-                .getResultList();
-    }
 
-    public List<ArchivoCargado> findByNombreLike(String nombre) {
-        return getEntityManager()
-                .createNamedQuery("ArchivoCargado.findByNombreLike", ArchivoCargado.class)
-                .setParameter("nombre", nombre)
-                .getResultList();
-    }
-
-    public List<ArchivoCargado> findByUsuario(String usuario) {
-        return getEntityManager()
-                .createNamedQuery("ArchivoCargado.findByUsuario", ArchivoCargado.class)
-                .setParameter("usuario", usuario)
-                .getResultList();
-    }
-
-    @Override
+   // @Override
     public void edit(Transaccion transaccionSeleccionado) {
 
     }
@@ -77,4 +58,5 @@ public class ArchivoCargadoDAO extends DefaultDataAcces<ArchivoCargado, Object> 
                 .setParameter("usuario", usuario)
                 .getResultList();
     }
+
 }

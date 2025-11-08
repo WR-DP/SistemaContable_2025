@@ -30,7 +30,7 @@ public class ConfiguracionDAO extends  DefaultDataAcces<Configuracion, Object> i
         return Configuracion.class;
     }
 
-    @Override
+   // @Override
     public void edit(Transaccion transaccionSeleccionado) {
 
     }
