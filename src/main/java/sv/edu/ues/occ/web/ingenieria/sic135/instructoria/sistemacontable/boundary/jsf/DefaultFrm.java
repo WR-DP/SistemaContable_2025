@@ -216,5 +216,10 @@ public abstract class DefaultFrm<T> implements Serializable {
         this.modelo = modelo;
     }
 
+    public boolean isEnModoEdicion() {
+        return this.estado != ESTADO_CRUD.NADA;
+    }
+
+
 
 }
