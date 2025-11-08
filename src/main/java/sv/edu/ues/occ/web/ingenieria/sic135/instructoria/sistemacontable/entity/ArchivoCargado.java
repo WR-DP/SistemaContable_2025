@@ -3,6 +3,8 @@ package sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.boundary.jsf.converter.InstantAttributeConverter;
+
 import java.time.Instant;
 import java.util.UUID;
 
@@ -44,6 +46,7 @@ public class ArchivoCargado {
     private String estado;
 
     @Column(name = "fecha_carga")
+    @Convert(converter = InstantAttributeConverter.class)
     private Instant fechaCarga;
 
     @Size(max = 100)

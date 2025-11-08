@@ -17,7 +17,10 @@ import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.
 import java.io.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -66,7 +69,7 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
     @Override
     protected ArchivoCargado nuevoRegistro() {
         ArchivoCargado nuevo = new ArchivoCargado();
-        nuevo.setEstado("PROCESADO");
+        nuevo.setEstado("SIN PROCESAR");
         nuevo.setFechaCarga(Instant.now());
         nuevo.setUsuarioCarga("admin");
         nuevo.setRegistroProcesado(0);
@@ -93,11 +96,12 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
 
                 // Crear registro
                 ArchivoCargado nuevo = new ArchivoCargado();
+                nuevo.setId(UUID.randomUUID());
+                nuevo.setFechaCarga(Instant.now());
                 nuevo.setNombreArchivo(nombreArchivo);
                 nuevo.setRutaArchivo(rutaCompleta);
                 nuevo.setTamañoByte(archivo.getSize());
                 nuevo.setEstado("CARGADO");
-                nuevo.setFechaCarga(Instant.now());
                 nuevo.setUsuarioCarga("admin");
 
                 archivoCargadoDAO.create(nuevo);
@@ -112,14 +116,14 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
                     Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error al parsear Excel", ex);
                 }
 
-                mostrarMensaje("✅ Archivo cargado correctamente: " + nombreArchivo, FacesMessage.SEVERITY_INFO);
+                mostrarMensaje("Archivo cargado correctamente: " + nombreArchivo, FacesMessage.SEVERITY_INFO);
 
             } catch (Exception e) {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Error al subir archivo", e);
-                mostrarMensaje("❌ Error al subir el archivo: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
+                mostrarMensaje("Error al subir el archivo: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
             }
         } else {
-            mostrarMensaje("⚠️ Debe seleccionar un archivo antes de subirlo.", FacesMessage.SEVERITY_WARN);
+            mostrarMensaje("Debe seleccionar un archivo antes de subirlo.", FacesMessage.SEVERITY_WARN);
         }
     }
 
@@ -128,6 +132,8 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
         getFacesContext().addMessage(null, msj);
     }
 
+
+    //el archivo cargado-> al subir debe ser parseado y guardado en transacciones
     public UploadedFile getArchivo() {
         return archivo;
     }
@@ -135,6 +141,7 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
     public void setArchivo(UploadedFile archivo) {
         this.archivo = archivo;
     }
+
     @Override
     protected ArchivoCargado getIdByText(String id) {
         if (id != null && this.modelo != null) {
