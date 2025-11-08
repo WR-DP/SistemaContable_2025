@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:f="jakarta.faces.core"
+        xmlns:h="jakarta.faces.html"
+        xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <meta charset="UTF-8"/>
+    <title>Sistema Contable UES</title>
+
+    <h:outputStylesheet library="css" name="style.css"/>
+
+    <link rel="icon" type="image/png" href="#{resource['imagenes/pexels-sash2s-16886249.jpg']}"/>
+</h:head>
+
+
+<h:body>
+    <f:view locale="es">
+        <main class="app">
+
+            <div class="content">
+                <header>
+                    <ui:insert name="header">
+                        <h1>Sistema Contable UES</h1>
+                    </ui:insert>
+                </header>
+
+                <article class="panel">
+                    <h:panelGroup id="pnlTabla">
+                        <ui:insert name="contenido-tabla"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup id="pnlDetalle">
+                        <ui:insert name="contenido-detalle"/>
+                    </h:panelGroup>
+                </article>
+
+                <ui:insert name="extra"/>
+            </div>
+
+            <footer>
+                Facultad Multidisciplinaria de Occidente - Universidad de El Salvador © 2025
+            </footer>
+        </main>
+
+
+
+    </f:view>
+</h:body>
+</html>

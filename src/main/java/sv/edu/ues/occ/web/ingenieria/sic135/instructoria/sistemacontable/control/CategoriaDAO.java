@@ -30,8 +30,8 @@ public class CategoriaDAO extends DefaultDataAcces<Categoria, Object> implements
         return Categoria.class;
     }
 
-    @Override
+    /*@Override
     public void edit(Transaccion transaccionSeleccionado) {
 
-    }
+    }*/
 }

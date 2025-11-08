@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui:component
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:cc="jakarta.faces.composite"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:h="jakarta.faces.html"
+        xmlns:f="jakarta.faces.core">
+
+    <ui:composition>
+        <cc:interface>
+            <cc:attribute name="formulario"
+                          required="true"
+                          type="sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.boundary.jsf.DefaultFrm"
+                          shortDescription="Backing bean para el formulario"/>
+            <cc:attribute name="actualizar"
+                          required="false"
+                          default=":pnlDetalle :pnlTabla"
+                          type="java.lang.String"
+                          shortDescription="Componente a actualizar"/>
+        </cc:interface>
+
+        <cc:implementation>
+            <h:panelGrid columns="3" style="margin-top:1rem; text-align:right;">
+                <p:commandButton value="Guardar"
+                                 icon="pi pi-save"
+                                 actionListener="#{cc.attrs.formulario.btnGuardarHandler}"
+                                 rendered="#{cc.attrs.formulario.estado == 'CREAR'}"
+                                 update="#{cc.attrs.actualizar}"
+                                 styleClass="ui-button-success"/>
+
+                <p:commandButton value="Modificar"
+                                 icon="pi pi-pencil"
+                                 actionListener="#{cc.attrs.formulario.btnModificarHandler}"
+                                 rendered="#{cc.attrs.formulario.estado == 'MODIFICAR'}"
+                                 update="#{cc.attrs.actualizar}"
+                                 styleClass="ui-button-warning"/>
+
+                <p:commandButton value="Eliminar"
+                                 icon="pi pi-trash"
+                                 actionListener="#{cc.attrs.formulario.btnEliminarHandler}"
+                                 rendered="#{cc.attrs.formulario.estado == 'MODIFICAR'}"
+                                 update="#{cc.attrs.actualizar}"
+                                 styleClass="ui-button-danger"/>
+            </h:panelGrid>
+        </cc:implementation>
+    </ui:composition>
+</ui:component>
