@@ -39,6 +39,12 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
 
     private Transaccion transaccionSeleccionado;
 
+    // Campos para filtrado por periodo contable
+    private String periodoFiltro; // "mensual"|"trimestral"|"anual"
+    private Integer anioFiltro;
+    private Integer mesFiltro;
+    private Integer trimestreFiltro;
+
     @Override
     protected FacesContext getFacesContext() {
         return facesContext;
@@ -51,9 +57,18 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
 
     @PostConstruct
     @Override
-    public void inicializar() throws IllegalAccessException {
-        super.inicializar();
-        listaTransacciones = transaccionDAO.findRange(0, Integer.MAX_VALUE);
+    public void inicializar() {
+        try {
+            super.inicializar();
+        } catch (IllegalAccessException e) {
+            java.util.logging.Logger.getLogger(getClass().getName()).log(java.util.logging.Level.SEVERE, null, e);
+        }
+        try {
+            listaTransacciones = transaccionDAO.findRange(0, Integer.MAX_VALUE);
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(getClass().getName()).log(java.util.logging.Level.WARNING, "No se pudo cargar la lista inicial de transacciones", ex);
+            listaTransacciones = java.util.Collections.emptyList();
+        }
     }
 
     @Override
@@ -113,7 +128,8 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
                 transaccionDAO.create(t);
             }
             enviarMensaje("Transacciones importadas correctamente.", FacesMessage.SEVERITY_INFO);
-            cargarTransaccionesPorArchivo(archivo);
+            // recargar lista de transacciones del archivo
+            listaTransacciones = transaccionDAO.findByArchivoId(archivo.getIdArchivoCargado());
         } catch (Exception e) {
             enviarMensaje("Error al importar transacciones: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
         }
@@ -135,6 +151,31 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
         transaccionDAO.create(nueva);
         listaTransacciones.add(nueva);
         enviarMensaje("Transaccion creada correctamente.", FacesMessage.SEVERITY_INFO);
+    }
+
+    /**
+     * Aplica el filtro por periodo usando el archivo seleccionado como contexto.
+     * Si no hay archivo seleccionado devuelve todas las transacciones (comportamiento actual).
+     */
+    public void aplicarFiltroPeriodo() {
+        if (archivoSeleccionado == null || archivoSeleccionado.getIdArchivoCargado() == null) {
+            // Sin archivo, cargar todas o avisar
+            try {
+                listaTransacciones = transaccionDAO.findRange(0, Integer.MAX_VALUE);
+            } catch (IllegalAccessException e) {
+                java.util.logging.Logger.getLogger(getClass().getName()).log(java.util.logging.Level.WARNING, "No se pudo obtener rango de transacciones", e);
+                listaTransacciones = java.util.Collections.emptyList();
+            }
+            enviarMensaje("No hay archivo seleccionado; mostrando todas las transacciones", FacesMessage.SEVERITY_WARN);
+            return;
+        }
+        Object archivoId = archivoSeleccionado.getIdArchivoCargado();
+        listaTransacciones = transaccionDAO.findByArchivoIdAndPeriodo(archivoId, periodoFiltro, anioFiltro, mesFiltro, trimestreFiltro);
+    }
+
+    // Permite cargar filtro directamente por parámetros (útil desde otras vistas)
+    public void aplicarFiltroPeriodoParaArchivoId(Object archivoId) {
+        listaTransacciones = transaccionDAO.findByArchivoIdAndPeriodo(archivoId, periodoFiltro, anioFiltro, mesFiltro, trimestreFiltro);
     }
 
     //getters and setters
@@ -159,5 +200,15 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
     public Transaccion getTransaccionSeleccionado() {return transaccionSeleccionado;}
 
     public void setTransaccionSeleccionado(Transaccion transaccionSeleccionado) {this.transaccionSeleccionado = transaccionSeleccionado;}
+
+    // Getters/Setters para filtros
+    public String getPeriodoFiltro() { return periodoFiltro; }
+    public void setPeriodoFiltro(String periodoFiltro) { this.periodoFiltro = periodoFiltro; }
+    public Integer getAnioFiltro() { return anioFiltro; }
+    public void setAnioFiltro(Integer anioFiltro) { this.anioFiltro = anioFiltro; }
+    public Integer getMesFiltro() { return mesFiltro; }
+    public void setMesFiltro(Integer mesFiltro) { this.mesFiltro = mesFiltro; }
+    public Integer getTrimestreFiltro() { return trimestreFiltro; }
+    public void setTrimestreFiltro(Integer trimestreFiltro) { this.trimestreFiltro = trimestreFiltro; }
 
 }

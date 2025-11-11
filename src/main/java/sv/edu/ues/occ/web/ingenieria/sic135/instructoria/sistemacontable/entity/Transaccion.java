@@ -7,61 +7,85 @@ import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
 @Table(name = "transaccion", schema = "public")
+@NamedQueries({
+        @NamedQuery(name = "Transaccion.findAll", query = "SELECT t FROM Transaccion t"),
+        @NamedQuery(name = "Transaccion.findByFecha", query = "SELECT t FROM Transaccion t WHERE t.fecha = :fecha"),
+        @NamedQuery(name = "Transaccion.findByDescripcion", query = "SELECT t FROM Transaccion t WHERE t.descripcion = :descripcion"),
+        @NamedQuery(name = "Transaccion.findByMonto", query = "SELECT t FROM Transaccion t WHERE t.monto = :monto"),
+        @NamedQuery(name = "Transaccion.findByMoneda", query = "SELECT t FROM Transaccion t WHERE t.moneda = :moneda"),
+        @NamedQuery(name = "Transaccion.findByFilaExcel", query = "SELECT t FROM Transaccion t WHERE t.filaExcel = :filaExcel"),
+        @NamedQuery(name = "Transaccion.findByCreatedAt", query = "SELECT t FROM Transaccion t WHERE t.createdAt = :createdAt"),
+        @NamedQuery(name = "Transaccion.findByUpdatedAt", query = "SELECT t FROM Transaccion t WHERE t.updatedAt = :updatedAt"),
+        @NamedQuery(name = "Transaccion.findByDateSpecificAll", query = "SELECT t FROM Transaccion t WHERE t.fecha = :fecha"),
+        @NamedQuery(name = "Transaccion.findByDateSpecificItems", query = "SELECT Transaccion.idTransaccion, Transaccion.descripcion, Transaccion.monto, Transaccion.moneda, Transaccion.archivoCargadoId FROM Transaccion as tr WHERE tr.fecha = :fecha"),//'2025-10-15'
+        @NamedQuery(name = "Transaccion.findByIdSpecific", query = "SELECT Transaccion.idTransaccion, Transaccion.descripcion, Transaccion.monto, Transaccion.moneda, Transaccion.archivoCargadoId FROM Transaccion  as tr WHERE tr.idTransaccion = :id_transaccion"),//'ca37f24f-fd6c-48cd-9b47-c61dae9cb0cf',
+        @NamedQuery(name = "Transaccion.findByQuarter", query = "  SELECT Transaccion.idTransaccion, tr.fecha, Transaccion.descripcion, Transaccion.monto,Transaccion.moneda, Transaccion.archivoCargadoId FROM Transaccion as tr WHERE tr.fecha BETWEEN :fechaInicio AND :fechaFinal ORDER BY tr.fecha ASC")//'2025-10-01' AND'2025-12-31'
+
+})
 public class Transaccion {
     @Id
-    @Column(name = "id_transaccion", nullable = false)
-    private UUID id;
-
-    @NotNull
-    @Column(name = "fecha", nullable = false)
-    private LocalDate fecha;
-
-    @NotNull
-    @Column(name = "descripcion", nullable = false, length = Integer.MAX_VALUE)
+    @Basic(optional = false)
+    @Lob
+    @Column(name = "id_transaccion")
+    private Object idTransaccion;
+    @Basic(optional = false)
+    @Column(name = "fecha")
+    @Temporal(TemporalType.DATE)
+    private Date fecha;
+    @Basic(optional = false)
+    @Column(name = "descripcion")
     private String descripcion;
-
-    @NotNull
-    @Column(name = "monto", nullable = false, precision = 15, scale = 2)
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Basic(optional = false)
+    @Column(name = "monto")
     private BigDecimal monto;
-
-    @Size(max = 3)
-    @Column(name = "moneda", length = 3)
+    @Column(name = "moneda")
     private String moneda;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "archivo_cargado_id")
-    private ArchivoCargado archivoCargado;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "cuenta_contable:id")
-    private CuentaContable cuentaContable;
-
     @Column(name = "fila_excel")
     private Integer filaExcel;
-
     @Column(name = "created_at")
-    private Instant createdAt;
-
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
     @Column(name = "updated_at")
-    private Instant updatedAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
+    @JoinColumn(name = "archivo_cargado_id", referencedColumnName = "id_archivo_cargado")
+    @ManyToOne
+    private ArchivoCargado archivoCargadoId;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "transaccionId")
+    private Collection<TransaccionClasificacion> transaccionClasificacionCollection;
 
-    public UUID getId() {
-        return id;
+    public Transaccion() {
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    public Transaccion(Object idTransaccion) {
+        this.idTransaccion = idTransaccion;
     }
 
-    public LocalDate getFecha() {
+    public Transaccion(Object idTransaccion, Date fecha, String descripcion, BigDecimal monto) {
+        this.idTransaccion = idTransaccion;
+        this.fecha = fecha;
+        this.descripcion = descripcion;
+        this.monto = monto;
+    }
+    public Object getIdTransaccion() {
+        return idTransaccion;
+    }
+    public void setIdTransaccion(Object idTransaccion) {
+        this.idTransaccion = idTransaccion;
+    }
+
+    public Date getFecha() {
         return fecha;
     }
 
-    public void setFecha(LocalDate fecha) {
+    public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
 
@@ -89,14 +113,6 @@ public class Transaccion {
         this.moneda = moneda;
     }
 
-    public ArchivoCargado getArchivoCargado() {
-        return archivoCargado;
-    }
-
-    public void setArchivoCargado(ArchivoCargado archivoCargado) {
-        this.archivoCargado = archivoCargado;
-    }
-
     public Integer getFilaExcel() {
         return filaExcel;
     }
@@ -105,28 +121,36 @@ public class Transaccion {
         this.filaExcel = filaExcel;
     }
 
-    public Instant getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Instant getUpdatedAt() {
+    public Date getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
+    public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public CuentaContable getCuentaContable() {
-        return cuentaContable;
+    public ArchivoCargado getArchivoCargadoId() {
+        return archivoCargadoId;
     }
 
-    public void setCuentaContable(CuentaContable cuentaContable) {
-        this.cuentaContable = cuentaContable;
+    public void setArchivoCargadoId(ArchivoCargado archivoCargadoId) {
+        this.archivoCargadoId = archivoCargadoId;
+    }
+
+    public Collection<TransaccionClasificacion> getTransaccionClasificacionCollection() {
+        return transaccionClasificacionCollection;
+    }
+
+    public void setTransaccionClasificacionCollection(Collection<TransaccionClasificacion> transaccionClasificacionCollection) {
+        this.transaccionClasificacionCollection = transaccionClasificacionCollection;
     }
 
 }
