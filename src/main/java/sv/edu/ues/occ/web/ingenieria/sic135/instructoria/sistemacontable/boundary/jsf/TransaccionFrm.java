@@ -14,11 +14,10 @@ import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 @Named
 @ViewScoped
