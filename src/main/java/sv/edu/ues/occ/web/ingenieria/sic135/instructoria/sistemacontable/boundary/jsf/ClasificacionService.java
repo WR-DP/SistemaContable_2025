@@ -2,7 +2,6 @@ package sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.bounda
 
 import jakarta.inject.Inject;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.CuentaContableDAO;
-import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.TransaccionDAO;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.TransaccionClasificacionDAO;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.CuentaContable;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion;
@@ -20,9 +19,6 @@ import java.util.logging.Logger;
 public class ClasificacionService {
 
     private static final Logger LOGGER = Logger.getLogger(ClasificacionService.class.getName());
-
-    @Inject
-    private TransaccionDAO transaccionDAO;
 
     @Inject
     private CuentaContableDAO cuentaContableDAO;
