@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,11 +59,8 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
     @PostConstruct
     @Override
     public void inicializar() {
-        try {
-            super.inicializar();
-        } catch (IllegalAccessException e) {
-            java.util.logging.Logger.getLogger(getClass().getName()).log(java.util.logging.Level.SEVERE, null, e);
-        }
+        // DefaultFrm.inicializar no lanza checked exceptions
+        super.inicializar();
         try {
             listaTransacciones = transaccionDAO.findRange(0, Integer.MAX_VALUE);
         } catch (Exception ex) {
@@ -74,32 +72,30 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
     @Override
     protected Transaccion nuevoRegistro() {
         Transaccion t = new Transaccion();
-        t.setId(UUID.randomUUID());
-        t.setFecha(LocalDate.now());
+        t.setIdTransaccion(UUID.randomUUID());
+        t.setFecha(new Date());
         t.setMonto(BigDecimal.ZERO);
         t.setDescripcion("");
         t.setMoneda("USD");
-        t.setCreatedAt(Instant.now());
+        t.setCreatedAt(new Date());
         return t;
     }
 
     @Override
     protected String getIdAsText(Transaccion r) {
-        if (r != null && r.getId() != null) {
-            return r.getId().toString();
+        if (r != null && r.getIdTransaccion() != null) {
+            return r.getIdTransaccion().toString();
         }
         return null;
     }
 
     @Override
     protected Transaccion getIdByText(String id) {
-        if (id != null) {
-            try {
-                String buscado = id;
-                return this.modelo.getWrappedData().stream().filter(r -> r.getId().toString().equals(buscado)).findFirst().orElse(null);
-            } catch (NumberFormatException e) {
-                java.util.logging.Logger.getLogger(Transaccion.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
-            }
+        if (id != null && this.modelo != null) {
+            final String buscado = id;
+            return this.modelo.getWrappedData().stream()
+                    .filter(r -> r.getIdTransaccion() != null && r.getIdTransaccion().toString().equals(buscado))
+                    .findFirst().orElse(null);
         }
         return null;
     }
@@ -111,10 +107,20 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
 
     @Override
     protected Transaccion buscarRegistroPorId(Object id) {
-        if (id instanceof UUID uuid) {
-            return transaccionDAO.findById(uuid);
+        // Buscar por idTransaccion (objeto UUID o String)
+        if (id == null) return null;
+        try {
+            return transaccionDAO.findById(id);
+        } catch (Exception ex) {
+            // intentar comparar como String en el modelo lazy
+            if (this.modelo != null) {
+                final String buscado = id.toString();
+                return this.modelo.getWrappedData().stream()
+                        .filter(r -> r.getIdTransaccion() != null && r.getIdTransaccion().toString().equals(buscado))
+                        .findFirst().orElse(null);
+            }
+            return null;
         }
-        return null;
     }
 
     public void cargarTransaccionesPorArchivo(ArchivoCargado archivo) {
@@ -137,7 +143,7 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
 
     public void guardarTransaccion(){
         if(transaccionSeleccionado != null){
-            transaccionSeleccionado.setUpdatedAt(Instant.now());
+            transaccionSeleccionado.setUpdatedAt(new Date());
             transaccionDAO.edit(transaccionSeleccionado);
             enviarMensaje("Transaccion editada correctamente.", FacesMessage.SEVERITY_INFO);
         } else {
@@ -147,7 +153,7 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
 
     public void crearTransaccionManual() {
         Transaccion nueva = nuevoRegistro();
-        nueva.setArchivoCargado(archivoSeleccionado);
+        nueva.setArchivoCargadoId(archivoSeleccionado);
         transaccionDAO.create(nueva);
         listaTransacciones.add(nueva);
         enviarMensaje("Transaccion creada correctamente.", FacesMessage.SEVERITY_INFO);
@@ -160,12 +166,7 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
     public void aplicarFiltroPeriodo() {
         if (archivoSeleccionado == null || archivoSeleccionado.getIdArchivoCargado() == null) {
             // Sin archivo, cargar todas o avisar
-            try {
-                listaTransacciones = transaccionDAO.findRange(0, Integer.MAX_VALUE);
-            } catch (IllegalAccessException e) {
-                java.util.logging.Logger.getLogger(getClass().getName()).log(java.util.logging.Level.WARNING, "No se pudo obtener rango de transacciones", e);
-                listaTransacciones = java.util.Collections.emptyList();
-            }
+            listaTransacciones = transaccionDAO.findRange(0, Integer.MAX_VALUE);
             enviarMensaje("No hay archivo seleccionado; mostrando todas las transacciones", FacesMessage.SEVERITY_WARN);
             return;
         }
