@@ -49,7 +49,7 @@ public class ClasificacionService {
         if (transaccion == null || cuenta == null) return false;
         try {
             // La asignación de la cuenta contable marca la transacción como clasificada
-            transaccion.setCuentaContable(cuenta);
+            //transaccion.setCuentaContable(cuenta);
             transaccion.setUpdatedAt(Instant.now());
             transaccionDAO.edit(transaccion);
             return true;

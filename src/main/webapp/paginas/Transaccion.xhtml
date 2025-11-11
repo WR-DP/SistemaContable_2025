@@ -1,0 +1,114 @@
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:h="jakarta.faces.html"
+        xmlns:f="jakarta.faces.core"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ues="jakarta.faces.composite/ues"
+        template="/WEB-INF/plantilla/default.xhtml">
+
+    <ui:define name="header">
+        <h1>Gestión de Transacciones</h1>
+    </ui:define>
+
+    <!-- tabla -->
+    <ui:define name="contenido-tabla">
+        <h:form id="frmTablaTransacciones">
+            <p:growl id="msgsTabla" showDetail="true" life="3000"/>
+
+
+            <p:panel id="pnlTablaTransaccion">
+
+                <p:dataTable id="tablaTransacciones"
+                             value="#{transaccionFrm.modelo}"
+                             var="t"
+                             paginator="true"
+                             rows="8"
+                             rendered="#{transaccionFrm.estado == 'NADA'}"
+                             selectionMode="single"
+                             selection="#{transaccionFrm.registro}"
+                             rowKey="#{t.id}"
+                             paginatorPosition="bottom"
+                             emptyMessage="No hay transacciones registradas."
+                             styleClass="tabla-crud">
+
+                    <p:ajax event="rowSelect"
+                            listener="#{transaccionFrm.seleccionarRegistro}"
+                            update=":frmDetalle :pnlTabla"/>
+
+                    <p:column headerText="Fecha">
+                        <h:outputText value="#{t.fecha}"/>
+                    </p:column>
+
+                    <p:column headerText="Descripción">
+                        <h:outputText value="#{t.descripcion}"/>
+                    </p:column>
+
+                    <p:column headerText="Monto">
+                        <h:outputText value="#{t.monto}"/>
+                    </p:column>
+
+                    <p:column headerText="Moneda">
+                        <h:outputText value="#{t.moneda}"/>
+                    </p:column>
+
+                    <!-- archivoCargado -->
+                    <p:column headerText="Archivo Origen">
+                        <h:outputText value="#{t.archivoCargado != null ? t.archivoCargado.nombreArchivo : '—'}"/>
+                    </p:column>
+                </p:dataTable>
+
+                <ues:botones-top formulario="#{transaccionFrm}" actualizar=":pnlDetalle :pnlTabla"/>
+
+            </p:panel>
+        </h:form>
+    </ui:define>
+
+    <!-- detalle -->
+    <ui:define name="contenido-detalle">
+        <h:form id="frmDetalle" rendered="#{transaccionFrm.estado != 'NADA'}" enctype="multipart/form-data">
+            <p:growl id="msgsDetalle" showDetail="true" life="4000"/>
+
+            <p:panel id="pnlDetalleTransaccion" header="Datos de la Transacción">
+
+                <p:panelGrid columns="2">
+                    <h:outputLabel value="ID:"/>
+                    <p:inputText value="#{transaccionFrm.registro.id}" readonly="true" disable="true"/>
+
+                    <h:outputLabel value="Fecha:"/>
+                    <p:datePicker value="#{transaccionFrm.registro.fecha}"
+                                  pattern="yyyy-MM-dd"
+                                  showIcon="true"
+                                  required="true"/>
+
+                    <h:outputLabel value="Descripción:"/>
+                    <p:inputTextarea value="#{transaccionFrm.registro.descripcion}"
+                                     rows="3" cols="30"
+                                     required="true"
+                                     requiredMessage="Ingrese una descripción."/>
+
+                    <h:outputLabel value="Monto:"/>
+                    <p:inputNumber value="#{transaccionFrm.registro.monto}"
+                                   symbol="$"
+                                   symbolPosition="p"
+                                   required="true"/>
+
+                    <h:outputLabel value="Moneda:"/>
+                    <p:selectOneMenu value="#{transaccionFrm.registro.moneda}">
+                        <f:selectItem itemLabel="USD" itemValue="USD"/>
+                    </p:selectOneMenu>
+
+                    <!-- muestra el archivo cargado del que proviene la transaccion -->
+                    <h:outputLabel value="Archivo Origen:"/>
+                    <p:inputText value="#{transaccionFrm.registro.archivoCargado != null ? transaccionFrm.registro.archivoCargado.nombreArchivo : ''}"
+                                 readonly="true"/>
+
+                </p:panelGrid>
+            </p:panel>
+            <br/>
+
+            <ues:botones-crud
+                    formulario="#{transaccionFrm}" actualizar=":pnlDetalle :pnlTabla"/>
+        </h:form>
+    </ui:define>
+</ui:composition>
