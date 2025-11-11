@@ -39,6 +39,7 @@ public class TransaccionClasificacionFrm implements Serializable {
 
     @Inject
     private ClasificacionService clasificasionesService;
+    private Transaccion transaccionSeleccionada;
 
     @PostConstruct
     public void init(){
