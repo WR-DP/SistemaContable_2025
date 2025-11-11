@@ -115,14 +115,6 @@
 
             </p:panelGrid>
 
-            <p:commandButton value="Subir Archivo"
-                             icon="pi pi-upload"
-                             actionListener="#{archivoCargadoFrm.subirArchivo}"
-                             update=":pnlTabla :frmArchivoCargado"
-                             ajax="false"
-                             styleClass="ui-button-success"
-                             style="margin-top:10px;" />
-
             <ues:botones-crud formulario="#{archivoCargadoFrm}" actualizar=":pnlDetalle :pnlTabla"/>
 
         </h:form>
