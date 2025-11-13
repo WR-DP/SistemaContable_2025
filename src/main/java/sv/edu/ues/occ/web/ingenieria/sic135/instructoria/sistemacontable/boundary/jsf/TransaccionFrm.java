@@ -14,10 +14,10 @@ import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 @Named
 @ViewScoped
@@ -39,6 +39,12 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
 
     private Transaccion transaccionSeleccionado;
 
+    // Campos para filtrado por periodo contable
+    private String periodoFiltro; // "mensual"|"trimestral"|"anual"
+    private Integer anioFiltro;
+    private Integer mesFiltro;
+    private Integer trimestreFiltro;
+
     @Override
     protected FacesContext getFacesContext() {
         return facesContext;
@@ -51,40 +57,44 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
 
     @PostConstruct
     @Override
-    public void inicializar() throws IllegalAccessException {
+    public void inicializar() {
+        // DefaultFrm.inicializar no lanza checked exceptions
         super.inicializar();
-        listaTransacciones = transaccionDAO.findRange(0, Integer.MAX_VALUE);
+        try {
+            listaTransacciones = transaccionDAO.findRange(0, Integer.MAX_VALUE);
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(getClass().getName()).log(java.util.logging.Level.WARNING, "No se pudo cargar la lista inicial de transacciones", ex);
+            listaTransacciones = java.util.Collections.emptyList();
+        }
     }
 
     @Override
     protected Transaccion nuevoRegistro() {
         Transaccion t = new Transaccion();
-        t.setId(UUID.randomUUID());
-        t.setFecha(LocalDate.now());
+        t.setIdTransaccion(UUID.randomUUID());
+        t.setFecha(new Date());
         t.setMonto(BigDecimal.ZERO);
         t.setDescripcion("");
         t.setMoneda("USD");
-        t.setCreatedAt(Instant.now());
+        t.setCreatedAt(new Date());
         return t;
     }
 
     @Override
     protected String getIdAsText(Transaccion r) {
-        if (r != null && r.getId() != null) {
-            return r.getId().toString();
+        if (r != null && r.getIdTransaccion() != null) {
+            return r.getIdTransaccion().toString();
         }
         return null;
     }
 
     @Override
     protected Transaccion getIdByText(String id) {
-        if (id != null) {
-            try {
-                String buscado = id;
-                return this.modelo.getWrappedData().stream().filter(r -> r.getId().toString().equals(buscado)).findFirst().orElse(null);
-            } catch (NumberFormatException e) {
-                java.util.logging.Logger.getLogger(Transaccion.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
-            }
+        if (id != null && this.modelo != null) {
+            final String buscado = id;
+            return this.modelo.getWrappedData().stream()
+                    .filter(r -> r.getIdTransaccion() != null && r.getIdTransaccion().toString().equals(buscado))
+                    .findFirst().orElse(null);
         }
         return null;
     }
@@ -96,10 +106,20 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
 
     @Override
     protected Transaccion buscarRegistroPorId(Object id) {
-        if (id instanceof UUID uuid) {
-            return transaccionDAO.findById(uuid);
+        // Buscar por idTransaccion (objeto UUID o String)
+        if (id == null) return null;
+        try {
+            return transaccionDAO.findById(id);
+        } catch (Exception ex) {
+            // intentar comparar como String en el modelo lazy
+            if (this.modelo != null) {
+                final String buscado = id.toString();
+                return this.modelo.getWrappedData().stream()
+                        .filter(r -> r.getIdTransaccion() != null && r.getIdTransaccion().toString().equals(buscado))
+                        .findFirst().orElse(null);
+            }
+            return null;
         }
-        return null;
     }
 
     public void cargarTransaccionesPorArchivo(ArchivoCargado archivo) {
@@ -113,7 +133,8 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
                 transaccionDAO.create(t);
             }
             enviarMensaje("Transacciones importadas correctamente.", FacesMessage.SEVERITY_INFO);
-            cargarTransaccionesPorArchivo(archivo);
+            // recargar lista de transacciones del archivo
+            listaTransacciones = transaccionDAO.findByArchivoId(archivo.getIdArchivoCargado());
         } catch (Exception e) {
             enviarMensaje("Error al importar transacciones: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
         }
@@ -121,7 +142,7 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
 
     public void guardarTransaccion(){
         if(transaccionSeleccionado != null){
-            transaccionSeleccionado.setUpdatedAt(Instant.now());
+            transaccionSeleccionado.setUpdatedAt(new Date());
             transaccionDAO.edit(transaccionSeleccionado);
             enviarMensaje("Transaccion editada correctamente.", FacesMessage.SEVERITY_INFO);
         } else {
@@ -131,10 +152,30 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
 
     public void crearTransaccionManual() {
         Transaccion nueva = nuevoRegistro();
-        nueva.setArchivoCargado(archivoSeleccionado);
+        nueva.setArchivoCargadoId(archivoSeleccionado);
         transaccionDAO.create(nueva);
         listaTransacciones.add(nueva);
         enviarMensaje("Transaccion creada correctamente.", FacesMessage.SEVERITY_INFO);
+    }
+
+    /**
+     * Aplica el filtro por periodo usando el archivo seleccionado como contexto.
+     * Si no hay archivo seleccionado devuelve todas las transacciones (comportamiento actual).
+     */
+    public void aplicarFiltroPeriodo() {
+        if (archivoSeleccionado == null || archivoSeleccionado.getIdArchivoCargado() == null) {
+            // Sin archivo, cargar todas o avisar
+            listaTransacciones = transaccionDAO.findRange(0, Integer.MAX_VALUE);
+            enviarMensaje("No hay archivo seleccionado; mostrando todas las transacciones", FacesMessage.SEVERITY_WARN);
+            return;
+        }
+        Object archivoId = archivoSeleccionado.getIdArchivoCargado();
+        listaTransacciones = transaccionDAO.findByArchivoIdAndPeriodo(archivoId, periodoFiltro, anioFiltro, mesFiltro, trimestreFiltro);
+    }
+
+    // Permite cargar filtro directamente por parámetros (útil desde otras vistas)
+    public void aplicarFiltroPeriodoParaArchivoId(Object archivoId) {
+        listaTransacciones = transaccionDAO.findByArchivoIdAndPeriodo(archivoId, periodoFiltro, anioFiltro, mesFiltro, trimestreFiltro);
     }
 
     //getters and setters
@@ -159,5 +200,15 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
     public Transaccion getTransaccionSeleccionado() {return transaccionSeleccionado;}
 
     public void setTransaccionSeleccionado(Transaccion transaccionSeleccionado) {this.transaccionSeleccionado = transaccionSeleccionado;}
+
+    // Getters/Setters para filtros
+    public String getPeriodoFiltro() { return periodoFiltro; }
+    public void setPeriodoFiltro(String periodoFiltro) { this.periodoFiltro = periodoFiltro; }
+    public Integer getAnioFiltro() { return anioFiltro; }
+    public void setAnioFiltro(Integer anioFiltro) { this.anioFiltro = anioFiltro; }
+    public Integer getMesFiltro() { return mesFiltro; }
+    public void setMesFiltro(Integer mesFiltro) { this.mesFiltro = mesFiltro; }
+    public Integer getTrimestreFiltro() { return trimestreFiltro; }
+    public void setTrimestreFiltro(Integer trimestreFiltro) { this.trimestreFiltro = trimestreFiltro; }
 
 }

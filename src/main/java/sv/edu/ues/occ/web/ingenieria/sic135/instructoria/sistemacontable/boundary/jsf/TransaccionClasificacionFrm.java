@@ -39,6 +39,7 @@ public class TransaccionClasificacionFrm implements Serializable {
 
     @Inject
     private ClasificacionService clasificasionesService;
+    private Transaccion transaccionSeleccionada;
 
     @PostConstruct
     public void init(){
@@ -182,7 +183,7 @@ public class TransaccionClasificacionFrm implements Serializable {
 
     // Métodos de utilidad (se mantienen igual)
     private void limpiarSeleccion() {
-        trasnsaccionesTotales= Integer.parseInt(null);
+        trasnsaccionesTotales = 0;
         cuentasSeleccionadas = null;
         cuentasSugeridas = null;
     }
@@ -209,7 +210,7 @@ public class TransaccionClasificacionFrm implements Serializable {
 
     // Getters y Setters
     public Transaccion getTransaccionSeleccionada() { return transaccionSeleccionado; }
-    public void setTransaccionSeleccionada(Transaccion transaccionSeleccionada) { this.transaccionSeleccionado = transaccionSeleccionada; }
+    public void setTransaccionSeleccionada(Transaccion transaccionSeleccionada) { this.transaccionSeleccionada = transaccionSeleccionada; }
     public List<Transaccion> getTransaccionesPendientes() { return transaccionesPendientes; }
     public List<CuentaContable> getCuentasSugeridas() { return cuentasSugeridas; }
     public CuentaContable getCuentaSeleccionada() { return cuentasSeleccionadas; }

@@ -5,6 +5,7 @@ import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion;
 
 import java.util.List;
 
@@ -91,8 +92,8 @@ public abstract class DefaultDataAcces <T, ID> implements DAOInterface<T, ID> {
     }
 
     @Override
-    public List<T> findRange(int first, int max) throws IllegalArgumentException, IllegalAccessException {
-        if(first < 0 || max < 1){
+    public List<T> findRange(int first, int max) throws IllegalArgumentException {
+        if (first < 0 || max < 1) {
             throw new IllegalArgumentException("Parametro no valido");
         }
         try {
@@ -107,7 +108,8 @@ public abstract class DefaultDataAcces <T, ID> implements DAOInterface<T, ID> {
             allQuery.setMaxResults(max);
             return allQuery.getResultList();
         } catch (Exception ex) {
-            throw new IllegalStateException("No se pudo acceder al repositorio",ex);
+            // Consistente con el resto de la API: envolver en IllegalStateException
+            throw new IllegalStateException("No se pudo acceder al repositorio", ex);
         }
     }
 
@@ -129,4 +131,6 @@ public abstract class DefaultDataAcces <T, ID> implements DAOInterface<T, ID> {
         cq.select(cb.count(root));
         return em.createQuery(cq).getSingleResult().intValue();
     }
+
+    public abstract void edit(Transaccion transaccionSeleccionado);
 }

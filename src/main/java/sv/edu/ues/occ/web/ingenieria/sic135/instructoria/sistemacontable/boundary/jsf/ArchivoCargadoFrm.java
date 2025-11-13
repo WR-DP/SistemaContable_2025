@@ -1,5 +1,14 @@
 package sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.boundary.jsf;
 
+/*
+ Modificaciones realizadas por el desarrollador externo:
+ - Bean principal para gestionar archivos cargados. Se eliminó la lógica de filtrado en la vista
+   (propiedades vp*, transaccionesFiltradas y cargarDesdeViewParam) para mantener sólo la implementación
+   del filtrado en el backend (`TransaccionDAO.findByArchivoIdAndPeriodo(...)`).
+ - Se mantuvieron las funcionalidades de subir archivo y procesar transacciones.
+ Fecha: 2025-11-10
+*/
+
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -17,9 +26,6 @@ import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.
 import java.io.*;
 import java.io.Serializable;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,11 +46,13 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
     @Inject
     TransaccionDAO transaccionDAO;
 
-    private UploadedFile archivo; // ✅ tipo correcto para PrimeFaces 12+
+    private UploadedFile archivo; // tipo correcto para PrimeFaces
+
+    private static final Logger LOGGER = Logger.getLogger(ArchivoCargadoFrm.class.getName());
 
     @PostConstruct
     @Override
-    public void inicializar() throws IllegalAccessException {
+    public void inicializar() {
         super.inicializar();
     }
 
@@ -108,7 +116,7 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
 
                 // Procesar transacciones desde Excel
                 try {
-                    List<Transaccion> transacciones = parser.parsearExcel(rutaCompleta, nuevo);
+                    java.util.List<Transaccion> transacciones = parser.parsearExcel(rutaCompleta, nuevo);
                     for (Transaccion t : transacciones) {
                         transaccionDAO.create(t);
                     }
@@ -133,7 +141,6 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
     }
 
 
-    //el archivo cargado-> al subir debe ser parseado y guardado en transacciones
     public UploadedFile getArchivo() {
         return archivo;
     }
