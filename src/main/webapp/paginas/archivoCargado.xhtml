@@ -50,9 +50,7 @@
                         </p:column>
 
                         <p:column headerText="Fecha de Carga" style="width: 180px;">
-                            <h:outputText value="#{a.fechaCarga}" converter="instantConverter">
-                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm" timeZone="America/El_Salvador"/>
-                            </h:outputText>
+                            <h:outputText value="#{a.fechaCarga}" converter="instantConverter"/>
                         </p:column>
 
                         <p:column headerText="Estado" style="width: 150px;">
@@ -167,6 +165,7 @@
                             </p:selectOneMenu>
                         </div>
                     </div>
+
                     <!-- Fila 3: Usuario + Archivo -->
                     <div class="form-row">
                         <div class="form-col">
