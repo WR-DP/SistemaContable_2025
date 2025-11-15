@@ -34,11 +34,6 @@ public class ArchivoCargadoDAO extends DefaultDataAcces<ArchivoCargado, Object> 
     }
 
 
-   // @Override
-    public void edit(Transaccion transaccionSeleccionado) {
-
-    }
-
     public List<ArchivoCargado> findAll() {
         return getEntityManager()
                 .createNamedQuery("ArchivoCargado.findAll", ArchivoCargado.class)
