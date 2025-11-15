@@ -20,9 +20,7 @@
         </cc:interface>
 
         <cc:implementation>
-            <!-- Contenedor de botones superiores con diseño moderno -->
-            <div class="top-buttons-container">
-                <!-- Botón Nuevo (visible cuando estado = NADA) -->
+            <h:panelGrid columns="2" style="margin-top:1rem;">
                 <p:commandButton id="btnNuevo"
                                  value="Nuevo"
                                  icon="pi pi-plus"
@@ -31,9 +29,8 @@
                                  rendered="#{cc.attrs.formulario.estado == 'NADA'}"
                                  process="@this"
                                  update="#{cc.attrs.actualizar}"
-                                 styleClass="btn-top btn-top-new"/>
+                                 styleClass="ui-button-success"/>
 
-                <!-- Botón Cancelar (visible cuando estado != NADA) -->
                 <p:commandButton id="btnCancelar"
                                  value="Cancelar"
                                  icon="pi pi-times"
@@ -42,9 +39,8 @@
                                  rendered="#{cc.attrs.formulario.estado != 'NADA'}"
                                  process="@this"
                                  update="#{cc.attrs.actualizar}"
-                                 styleClass="btn-top btn-top-cancel"
-                                 immediate="true"/>
-            </div>
+                                 styleClass="ui-button-secondary"/>
+            </h:panelGrid>
         </cc:implementation>
     </ui:composition>
 </ui:component>
