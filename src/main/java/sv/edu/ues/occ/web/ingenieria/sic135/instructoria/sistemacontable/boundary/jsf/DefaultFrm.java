@@ -33,7 +33,7 @@ public abstract class DefaultFrm<T> implements Serializable {
     protected abstract T buscarRegistroPorId(Object id);
 
     @PostConstruct
-    public void inicializar() throws IllegalAccessException {
+    public void inicializar() {
         inicializarRegistros();
         inicializarListas();
     }
@@ -169,6 +169,15 @@ public abstract class DefaultFrm<T> implements Serializable {
         }
     }
 
+    public void seleccionarRegistro(SelectEvent<T> r) {
+        if(r!=null && r.getObject() != null){
+            this.registro = r.getObject();
+            this.estado = ESTADO_CRUD.MODIFICAR;
+        } else{
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,"Advertencia", "No se selecciono ningun registro"));
+        }
+    }
+
     public void enviarMensaje(String s, FacesMessage.Severity severity) {
         FacesMessage msj = new FacesMessage();
         msj.setSeverity(severity);
@@ -179,42 +188,37 @@ public abstract class DefaultFrm<T> implements Serializable {
     public ESTADO_CRUD getEstado() {
         return estado;
     }
-
     public void setEstado(ESTADO_CRUD estado) {
         this.estado = estado;
     }
-
     public String getNombreBean() {
         return nombreBean;
     }
-
     public void setNombreBean(String nombreBean) {
         this.nombreBean = nombreBean;
     }
-
     public T getRegistro() {
         return registro;
     }
-
     public void setRegistro(T registro) {
         this.registro = registro;
     }
-
     public int getPageSize() {
         return pageSize;
     }
-
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
     }
-
     public LazyDataModel<T> getModelo() {
         return modelo;
     }
-
     public void setModelo(LazyDataModel<T> modelo) {
         this.modelo = modelo;
     }
+    public boolean isEnModoEdicion() {
+        return this.estado != ESTADO_CRUD.NADA;
+    }
+
 
 
 }

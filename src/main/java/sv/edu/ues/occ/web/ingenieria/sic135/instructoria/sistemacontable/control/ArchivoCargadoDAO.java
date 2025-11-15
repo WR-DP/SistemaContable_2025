@@ -33,6 +33,11 @@ public class ArchivoCargadoDAO extends DefaultDataAcces<ArchivoCargado, Object> 
         return ArchivoCargado.class;
     }
 
+    @Override
+    public void edit(Transaccion transaccionSeleccionado) {
+
+    }
+
 
     public List<ArchivoCargado> findAll() {
         return getEntityManager()

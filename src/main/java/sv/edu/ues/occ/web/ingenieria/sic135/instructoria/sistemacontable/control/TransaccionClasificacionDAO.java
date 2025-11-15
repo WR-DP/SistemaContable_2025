@@ -4,6 +4,7 @@ import jakarta.ejb.LocalBean;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.TransaccionClasificacion;
 
 import java.io.Serializable;
@@ -28,6 +29,11 @@ public class TransaccionClasificacionDAO extends DefaultDataAcces<TransaccionCla
     @Override
     protected Class<TransaccionClasificacion> getEntityClass() {
         return TransaccionClasificacion.class;
+    }
+
+    @Override
+    public void edit(Transaccion transaccionSeleccionado) {
+
     }
 
 

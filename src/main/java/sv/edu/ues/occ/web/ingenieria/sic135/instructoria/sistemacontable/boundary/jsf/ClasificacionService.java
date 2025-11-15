@@ -2,23 +2,31 @@ package sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.bounda
 
 import jakarta.inject.Inject;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.CuentaContableDAO;
-import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.TransaccionDAO;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.TransaccionClasificacionDAO;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.CuentaContable;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.TransaccionClasificacion;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.TransaccionClasificacion;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 public class ClasificacionService {
 
-    @Inject
-    private TransaccionDAO transaccionDAO;
+    private static final Logger LOGGER = Logger.getLogger(ClasificacionService.class.getName());
 
     @Inject
     private CuentaContableDAO cuentaContableDAO;
+
+    @Inject
+    private TransaccionClasificacionDAO transaccionClasificacionDAO;
 
     private static final java.util.Map<String, Pattern>REGLAS_CLASIFICACION =java.util.Map.of(
             "5.1.01", Pattern.compile(".*\\b(sueldo|salario|nómina|nomina|pago personal|planilla)\\b.*", Pattern.CASE_INSENSITIVE),
@@ -55,8 +63,9 @@ public class ClasificacionService {
             if (codigoSugerido != null) {
                 CuentaContable cc = cuentaContableDAO.findByCodigo(codigoSugerido);
                 if (cc != null) {
-                    List<CuentaContable> sugerencias = cuentaContableDAO.findCuentaPrincipales();
-                    sugerencias.add(0, cc); // Pone la sugerencia IA de primera
+                    // convertir a LinkedList para poder añadir al principio sin warning
+                    LinkedList<CuentaContable> sugerencias = new LinkedList<>(cuentaContableDAO.findCuentaPrincipales());
+                    sugerencias.addFirst(cc);
                     return sugerencias;
                 }
             }
@@ -67,43 +76,46 @@ public class ClasificacionService {
     public boolean clasificarTransaccionManual(Transaccion transaccion, CuentaContable cuenta) {
         if (transaccion == null || cuenta == null) return false;
         try {
-            // La asignación de la cuenta contable marca la transacción como clasificada
-            transaccion.setCuentaContable(cuenta);
-            transaccion.setUpdatedAt(Instant.now());
-            transaccionDAO.edit(transaccion);
+            // Crear registro de clasificación asociado a la transacción
+            TransaccionClasificacion tc = new TransaccionClasificacion();
+            tc.setTransaccion(transaccion);
+            tc.setOrigen("MANUAL");
+            tc.setCuentaContableDebe(cuenta);
+            tc.setConfianzaClasificacion(new BigDecimal("1.00"));
+            tc.setCreatedAt(Instant.now());
+            transaccionClasificacionDAO.create(tc);
             return true;
         } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Error clasificando transaccion manualmente", e);
             return false;
         }
     }
 
     public CompletionStage<Boolean> clasificarTransaccionAutomatica(Transaccion transaccion) {
         return obtenerSugerenciasIA(transaccion)
-                .thenApply(sugerencias -> {
-                    if (!sugerencias.isEmpty()) {
-                        CuentaContable mejorSugerencia = sugerencias.get(0);
+                 .thenApply(sugerencias -> {
+                     if (!sugerencias.isEmpty()) {
+                        CuentaContable mejorSugerencia = sugerencias.getFirst();
                         return clasificarTransaccionManual(transaccion, mejorSugerencia);
-                    }
-                    return false;
-                });
-    }
+                     }
+                     return false;
+                 });
+     }
 
-    public CompletionStage<Integer> clasificarLoteAutomatico(List<Transaccion> transacciones) {
-        return CompletableFuture.supplyAsync(() -> {
-            int exitosas = 0;
-            for (Transaccion t : transacciones) {
-                try {
-                    if (clasificarTransaccionAutomatica(t).toCompletableFuture().get()) {
-                        exitosas++;
-                    }
-                } catch (Exception e) {
-                    // Log del error para debugging
-                    System.err.println("Error clasificando transacción ID: " +
-                            (t.getId() != null ? t.getId() : "N/A") +
-                            " - " + e.getMessage());
-                }
-            }
-            return exitosas;
-        });
-    }
+     public CompletionStage<Integer> clasificarLoteAutomatico(List<Transaccion> transacciones) {
+         return CompletableFuture.supplyAsync(() -> {
+             int exitosas = 0;
+             for (Transaccion t : transacciones) {
+                 try {
+                     if (clasificarTransaccionAutomatica(t).toCompletableFuture().get()) {
+                         exitosas++;
+                     }
+                 } catch (Exception e) {
+                    //
+                 }
+             }
+             return exitosas;
+         });
+     }
+
 }

@@ -1,0 +1,130 @@
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:h="jakarta.faces.html"
+        xmlns:f="jakarta.faces.core"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ues="jakarta.faces.composite/ues"
+        template="/WEB-INF/plantilla/default.xhtml">
+
+    <!-- Notas: filtrado por periodos implementado en backend (TransaccionDAO). La vista de filtrado fue removida
+         por petición del usuario; el bean mantiene solo funcionalidad de archivos (subir/editar/eliminar). -->
+
+    <!-- ===================== HEADER ===================== -->
+    <ui:define name="header">
+        <h1><i class="pi pi-upload" style="margin-right:10px;"></i> Carga de Archivos Contables</h1>
+    </ui:define>
+
+    <!-- ===================== TABLA ===================== -->
+    <ui:define name="contenido-tabla">
+        <h:form id="frmTablaArchivos">
+            <p:growl id="msgsTabla" showDetail="true" life="3000"/>
+
+            <p:dataTable id="tablaArchivos"
+                         value="#{archivoCargadoFrm.modelo}"
+                         var="a"
+                         paginator="true"
+                         rows="8"
+                         rendered="#{archivoCargadoFrm.estado == 'NADA'}"
+                         selectionMode="single"
+                         selection="#{archivoCargadoFrm.registro}"
+                         rowKey="#{a.id}"
+                         paginatorPosition="bottom"
+                         emptyMessage="No se encontraron archivos cargados."
+                         styleClass="tabla-crud">
+
+                <p:ajax event="rowSelect" listener="#{archivoCargadoFrm.seleccionarRegistro}"
+                        update=":pnlDetalle :pnlTabla"/>
+
+                <p:column headerText="ID">
+                    <h:outputText value="#{a.idArchivoCargado}"/>
+                </p:column>
+
+                <p:column headerText="Nombre del Archivo">
+                    <h:outputText value="#{a.nombreArchivo}"/>
+                </p:column>
+
+                <p:column headerText="Fecha de Carga">
+                    <h:outputText value="#{a.fechaCarga}" converter="instantConverter"/>
+                </p:column>
+
+                <p:column headerText="Estado">
+                    <h:outputText value="#{a.estado}"/>
+                </p:column>
+
+                <p:column headerText="Usuario">
+                    <h:outputText value="#{a.usuarioCarga}"/>
+                </p:column>
+            </p:dataTable>
+
+            <ues:botones-top formulario="#{archivoCargadoFrm}" actualizar=":pnlDetalle :pnlTabla"/>
+
+        </h:form>
+    </ui:define>
+
+
+    <ui:define name="contenido-detalle">
+        <!-- Form only rendered when there's a registro to edit/create to ensure bindings are writable -->
+        <h:form id="frmArchivoCargado" rendered="#{archivoCargadoFrm.estado != 'NADA' and archivoCargadoFrm.registro != null}" enctype="multipart/form-data">
+            <p:growl id="msgsDetalle" showDetail="true" life="4000"/>
+
+            <p:panelGrid columns="2">
+                <p:outputLabel for="txtId" value="ID:"/>
+                <p:inputText id="txtId" value="#{archivoCargadoFrm.registro.idArchivoCargado}" readonly="true" disabled="true"/>
+
+                <p:outputLabel for="txtNombre" value="Nombre del Archivo:"/>
+                <p:inputText id="txtNombre" value="#{archivoCargadoFrm.registro.nombreArchivo}" required="true"
+                             requiredMessage="Debe ingresar un nombre de archivo."/>
+
+                <p:outputLabel for="fecha" value="Fecha de Carga:"/>
+                <p:datePicker id="fecha"
+                              value="#{archivoCargadoFrm.registro.fechaCarga}"
+                              showIcon="true"
+                              showTime="true"
+                              hourFormat="24"
+                              pattern="yyyy-MM-dd HH:mm"
+                              timeZone="America/El_Salvador"
+                              converter="instantConverter"
+                              required="#{archivoCargadoFrm.estado == 'CREAR'}"
+                              requiredMessage="La fecha es obligatoria."
+                              style="width:100%;"/>
+
+
+                <p:outputLabel for="txtEstado" value="Estado:"/>
+                <p:selectOneMenu id="txtEstado"
+                                 value="#{archivoCargadoFrm.registro.estado}">
+                    <f:selectItem itemLabel="PROCESADO" itemValue="PROCESADO"/>
+                    <f:selectItem itemLabel="PROCESANDO" itemValue="PROCESANDO"/>
+                    <f:selectItem itemLabel="SIN PROCESAR" itemValue="SIN PROCESAR"/>
+                </p:selectOneMenu>
+
+
+                <p:outputLabel for="txtUsuario" value="Usuario:"/>
+                <p:inputText id="txtUsuario" value="#{archivoCargadoFrm.registro.usuarioCarga}" required="true"
+                              requiredMessage="Ingrese el nombre del usuario."/>
+
+                <p:outputLabel for="file" value="Seleccionar Archivo Excel:"/>
+                <p:fileUpload id="file"
+                              value="#{archivoCargadoFrm.archivo}"
+                              mode="simple"
+                              label="Seleccionar archivo"
+                              skinSimple="true"
+                              required="#{archivoCargadoFrm.estado == 'CREAR'}"
+                              requiredMessage="Debe seleccionar un archivo."/>
+
+
+            </p:panelGrid>
+
+            <p:commandButton value="Subir Archivo"
+                             icon="pi pi-upload"
+                             actionListener="#{archivoCargadoFrm.subirArchivo}"
+                             update=":pnlTabla :frmArchivoCargado"
+                             ajax="false"
+                             styleClass="ui-button-success"
+                             style="margin-top:10px;" />
+
+            <ues:botones-crud formulario="#{archivoCargadoFrm}" actualizar=":pnlDetalle :pnlTabla"/>
+
+        </h:form>
+    </ui:define>
+</ui:composition>

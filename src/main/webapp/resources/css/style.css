@@ -1,0 +1,276 @@
+/* --- FONDO GENERAL --- */
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-image: url("#{resource['imagenes/pexels-sash2s-16886249.jpg']}");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    margin: 0;
+    padding: 0;
+    color: #2e2e2e;
+}
+
+/* --- ESTRUCTURA PRINCIPAL --- */
+main.app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    backdrop-filter: blur(3px);
+}
+
+/* =========================================================
+    ENCABEZADO
+   ========================================================= */
+header {
+    background: linear-gradient(135deg, #133a27, #0f5132);
+    color: #f8f9f5;
+    padding: 1rem 2rem;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #d8dcb7; /* Dorado claro elegante */
+    letter-spacing: 1px;
+}
+
+/* =========================================================
+    CONTENIDO PRINCIPAL
+   ========================================================= */
+.content {
+    flex: 1;
+    padding: 4.5rem; /*Cambia el ancho blanco de las tablas*/
+}
+
+/* --- PANEL PRINCIPAL --- */
+.panel {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* =========================================================
+    PIE DE PÁGINA
+   ========================================================= */
+footer {
+    background: #0d1f14;
+    color: #b2b9ad;
+    text-align: center;
+    font-size: 0.9rem;
+    padding: 0.8rem 0;
+    border-top: 3px solid #0f5132;
+}
+
+/* =========================================================
+    TÍTULOS Y TEXTOS
+   ========================================================= */
+h1, h2, h3 {
+    text-align: center;
+    color: #133a27;
+    margin-top: 0;
+}
+
+/* =========================================================
+    FORMULARIOS Y CAMPOS
+   ========================================================= */
+form {
+    display: grid;
+    gap: 15px;
+}
+
+label {
+    font-weight: bold;
+    color: #0f5132;
+}
+
+input, select, textarea {
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.85);
+    border: 2px solid #9dbb9d;
+    border-radius: 8px;
+    outline: none;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    background: rgba(249, 255, 249, 0.95);
+    border-color: #0f5132;
+    box-shadow: 0 0 5px rgba(31, 97, 60, 0.6);
+}
+
+input:hover, select:hover, textarea:hover {
+    border-color: #198754;
+}
+
+/* =========================================================
+    BOTONES
+   ========================================================= */
+button, .ui-button {
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #198754, #146c43);
+    color: #f5f5f5;
+    border: 2px solid #0f5132;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover, .ui-button:hover {
+    background: linear-gradient(135deg, #218c65, #176947);
+    transform: translateY(-2px);
+}
+
+.ui-button-success {
+    background: linear-gradient(135deg, #28a745, #1e7e34) !important;
+    border-color: #155d27 !important;
+}
+
+.ui-button-success:hover {
+    background: linear-gradient(135deg, #34b56a, #208d3c) !important;
+}
+
+.ui-button-secondary {
+    background: #6c757d !important;
+    border-color: #565e64 !important;
+    color: #fff !important;
+}
+.ui-button-secondary:hover {
+    background: #5c636a !important;
+}
+
+/* =========================================================
+    TABLAS
+   ========================================================= */
+table, .ui-datatable {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(236, 239, 232, 0.98);
+    border: 2px solid #9dbb9d;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #b5ccb4;
+    text-align: left;
+}
+
+th {
+    background: #0f5132;
+    color: #eaeedc;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background: rgba(243, 247, 239, 0.7);
+}
+
+tr:hover {
+    background: rgba(181, 218, 196, 0.4);
+    cursor: pointer;
+}
+
+/* =========================================================
+    TABLA COMPACTA - ARCHIVO CARGADO
+   ========================================================= */
+.tabla-contable {
+    width: 85% !important;
+    margin: 0 auto;
+    font-size: 13px !important;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    background: rgba(242, 246, 241, 0.98);
+    border: 2px solid #8da98d;
+}
+
+.tabla-contable .p-datatable-thead > tr > th {
+    background: #0f5132;
+    color: #e8eedc;
+    padding: 8px 10px;
+    font-weight: bold;
+    border-bottom: 2px solid #0b3b22;
+    text-align: left;
+}
+
+.tabla-contable .p-datatable-tbody > tr > td {
+    background: rgba(239, 243, 238, 0.9);
+    color: #133a27;
+    padding: 6px 10px !important;
+    border-bottom: 1px solid #bcd4bc;
+}
+
+.tabla-contable .p-datatable-tbody > tr:nth-child(even) > td {
+    background: rgba(227, 233, 225, 0.8);
+}
+
+.tabla-contable .p-datatable-tbody > tr:hover > td {
+    background: rgba(195, 223, 200, 0.55);
+    color: #0f5132;
+    cursor: pointer;
+}
+
+.tabla-contable .p-paginator {
+    background: #0f5132;
+    border-top: 2px solid #0b3b22;
+    font-size: 12px;
+    padding: 4px;
+    color: #eaeedc;
+}
+
+/* =========================================================
+    MENSAJES PRIMEFACES
+   ========================================================= */
+.ui-messages-info, .success {
+    background: rgba(218, 247, 220, 0.8);
+    border-left: 4px solid #28a745;
+    padding: 10px;
+    border-radius: 6px;
+    color: #155724;
+}
+
+.ui-messages-error, .error {
+    background: rgba(253, 237, 237, 0.85);
+    border-left: 4px solid #dc3545;
+    padding: 10px;
+    border-radius: 6px;
+    color: #842029;
+}
+
+/* =========================================================
+    SPINNER DE CARGA / OVERLAY
+   ========================================================= */
+.custom-loader {
+    border: 4px solid #e5e5e5;
+    border-top: 4px solid #198754;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    animation: spin 1s linear infinite;
+    margin: auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
