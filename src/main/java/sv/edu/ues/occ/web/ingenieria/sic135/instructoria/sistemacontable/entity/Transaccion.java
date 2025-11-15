@@ -37,7 +37,7 @@ public class Transaccion {
     private ArchivoCargado archivoCargado;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "cuenta_contable:id")
+    @JoinColumn(name= "cuenta_contable_id")
     private CuentaContable cuentaContable;
 
     @Column(name = "fila_excel")
@@ -48,6 +48,22 @@ public class Transaccion {
 
     @Column(name = "updated_at")
     private Instant updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (id == null) {
+            id = UUID.randomUUID();
+        }
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+        updatedAt = Instant.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = Instant.now();
+    }
 
     public UUID getId() {
         return id;

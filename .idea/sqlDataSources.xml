@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DdlMappings">
+    <mapping uuid="122ba2ad-f01f-458a-b373-e88ff6d8f707" name="sistema_contable_sic135@localhost Mapping">
+      <data-sources db="797d6df3-b9f1-476d-8720-4cb8e31a0359" />
+      <scope>
+        <node kind="database" negative="1" />
+      </scope>
+    </mapping>
+  </component>
+</project>
