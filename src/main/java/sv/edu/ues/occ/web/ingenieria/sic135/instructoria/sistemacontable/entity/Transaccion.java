@@ -45,22 +45,6 @@ public class Transaccion {
     @Column(name = "updated_at")
     private Instant updatedAt;
 
-    @PrePersist
-    protected void onCreate() {
-        if (id == null) {
-            id = UUID.randomUUID();
-        }
-        if (createdAt == null) {
-            createdAt = Instant.now();
-        }
-        updatedAt = Instant.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = Instant.now();
-    }
-
     public UUID getId() {
         return id;
     }
