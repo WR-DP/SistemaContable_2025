@@ -1,4 +1,5 @@
 package sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -10,31 +11,21 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @ApplicationScoped
 public class TransaccionExcelParse {
 
-    /**
-     * Lee un archivo Excel (.xlsx) con el formato esperado y devuelve una lista de transacciones.
-     *
-     * @param archivo        Ruta absoluta del archivo Excel a parsear.
-     * @param archivoCargado Entidad ArchivoCargado asociada para enlazar con cada transacción.
-     * @return Lista de transacciones extraídas del archivo.
-     */
     public List<Transaccion> parsearExcel(String archivo, ArchivoCargado archivoCargado) {
         List<Transaccion> transacciones = new ArrayList<>();
 
         try (FileInputStream fis = new FileInputStream(archivo);
              Workbook workbook = new XSSFWorkbook(fis)) {
 
-            Sheet hoja = workbook.getSheetAt(0); // solo la primera hoja de momento luego podemos ampliar
+            Sheet hoja = workbook.getSheetAt(0);
             Iterator<Row> filas = hoja.iterator();
 
-            // Ignorar la primera fila (encabezados)
+            // Ignorar encabezado
             if (filas.hasNext()) filas.next();
 
             int numFila = 1;
@@ -54,10 +45,15 @@ public class TransaccionExcelParse {
 
                 // Fecha
                 if (cellFecha != null && cellFecha.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cellFecha)) {
-                    t.setFecha(cellFecha.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                    // Excel ya devuelve un java.util.Date compatible con tu entidad
+                    t.setFecha(cellFecha.getDateCellValue());
                 } else if (cellFecha != null && cellFecha.getCellType() == CellType.STRING) {
-                    t.setFecha(LocalDate.parse(cellFecha.getStringCellValue()));
+                    // Convierte texto tipo "2025-11-10" a java.sql.Date (subtipo de java.util.Date)
+                    t.setFecha(java.sql.Date.valueOf(cellFecha.getStringCellValue()));
                 }
+
+
+
 
                 // Descripción
                 if (cellDesc != null) {
@@ -79,6 +75,7 @@ public class TransaccionExcelParse {
                 if (cellMoneda != null) {
                     t.setMoneda(cellMoneda.getStringCellValue());
                 }
+
                 transacciones.add(t);
             }
         } catch (IOException e) {

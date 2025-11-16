@@ -3,10 +3,12 @@ package sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.util.Collection;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -18,7 +20,7 @@ public class Transaccion {
 
     @NotNull
     @Column(name = "fecha", nullable = false)
-    private LocalDate fecha;
+    private Date fecha;
 
     @NotNull
     @Column(name = "descripcion", nullable = false, length = Integer.MAX_VALUE)
@@ -36,18 +38,37 @@ public class Transaccion {
     @JoinColumn(name = "archivo_cargado_id")
     private ArchivoCargado archivoCargado;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name= "cuenta_contable:id")
-    private CuentaContable cuentaContable;
-
     @Column(name = "fila_excel")
     private Integer filaExcel;
 
     @Column(name = "created_at")
-    private Instant createdAt;
+    private Date createdAt;
 
     @Column(name = "updated_at")
-    private Instant updatedAt;
+    private Date updatedAt;
+
+
+    // 🔧 CORREGIDO: mappedBy debe coincidir con el atributo "transaccion" en TransaccionClasificacion
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "transaccion")
+    private Collection<TransaccionClasificacion> transaccionClasificacionCollection;
+
+    // ==============================
+    // Constructores
+    // ==============================
+    public Transaccion() {
+    }
+
+    public Transaccion(UUID idTransaccion) {
+        this.id = idTransaccion;
+    }
+
+    public Transaccion(UUID idTransaccion, Date fecha, String descripcion, BigDecimal monto) {
+        this.id = idTransaccion;
+        this.fecha = fecha;
+        this.descripcion = descripcion;
+        this.monto = monto;
+    }
+
 
     public UUID getId() {
         return id;
@@ -57,11 +78,11 @@ public class Transaccion {
         this.id = id;
     }
 
-    public LocalDate getFecha() {
+    public Date getFecha() {
         return fecha;
     }
 
-    public void setFecha(LocalDate fecha) {
+    public void setFecha(Date fecha) {
         this.fecha = fecha;
     }
 
@@ -105,28 +126,27 @@ public class Transaccion {
         this.filaExcel = filaExcel;
     }
 
-    public Instant getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Instant getUpdatedAt() {
+    public Date getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
+    public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public CuentaContable getCuentaContable() {
-        return cuentaContable;
+    public Collection<TransaccionClasificacion> getTransaccionClasificacionCollection() {
+        return transaccionClasificacionCollection;
     }
 
-    public void setCuentaContable(CuentaContable cuentaContable) {
-        this.cuentaContable = cuentaContable;
+    public void setTransaccionClasificacionCollection(Collection<TransaccionClasificacion> transaccionClasificacionCollection) {
+        this.transaccionClasificacionCollection = transaccionClasificacionCollection;
     }
-
 }

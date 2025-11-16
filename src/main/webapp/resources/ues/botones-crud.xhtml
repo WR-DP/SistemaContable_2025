@@ -6,6 +6,15 @@
         xmlns:h="jakarta.faces.html"
         xmlns:f="jakarta.faces.core">
 
+    <!--
+      - Ajustado el comportamiento de los botones CRUD para evitar que las acciones de Modificar/Eliminar
+        disparen la validación de todos los campos del formulario.
+      - El botón "Modificar" ahora procesa sólo el propio componente (process="@this") para reducir validaciones.
+      - El botón "Eliminar" ahora tiene immediate="true" para saltarse la fase de validación y ejecutar la acción de borrado.
+      Motivo: permitir eliminar/modificar sin tener que reingresar la fecha o seleccionar un archivo cuando se edita un registro.
+      Fecha: 2025-11-10
+    -->
+
     <ui:composition>
         <cc:interface>
             <cc:attribute name="formulario"
@@ -33,14 +42,16 @@
                                  actionListener="#{cc.attrs.formulario.btnModificarHandler}"
                                  rendered="#{cc.attrs.formulario.estado == 'MODIFICAR'}"
                                  update="#{cc.attrs.actualizar}"
-                                 styleClass="ui-button-warning"/>
+                                 styleClass="ui-button-warning"
+                                 process="@this"/>
 
                 <p:commandButton value="Eliminar"
                                  icon="pi pi-trash"
                                  actionListener="#{cc.attrs.formulario.btnEliminarHandler}"
                                  rendered="#{cc.attrs.formulario.estado == 'MODIFICAR'}"
                                  update="#{cc.attrs.actualizar}"
-                                 styleClass="ui-button-danger"/>
+                                 styleClass="ui-button-danger"
+                                 immediate="true"/>
             </h:panelGrid>
         </cc:implementation>
     </ui:composition>

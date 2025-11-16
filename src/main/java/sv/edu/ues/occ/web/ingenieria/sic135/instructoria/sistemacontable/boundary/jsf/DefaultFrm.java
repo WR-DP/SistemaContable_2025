@@ -33,7 +33,7 @@ public abstract class DefaultFrm<T> implements Serializable {
     protected abstract T buscarRegistroPorId(Object id);
 
     @PostConstruct
-    public void inicializar() throws IllegalAccessException {
+    public void inicializar() {
         inicializarRegistros();
         inicializarListas();
     }
