@@ -421,12 +421,14 @@
 
         <!-- Iconos de características -->
         <div class="features-icons">
-            <div class="feature-item">
-                <div class="feature-icon">
-                    <i class="fas fa-file-invoice-dollar"></i>
+            <a href="facturacion.jsf" style="text-decoration:none;color:inherit;">
+                <div class="feature-item" role="button" aria-label="Facturación Electrónica">
+                    <div class="feature-icon">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                    </div>
+                    <span class="feature-label">Facturación Electrónica</span>
                 </div>
-                <span class="feature-label">Facturas</span>
-            </div>
+            </a>
 
             <div class="feature-item">
                 <div class="feature-icon">

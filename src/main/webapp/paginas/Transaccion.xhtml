@@ -72,37 +72,36 @@
             <p:panel id="pnlDetalleTransaccion" header="Datos de la Transacción">
 
                 <p:panelGrid columns="2">
-                    <h:outputLabel value="ID:"/>
-                    <p:inputText value="#{transaccionFrm.registro.id}" readonly="true" disable="true"/>
+                    <h:outputLabel for="registroId" value="ID:"/>
+                    <p:inputText id="registroId" value="#{transaccionFrm.registro.id}" readonly="true" disabled="true"/>
 
-                    <h:outputLabel value="Fecha:"/>
-                    <p:datePicker value="#{transaccionFrm.registro.fecha}"
+                    <h:outputLabel for="fecha" value="Fecha:"/>
+                    <p:datePicker id="fecha" value="#{transaccionFrm.registro.fecha}"
                                   pattern="yyyy-MM-dd"
                                   showIcon="true"
                                   required="true"/>
 
-                    <h:outputLabel value="Descripción:"/>
-                    <p:inputTextarea value="#{transaccionFrm.registro.descripcion}"
+                    <h:outputLabel for="descripcion" value="Descripción:"/>
+                    <p:inputTextarea id="descripcion" value="#{transaccionFrm.registro.descripcion}"
                                      rows="3" cols="30"
                                      required="true"
                                      requiredMessage="Ingrese una descripción."/>
 
-                    <h:outputLabel value="Monto:"/>
-                    <p:inputNumber value="#{transaccionFrm.registro.monto}"
+                    <h:outputLabel for="monto" value="Monto:"/>
+                    <p:inputNumber id="monto" value="#{transaccionFrm.registro.monto}"
                                    symbol="$"
                                    symbolPosition="p"
                                    required="true"/>
 
-                    <h:outputLabel value="Moneda:"/>
-                    <p:selectOneMenu value="#{transaccionFrm.registro.moneda}">
+                    <h:outputLabel for="moneda" value="Moneda:"/>
+                    <p:selectOneMenu id="moneda" value="#{transaccionFrm.registro.moneda}">
                         <f:selectItem itemLabel="USD" itemValue="USD"/>
                     </p:selectOneMenu>
 
                     <!-- muestra el archivo cargado de donde proviene la transaccion -->
-                    <h:outputLabel value="Archivo Origen:"/>
-                    <p:inputText value="#{transaccionFrm.registro.archivoCargado != null ? transaccionFrm.registro.archivoCargado.nombreArchivo : ''}"
+                    <h:outputLabel for="archivoOrigen" value="Archivo Origen:"/>
+                    <p:inputText id="archivoOrigen" value="#{transaccionFrm.registro.archivoCargado != null ? transaccionFrm.registro.archivoCargado.nombreArchivo : ''}"
                                  readonly="true"/>
-
                 </p:panelGrid>
             </p:panel>
             <br/>

@@ -1,0 +1,162 @@
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:ui="jakarta.faces.facelets"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://xmlns.jcp.org/jsf/core"
+        xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+        template="/WEB-INF/plantilla/default.xhtml">
+
+    <ui:define name="header">
+        <h1>Facturación</h1>
+    </ui:define>
+
+    <ui:define name="contenido-tabla">
+        <div class="container">
+            <div class="content">
+
+                <h:form id="mainForm">
+
+                    <div class="content-section">
+                        <div class="form-card-clean">
+                            <div class="form-header-clean">
+                                <h2 class="table-title"><span class="pi pi-file-invoice" aria-hidden="true">&#8203;</span> Generar Factura</h2>
+                            </div>
+                            <div style="padding:1.25rem 1.5rem;">
+                                <div class="row" style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;">
+                                    <div style="flex:0 0 280px;">
+                                        <label class="form-label">Tipo</label>
+                                        <h:selectOneMenu value="#{transaccionFrm.tipoFacturacion}" styleClass="form-select" style="width:100%;">
+                                            <f:selectItem itemValue="" itemLabel="-- Seleccione --" />
+                                            <f:selectItem itemValue="VENTA" itemLabel="VENTA" />
+                                            <f:selectItem itemValue="COMPRA" itemLabel="COMPRA" />
+                                        </h:selectOneMenu>
+                                    </div>
+
+                                    <div style="display:flex;gap:0.5rem;align-items:center;">
+                                        <h:commandButton value="Aplicar filtro" action="#{transaccionFrm.aplicarFiltroPeriodo}" styleClass="btn btn-secondary" />
+                                    </div>
+                                </div>
+
+                                <div style="margin-top:1rem;">
+                                    <h:panelGroup id="facturacionResult" rendered="#{not empty transaccionFrm.invoiceJson or not empty transaccionFrm.listaParaFacturar}">
+                                        <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;">
+                                            <div>
+                                                Registros preparados: <strong>
+                                                    <h:outputText value="#{not empty transaccionFrm.listaParaFacturar ? fn:length(transaccionFrm.listaParaFacturar) : 0}"/>
+                                                </strong>
+                                            </div>
+
+                                            <div>
+                                                <h:panelGroup rendered="#{not empty transaccionFrm.totalesPorMoneda}">
+                                                    <h5 style="margin:0 0 0.25rem 0;">Totales por moneda</h5>
+                                                    <ui:repeat value="#{transaccionFrm.totalesPorMoneda.entrySet().toArray()}" var="entry">
+                                                        <div style="font-weight:600;color:var(--text-muted);">#{entry.key}: #{entry.value}</div>
+                                                    </ui:repeat>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+
+                                        <div style="margin-top:1rem;">
+                                            <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;">
+                                                <h5 style="margin:0;">Factura</h5>
+                                                <div style="display:flex;gap:0.5rem;">
+                                                    <h:panelGroup rendered="#{not empty transaccionFrm.jsonFilePath}">
+                                                        <h:outputLink value="#{request.contextPath}/#{transaccionFrm.jsonFilePath}" styleClass="btn btn-outline-secondary btn-sm">Descargar JSON</h:outputLink>
+                                                    </h:panelGroup>
+                                                    <h:panelGroup rendered="#{not empty transaccionFrm.pdfFilePath}">
+                                                        <h:outputLink value="#{request.contextPath}/#{transaccionFrm.pdfFilePath}" styleClass="btn btn-primary btn-sm" target="_blank">Descargar PDF</h:outputLink>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </div>
+                                            <div style="margin-top:0.75rem;">
+                                                <h:panelGroup rendered="#{empty transaccionFrm.jsonFilePath}">
+                                                    <div style="color:var(--text-muted);">No hay factura generada aún. Use "Generar factura" para crear JSON y PDF.</div>
+                                                </h:panelGroup>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <div class="table-title"><span class="pi pi-list" aria-hidden="true">&#8203;</span> Listado para Facturación</div>
+                        <div class="table-container" style="padding:1rem;">
+                            <h:dataTable value="#{transaccionFrm.listaTransacciones}" var="t"
+                                         rendered="#{not empty transaccionFrm.listaTransacciones}"
+                                         styleClass="table table-striped table-hover" style="width:100%;">
+
+                                <f:facet name="header">
+                                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                                        <div style="font-weight:700;color:var(--text);">Transacciones</div>
+                                        <div>
+                                            <h:commandButton value="Generar factura" action="#{transaccionFrm.generarFacturaDigital}" styleClass="btn btn-success" ajax="false" />
+                                        </div>
+                                    </div>
+                                </f:facet>
+
+                                <h:column>
+                                    <h:selectBooleanCheckbox value="#{transaccionFrm.seleccionMap[t.id.toString()]}" />
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputText value="#{t.id}" />
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputText value="#{t.fecha}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy" />
+                                    </h:outputText>
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputText value="#{t.descripcion}" />
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputText value="#{t.monto}" />
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputText value="#{t.moneda}" />
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputText value="#{t.archivoCargado != null ? t.archivoCargado.id : ''}" />
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputText value="#{t.filaExcel}" />
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputText value="#{t.createdAt}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+                                    </h:outputText>
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputText value="#{t.updatedAt}">
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+                                    </h:outputText>
+                                </h:column>
+
+                            </h:dataTable>
+                        </div>
+                    </div>
+
+                </h:form>
+            </div>
+        </div>
+
+        <script>
+            // ...script removed (download handled via links to server files)...
+        </script>
+    </ui:define>
+
+    <ui:define name="contenido-detalle">
+        <!-- mantener espacio para consistencia con la plantilla -->
+    </ui:define>
+
+</ui:composition>
