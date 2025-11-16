@@ -47,6 +47,8 @@ public class TransaccionClasificacion {
     @Column(name = "created_at")
     private Instant createdAt;
 
+
+
     public Long getId() {
         return id;
     }

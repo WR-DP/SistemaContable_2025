@@ -7,6 +7,7 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.DAOInterface;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.TransaccionClasificacionDAO;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.TransaccionDAO;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.TransaccionExcelParse;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.ArchivoCargado;
@@ -36,6 +37,10 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
     //injectar el parser para enviarle los datos
     @Inject
     private TransaccionExcelParse parser;
+
+    //traer los metodos que corresponden a la clasificacion
+    @Inject
+    private TransaccionClasificacionDAO transaccionClasificacionDAO;
 
     private List<Transaccion> listaTransacciones;
 
@@ -125,7 +130,7 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
     @Override
     protected Transaccion nuevoRegistro() {
         Transaccion t = new Transaccion();
-        t.setIdTransaccion(UUID.randomUUID());
+        t.setId(UUID.randomUUID());
         t.setFecha(new Date());
         t.setMonto(BigDecimal.ZERO);
         t.setDescripcion("");
@@ -136,8 +141,8 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
 
     @Override
     protected String getIdAsText(Transaccion r) {
-        if (r != null && r.getIdTransaccion() != null) {
-            return r.getIdTransaccion().toString();
+        if (r != null && r.getId() != null) {
+            return r.getId().toString();
         }
         return null;
     }
@@ -147,7 +152,7 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
         if (id != null && this.modelo != null) {
             final String buscado = id;
             return this.modelo.getWrappedData().stream()
-                    .filter(r -> r.getIdTransaccion() != null && r.getIdTransaccion().toString().equals(buscado))
+                    .filter(r -> r.getId() != null && r.getId().toString().equals(buscado))
                     .findFirst().orElse(null);
         }
         return null;
@@ -169,7 +174,7 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
             if (this.modelo != null) {
                 final String buscado = id.toString();
                 return this.modelo.getWrappedData().stream()
-                        .filter(r -> r.getIdTransaccion() != null && r.getIdTransaccion().toString().equals(buscado))
+                        .filter(r -> r.getId() != null && r.getId().toString().equals(buscado))
                         .findFirst().orElse(null);
             }
             return null;
@@ -215,7 +220,7 @@ vista de facturacion dentro de la principal de transacciones->
 
     public void crearTransaccionManual() {
         Transaccion nueva = nuevoRegistro();
-        nueva.setArchivoCargadoId(archivoSeleccionado);
+        nueva.setArchivoCargado(archivoSeleccionado);
         transaccionDAO.create(nueva);
         listaTransacciones.add(nueva);
         enviarMensaje("Transaccion creada correctamente.", FacesMessage.SEVERITY_INFO);
@@ -425,7 +430,8 @@ vista de facturacion dentro de la principal de transacciones->
                 table.addCell("Descripción");
                 table.addCell("Monto (USD)");
                 for (Transaccion t : seleccionadas) {
-                    table.addCell(t.getIdTransaccion() != null ? t.getIdTransaccion().toString() : "");
+                    //========================================> CONFIRMAR LA FUNCIONALIDAD DE ESTE ID YA QUE ES EL DE TRANSACCION
+                    table.addCell(t.getId() != null ? t.getId().toString() : "");
                     table.addCell(t.getFecha() != null ? t.getFecha().toString() : "");
                     table.addCell(t.getDescripcion() != null ? t.getDescripcion() : "");
                     table.addCell(t.getMonto() != null ? t.getMonto().toString() : "0");
@@ -548,7 +554,7 @@ vista de facturacion dentro de la principal de transacciones->
         for (Transaccion t : listaParaFacturar) {
             if (!firstItem) sb.append(',');
             sb.append('{');
-            sb.append("\"idTransaccion\":\"").append(t.getIdTransaccion() != null ? t.getIdTransaccion().toString() : "").append('\"');
+            sb.append("\"idTransaccion\":\"").append(t.getId() != null ? t.getId().toString() : "").append('\"');
             sb.append(',');
             sb.append("\"fecha\":\"").append(t.getFecha() != null ? t.getFecha().toString() : "").append('\"');
             sb.append(',');
@@ -592,7 +598,7 @@ vista de facturacion dentro de la principal de transacciones->
         if (seleccionMap == null || seleccionMap.isEmpty() || listaTransacciones == null) return java.util.Collections.emptyList();
         List<Transaccion> res = new java.util.ArrayList<>();
         for (Transaccion t : listaTransacciones) {
-            String key = t.getIdTransaccion() != null ? t.getIdTransaccion().toString() : null;
+            String key = t.getId() != null ? t.getId().toString() : null;
             if (key != null && Boolean.TRUE.equals(seleccionMap.get(key))) {
                 res.add(t);
             }
