@@ -6,15 +6,6 @@
         xmlns:h="jakarta.faces.html"
         xmlns:f="jakarta.faces.core">
 
-    <!--
-      - Ajustado el comportamiento de los botones CRUD para evitar que las acciones de Modificar/Eliminar
-        disparen la validación de todos los campos del formulario.
-      - El botón "Modificar" ahora procesa sólo el propio componente (process="@this") para reducir validaciones.
-      - El botón "Eliminar" ahora tiene immediate="true" para saltarse la fase de validación y ejecutar la acción de borrado.
-      Motivo: permitir eliminar/modificar sin tener que reingresar la fecha o seleccionar un archivo cuando se edita un registro.
-      Fecha: 2025-11-10
-    -->
-
     <ui:composition>
         <cc:interface>
             <cc:attribute name="formulario"
@@ -29,30 +20,41 @@
         </cc:interface>
 
         <cc:implementation>
-            <h:panelGrid columns="3" style="margin-top:1rem; text-align:right;">
+            <!-- Contenedor de botones CRUD con diseño moderno -->
+            <div class="crud-buttons-container">
+                <!-- Botón Guardar (CREAR) -->
                 <p:commandButton value="Guardar"
                                  icon="pi pi-save"
                                  actionListener="#{cc.attrs.formulario.btnGuardarHandler}"
                                  rendered="#{cc.attrs.formulario.estado == 'CREAR'}"
                                  update="#{cc.attrs.actualizar}"
-                                 styleClass="ui-button-success"/>
+                                 styleClass="btn-crud btn-crud-save"/>
 
+                <!-- Botón Modificar (MODIFICAR) -->
                 <p:commandButton value="Modificar"
                                  icon="pi pi-pencil"
                                  actionListener="#{cc.attrs.formulario.btnModificarHandler}"
                                  rendered="#{cc.attrs.formulario.estado == 'MODIFICAR'}"
                                  update="#{cc.attrs.actualizar}"
-                                 styleClass="ui-button-warning"
-                                 process="@this"/>
+                                 styleClass="btn-crud btn-crud-edit"/>
 
+                <!-- Botón Eliminar (MODIFICAR) -->
                 <p:commandButton value="Eliminar"
                                  icon="pi pi-trash"
                                  actionListener="#{cc.attrs.formulario.btnEliminarHandler}"
                                  rendered="#{cc.attrs.formulario.estado == 'MODIFICAR'}"
                                  update="#{cc.attrs.actualizar}"
-                                 styleClass="ui-button-danger"
+                                 styleClass="btn-crud btn-crud-delete"
+                                 onclick="return confirm('¿Está seguro que desea eliminar este registro?');"/>
+
+                <!-- Botón Cancelar (siempre visible) -->
+                <p:commandButton value="Cancelar"
+                                 icon="pi pi-times"
+                                 actionListener="#{cc.attrs.formulario.btnCancelarHandler}"
+                                 update="#{cc.attrs.actualizar}"
+                                 styleClass="btn-crud btn-crud-cancel"
                                  immediate="true"/>
-            </h:panelGrid>
+            </div>
         </cc:implementation>
     </ui:composition>
 </ui:component>
