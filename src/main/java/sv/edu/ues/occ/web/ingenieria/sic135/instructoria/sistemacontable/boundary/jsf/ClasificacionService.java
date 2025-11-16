@@ -6,6 +6,7 @@ import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.CuentaContable;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.TransaccionClasificacion;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.TransaccionClasificacion;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -15,6 +16,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public class ClasificacionService {
 
@@ -26,20 +28,37 @@ public class ClasificacionService {
     @Inject
     private TransaccionClasificacionDAO transaccionClasificacionDAO;
 
+    private static final java.util.Map<String, Pattern>REGLAS_CLASIFICACION =java.util.Map.of(
+            "5.1.01", Pattern.compile(".*\\b(sueldo|salario|nómina|nomina|pago personal|planilla)\\b.*", Pattern.CASE_INSENSITIVE),
+            "5.1.04", Pattern.compile(".*\\b(alquiler|arriendo|renta|leasing|renta local)\\b.*", Pattern.CASE_INSENSITIVE),
+            "4.1.02", Pattern.compile(".*\\b(interés|interes|depósito|deposito|inversión|inversion|rendimiento)\\b.*", Pattern.CASE_INSENSITIVE),
+            "5.1.03", Pattern.compile(".*\\b(servicio|mantenimiento|reparación|reparacion|soporte técnico)\\b.*", Pattern.CASE_INSENSITIVE),
+            "5.1.02", Pattern.compile(".*\\b(luz|energía|energia|agua|teléfono|telefono|internet|servicio básico)\\b.*", Pattern.CASE_INSENSITIVE),
+            "1.1.01", Pattern.compile(".*\\b(compra|adquisición|adquisicion|mercadería|mercaderia|inventario)\\b.*", Pattern.CASE_INSENSITIVE)
+    );
     private String clasificarPorReglas(String descripcion) {
-        if (descripcion.contains("sueldo") || descripcion.contains("salario")) {
-            return "5.1.01"; // Gastos de Personal
-        } else if (descripcion.contains("alquiler") || descripcion.contains("arriendo")) {
-            return "5.1.04"; // Gastos de Renta
-        } else if (descripcion.contains("interes") || descripcion.contains("deposito")) {
-            return "4.1.02"; // Ingresos por Intereses
+        if (descripcion == null || descripcion.trim().isEmpty()) {
+            return null;
         }
-        return null;
+
+        try {
+            // Probar cada regla en el mapa
+            for (java.util.Map.Entry<String, Pattern> entry : REGLAS_CLASIFICACION.entrySet()) {
+                if (entry.getValue().matcher(descripcion).find()) {
+                    return entry.getKey();
+                }
+            }
+            return null;
+
+        } catch (Exception e) {
+            System.err.println("Error en clasificación por reglas: " + e.getMessage());
+            return null;
+        }
     }
 
     public CompletionStage<List<CuentaContable>> obtenerSugerenciasIA(Transaccion transaccion) {
         return CompletableFuture.supplyAsync(() -> {
-            String codigoSugerido = clasificarPorReglas(transaccion.getDescripcion().toLowerCase());
+            String codigoSugerido = clasificarPorReglas(transaccion.getDescripcion());
 
             if (codigoSugerido != null) {
                 CuentaContable cc = cuentaContableDAO.findByCodigo(codigoSugerido);
@@ -92,10 +111,11 @@ public class ClasificacionService {
                          exitosas++;
                      }
                  } catch (Exception e) {
-                    LOGGER.log(Level.WARNING, "Error clasificando transaccion en lote", e);
+                    //
                  }
              }
              return exitosas;
          });
      }
- }
+
+}

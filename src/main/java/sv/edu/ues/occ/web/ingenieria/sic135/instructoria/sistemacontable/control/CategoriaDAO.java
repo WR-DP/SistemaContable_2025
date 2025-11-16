@@ -35,8 +35,5 @@ public class CategoriaDAO extends DefaultDataAcces<Categoria, Object> implements
 
     }
 
-    /*@Override
-    public void edit(Transaccion transaccionSeleccionado) {
 
-    }*/
 }

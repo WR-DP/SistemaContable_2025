@@ -9,6 +9,8 @@ import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.List;
+import java.util.logging.Logger;
 
 @Stateless
 @LocalBean
@@ -36,20 +38,25 @@ public class ArchivoCargadoDAO extends DefaultDataAcces<ArchivoCargado, Object> 
 
     }
 
+
     public List<ArchivoCargado> findAll() {
-        return em.createNamedQuery("ArchivoCargado.findAll", ArchivoCargado.class)
+        return getEntityManager()
+                .createNamedQuery("ArchivoCargado.findAll", ArchivoCargado.class)
                 .getResultList();
     }
 
     public List<ArchivoCargado> findByNombreLike(String nombre) {
-        return em.createNamedQuery("ArchivoCargado.findByNombreLike", ArchivoCargado.class)
+        return getEntityManager()
+                .createNamedQuery("ArchivoCargado.findByNombreLike", ArchivoCargado.class)
                 .setParameter("nombre", nombre)
                 .getResultList();
     }
 
     public List<ArchivoCargado> findByUsuario(String usuario) {
-        return em.createNamedQuery("ArchivoCargado.findByUsuario", ArchivoCargado.class)
+        return getEntityManager()
+                .createNamedQuery("ArchivoCargado.findByUsuario", ArchivoCargado.class)
                 .setParameter("usuario", usuario)
                 .getResultList();
     }
+
 }

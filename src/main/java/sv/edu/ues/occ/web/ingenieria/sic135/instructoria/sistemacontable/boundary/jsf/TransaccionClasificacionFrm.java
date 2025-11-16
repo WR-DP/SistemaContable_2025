@@ -49,7 +49,7 @@ public class TransaccionClasificacionFrm implements Serializable {
     // Implementacion del manejo de Datos
     public void cargarTransaccionesPendientes(){
         try{
-            transaccionesPendientes = transaccionDAO.findTransaccionesPendinetes();
+            transaccionesPendientes = transaccionDAO.findTransaccionesPendientes();
         }catch (Exception e){
             logger.log(Level.SEVERE,"Error cargado Transacciones Pendientes",e);
             mostrarMensajeError("Error al cargar  transacciones: "+e.getMessage());
@@ -135,7 +135,7 @@ public class TransaccionClasificacionFrm implements Serializable {
     }
 
     public void clasificarLote() {
-        List<Transaccion> pendientes = transaccionDAO.findTransaccionesPendinetes();
+        List<Transaccion> pendientes = transaccionDAO.findTransaccionesPendientes();
         if (pendientes.isEmpty()) {
             mostrarMensajeInfo("No hay transacciones pendientes para clasificar");
             return;

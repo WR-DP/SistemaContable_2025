@@ -33,8 +33,8 @@ public class TransaccionExcelParse {
                 Row fila = filas.next();
 
                 Transaccion t = new Transaccion();
-                t.setIdTransaccion(UUID.randomUUID());
-                t.setArchivoCargadoId(archivoCargado);
+                t.setId(UUID.randomUUID());
+                t.setArchivoCargado(archivoCargado);
                 t.setFilaExcel(numFila++);
 
                 // Leer columnas
