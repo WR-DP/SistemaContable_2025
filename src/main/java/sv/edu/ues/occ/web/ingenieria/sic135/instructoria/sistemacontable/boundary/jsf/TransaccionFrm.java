@@ -6,6 +6,7 @@ import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import org.primefaces.event.SelectEvent;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.DAOInterface;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.TransaccionClasificacionDAO;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.TransaccionDAO;
@@ -305,9 +306,9 @@ vista de facturacion dentro de la principal de transacciones->
                 enviarMensaje("Filtro flexible (filtrado): " + listaTransacciones.size() + " registros encontrados.", FacesMessage.SEVERITY_INFO);
             }
         }
-         // Limpiar selecciones al aplicar un nuevo filtro
-         if (seleccionMap != null) seleccionMap.clear();
-     }
+        // Limpiar selecciones al aplicar un nuevo filtro
+        if (seleccionMap != null) seleccionMap.clear();
+    }
 
     // Permite cargar filtro directamente por parámetros (útil desde otras vistas)
     public void aplicarFiltroPeriodoParaArchivoId(Object archivoId) {
@@ -635,6 +636,41 @@ vista de facturacion dentro de la principal de transacciones->
             if (e.getValue() > max) { max = e.getValue(); mejor = e.getKey(); }
         }
         return mejor;
+    }
+
+    // campo para recibir el id pasado en la URL
+    private String idArchivoSeleccionado;
+
+    public String getIdArchivoSeleccionado() {
+        return idArchivoSeleccionado;
+    }
+    public void setIdArchivoSeleccionado(String idArchivoSeleccionado) {
+        this.idArchivoSeleccionado = idArchivoSeleccionado;
+    }
+
+    public void cargarTransaccionesDelArchivo() {
+        try {
+            if (idArchivoSeleccionado == null || idArchivoSeleccionado.isBlank()) {
+                enviarMensaje("No se recibió el ID del archivo.", FacesMessage.SEVERITY_WARN);
+                return;
+            }
+            UUID id = UUID.fromString(idArchivoSeleccionado);
+            List<Transaccion> tmp = transaccionDAO.findByArchivoId(id);
+            listaTransacciones = tmp != null ? tmp : java.util.Collections.emptyList();
+            if (modelo != null) {
+                modelo.setWrappedData(listaTransacciones);
+            }
+            enviarMensaje("Transacciones cargadas del archivo seleccionado.", FacesMessage.SEVERITY_INFO);
+
+        } catch (Exception e) {
+            enviarMensaje("Error cargando transacciones: " + e.getMessage(),
+                    FacesMessage.SEVERITY_ERROR);
+            e.printStackTrace();
+        }
+    }
+    public void seleccionarRegistro(SelectEvent<Transaccion> event) {
+        this.registro = event.getObject();
+        this.estado = ESTADO_CRUD.MODIFICAR;
     }
 
     //getters and setters

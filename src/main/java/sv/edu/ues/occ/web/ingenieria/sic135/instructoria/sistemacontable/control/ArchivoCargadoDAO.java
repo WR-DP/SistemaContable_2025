@@ -32,13 +32,18 @@ public class ArchivoCargadoDAO extends DefaultDataAcces<ArchivoCargado, Object> 
     protected Class<ArchivoCargado> getEntityClass() {
         return ArchivoCargado.class;
     }
-
     @Override
-    public void edit(Transaccion transaccionSeleccionado) {
-
+    public ArchivoCargado findById(Object id) {
+        if (id == null) return null;
+        return em.find(ArchivoCargado.class, id);
     }
 
-
+    @Override
+    public void edit(Transaccion transaccionSeleccionado) { // Este DAO no edita transacciones
+    }
+    public void editArchivo(ArchivoCargado archivo) {
+        em.merge(archivo);
+    }
     public List<ArchivoCargado> findAll() {
         return getEntityManager()
                 .createNamedQuery("ArchivoCargado.findAll", ArchivoCargado.class)
