@@ -266,7 +266,7 @@ public class TransaccionDAO extends DefaultDataAcces<Transaccion, Object> implem
                     "WHERE LOWER(tc.tipoTransaccion) = :tipo " +
                     "AND t.fecha BETWEEN :desde AND :hasta ";
             if (archivoId != null) {
-                jpql += "AND t.archivoCargadoId.id = :archivoId ";
+                jpql += "AND t.archivoCargado.id = :archivoId ";
             }
             jpql += "ORDER BY t.fecha ASC";
 
