@@ -38,7 +38,7 @@ public class ArchivoCargadoDAO extends DefaultDataAcces<ArchivoCargado, Object> 
         return em.find(ArchivoCargado.class, id);
     }
 
-    @Override
+    //@Override
     public void edit(Transaccion transaccionSeleccionado) { // Este DAO no edita transacciones
     }
     public void editArchivo(ArchivoCargado archivo) {

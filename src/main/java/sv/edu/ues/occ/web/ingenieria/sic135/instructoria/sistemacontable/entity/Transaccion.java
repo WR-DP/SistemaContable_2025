@@ -15,19 +15,19 @@ import java.util.UUID;
 @Table(name = "transaccion", schema = "public")
 public class Transaccion {
     @Id
-    @Column(name = "id_transaccion", nullable = false)
+    @Column(name = "id_transaccion")
     private UUID id;
 
     @NotNull
-    @Column(name = "fecha", nullable = false)
+    @Column(name = "fecha")
     private Date fecha;
 
     @NotNull
-    @Column(name = "descripcion", nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = "descripcion")
     private String descripcion;
 
     @NotNull
-    @Column(name = "monto", nullable = false, precision = 15, scale = 2)
+    @Column(name = "monto", precision = 15, scale = 2)
     private BigDecimal monto;
 
     @Size(max = 3)
@@ -52,9 +52,6 @@ public class Transaccion {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "transaccion")
     private Collection<TransaccionClasificacion> transaccionClasificacionCollection;
 
-    // ==============================
-    // Constructores
-    // ==============================
     public Transaccion() {
     }
 

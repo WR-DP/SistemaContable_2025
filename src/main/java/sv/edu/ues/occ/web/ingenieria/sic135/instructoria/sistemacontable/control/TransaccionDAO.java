@@ -55,25 +55,26 @@ public class TransaccionDAO extends DefaultDataAcces<Transaccion, Object> implem
         return result != null ? result.intValue() : 0;
     }
 
-    public List<Transaccion> findAll() {
-        return em.createQuery("SELECT t FROM Transaccion t", Transaccion.class)
-                .getResultList();
-    }
-
-    public void edit(Transaccion transaccionSeleccionado) {
-        em.merge(transaccionSeleccionado);
-    }
-
-    public void create(Transaccion transaccion) {
-        em.persist(transaccion);
-    }
-
-    public void delete(Transaccion transaccion) {
-        if(!em.contains(transaccion)) {
-            transaccion = em.merge(transaccion);
-        }
-        em.remove(transaccion);
-    }
+//
+//    public List<Transaccion> findAll() {
+//        return em.createQuery("SELECT t FROM Transaccion t", Transaccion.class)
+//                .getResultList();
+//    }
+//
+//    public void edit(Transaccion transaccionSeleccionado) {
+//        em.merge(transaccionSeleccionado);
+//    }
+//
+//    public void create(Transaccion transaccion) {
+//        em.persist(transaccion);
+//    }
+//
+//    public void delete(Transaccion transaccion) {
+//        if(!em.contains(transaccion)) {
+//            transaccion = em.merge(transaccion);
+//        }
+//        em.remove(transaccion);
+//    }
 
     public List<Transaccion> findRange(int[] range) {
         return em.createQuery("SELECT t FROM Transaccion t", Transaccion.class)

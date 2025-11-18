@@ -31,10 +31,6 @@ public class CuentaContableDAO extends DefaultDataAcces<CuentaContable, Object> 
         return CuentaContable.class;
     }
 
-    @Override
-    public void edit(Transaccion transaccionSeleccionado) {
-
-    }
 
 
     //Buscar cuenta por el codigo (usado por la IA)

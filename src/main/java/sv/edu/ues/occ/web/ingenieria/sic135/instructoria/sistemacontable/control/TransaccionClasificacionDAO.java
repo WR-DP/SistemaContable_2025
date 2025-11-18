@@ -36,10 +36,5 @@ public class TransaccionClasificacionDAO extends DefaultDataAcces<TransaccionCla
         return TransaccionClasificacion.class;
     }
 
-    @Override
-    public void edit(Transaccion transaccionSeleccionado) {
-
-    }
-    //private static final Logger LOGGER = Logger.getLogger(TransaccionDAO.class.getName());
 
 }

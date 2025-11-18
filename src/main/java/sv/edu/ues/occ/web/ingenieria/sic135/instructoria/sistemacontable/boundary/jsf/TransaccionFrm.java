@@ -203,7 +203,6 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
     public void guardarTransaccion(){
         if(transaccionSeleccionado != null){
             transaccionSeleccionado.setUpdatedAt(new Date());
-            transaccionDAO.edit(transaccionSeleccionado);
             enviarMensaje("Transaccion editada correctamente.", FacesMessage.SEVERITY_INFO);
         } else {
             enviarMensaje("No hay transaccion seleccionada para editar.", FacesMessage.SEVERITY_WARN);

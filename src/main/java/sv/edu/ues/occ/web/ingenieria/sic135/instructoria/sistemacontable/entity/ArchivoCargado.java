@@ -53,18 +53,6 @@ public class ArchivoCargado {
     @Column(name = "usuario_carga", length = 100)
     private String usuarioCarga;
 
-    @PrePersist
-    public void prePersist() {
-        if (this.id == null) {
-            this.id = UUID.randomUUID();
-        }
-        if (this.fechaCarga == null) {
-            this.fechaCarga = Instant.now();
-        }
-        if (this.estado == null) {
-            this.estado = "CARGADO";
-        }
-    }
 
     public UUID getId() {
         return id;

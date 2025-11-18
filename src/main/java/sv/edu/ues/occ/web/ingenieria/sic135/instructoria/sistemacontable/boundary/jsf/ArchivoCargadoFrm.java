@@ -1,13 +1,5 @@
 package sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.boundary.jsf;
 
-/*
- Modificaciones realizadas por el desarrollador externo:
- - Bean principal para gestionar archivos cargados. Se eliminó la lógica de filtrado en la vista
-   (propiedades vp*, transaccionesFiltradas y cargarDesdeViewParam) para mantener sólo la implementación
-   del filtrado en el backend (`TransaccionDAO.findByArchivoIdAndPeriodo(...)`).
- - Se mantuvieron las funcionalidades de subir archivo y procesar transacciones.
- Fecha: 2025-11-10
-*/
 
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
@@ -37,13 +29,10 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
 
     @Inject
     FacesContext facesContext;
-
     @Inject
     ArchivoCargadoDAO archivoCargadoDAO;
-
     @Inject
     TransaccionExcelParse parser;
-
     @Inject
     TransaccionDAO transaccionDAO;
 
@@ -78,6 +67,8 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
     @Override
     protected ArchivoCargado nuevoRegistro() {
         ArchivoCargado nuevo = new ArchivoCargado();
+        nuevo.setId(UUID.randomUUID());
+        nuevo.setNombreArchivo("");
         nuevo.setEstado("SIN PROCESAR");
         nuevo.setFechaCarga(Instant.now());
         nuevo.setUsuarioCarga("admin");
@@ -86,6 +77,9 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
         nuevo.setTotalRegistro(0);
         return nuevo;
     }
+
+
+
 
     public void subirArchivo() {
         if (archivo != null) {
