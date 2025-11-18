@@ -8,8 +8,8 @@
         template="/WEB-INF/plantilla/default.xhtml">
 
     <f:metadata>
-        <f:viewParam name="archivoId" value="#{transaccionFrm.idArchivoSeleccionado}" />
-        <f:viewAction action="#{transaccionFrm.cargarTransaccionesDelArchivo}" />
+        <f:viewParam name="archivoId" value="#{transaccionFrm.idArchivoSeleccionado}"/>
+        <f:viewAction action="#{transaccionFrm.cargarTransaccionesDelArchivo}"/>
     </f:metadata>
 
     <ui:define name="header">
@@ -39,7 +39,7 @@
 
                     <p:column headerText="Fecha">
                         <h:outputText value="#{t.fecha}">
-                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
                         </h:outputText>
                     </p:column>
 
@@ -124,34 +124,82 @@
             <!-- clasificacion -->
             <p:tab title="Clasificación Contable"
                    disabled="#{transaccionFrm.estado != 'MODIFICAR'}">
+                <h:panelGrid>
 
-                <h:form id="frmClasificacion">
+                    <h:panelGroup id="pnlClasificacion">
+                        <h:form id="frmClasificacion">
+                            <h:outputLabel value="Tipo Transaccion: "/>
+                            <h:outputText value="#{transaccionClasificacionFrm.registro.tipoTransaccion}"/>
 
-                    <p:panel header="Transacción Seleccionada">
+                            <h:outputLabel value="Nombre de Catergoria: "/>
+                            <h:outputText value="#{transaccionClasificacionFrm.registro.categoriaId.nombre}"/>
 
-                        <h:panelGrid columns="2" cellpadding="5">
+                            <h:outputLabel value="Descripsion de Catergoria: "/>
+                            <h:outputText value="#{transaccionClasificacionFrm.registro.categoriaId.descripcion}"/>
 
-                            <h:outputLabel value="Fecha:" />
-                            <h:outputText value="#{transaccionFrm.registro.fecha}">
-                                <f:convertDateTime pattern="dd/MM/yyyy"/>
-                            </h:outputText>
 
-                            <h:outputLabel value="Descripción:" />
-                            <h:outputText value="#{transaccionFrm.registro.descripcion}" />
+                            <p:column headerText="Naturaleza de la cuenta" />
+                            <h:panelGrid columns="2">
+                                <h:panelGrid>
+                                    <h2>Cuenta Contable Debe</h2>
+                                    <p:column headerText="Nombre de Cuenta: "/>
+                                    <h:outputText
+                                            value="#{transaccionClasificacionFrm.registro.cuentaContableDebeId.nombre}"/>
 
-                            <h:outputLabel value="Monto:" />
-                            <h:outputText value="$#{transaccionFrm.registro.monto}" />
+                                    <p:column headerText="Codigo de Cuenta: "/>
+                                    <h:outputText
+                                            value="#{transaccionClasificacionFrm.registro.cuentaContableDebeId.codigo}"/>
 
-                            <h:outputLabel value="Moneda:" />
-                            <h:outputText value="#{transaccionFrm.registro.moneda}" />
+                                    <p:column headerText="Codigo de Descripcion: "/>
+                                    <h:outputText
+                                            value="#{transaccionClasificacionFrm.registro.cuentaContableDebeId.codigo}"/>
+                                </h:panelGrid>
+
+                                <h:panelGrid>
+                                    <h2>Cuenta Contable Haber</h2>
+                                    <p:column headerText="Nombre de Cuenta: "/>
+                                    <h:outputText
+                                            value="#{transaccionClasificacionFrm.registro.cuentaContableDebeId.nombre}"/>
+
+                                    <p:column headerText="Codigo de Cuenta: "/>
+                                    <h:outputText
+                                            value="#{transaccionClasificacionFrm.registro.cuentaContableDebeId.codigo}"/>
+
+                                    <p:column headerText="Codigo de Descripcion: "/>
+                                    <h:outputText
+                                            value="#{transaccionClasificacionFrm.registro.cuentaContableDebeId.codigo}"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+
+                            <p:commandButton
+                            />
+
+                        </h:form>
+                    </h:panelGroup>
+
+
+                    <h:panelGroup id="pnlDetalleClasificacion">
+                        <p:growl id="growlDetalleClasificacion" showDetail="true"/>
+                        <p:growl id="growl-stickyTabClasificacion" for="sticky-key" showDetail="true" sticky="true"/>
+
+                        <h:panelGrid rendered="#{transaccionClasificacionFrm.estado != 'NADA'}">
+                            <h:form id="frmDetalleClasificacion">
+                                <p:panel header="Transacción Seleccionada">
+                                    <h:panelGrid columns="2" cellpadding="5">
+
+                                    </h:panelGrid>
+
+
+
+                                </p:panel>
+
+                            </h:form>
 
                         </h:panelGrid>
 
-                    </p:panel>
+                    </h:panelGroup>
 
-
-
-                </h:form>
+                </h:panelGrid>
 
             </p:tab>
 

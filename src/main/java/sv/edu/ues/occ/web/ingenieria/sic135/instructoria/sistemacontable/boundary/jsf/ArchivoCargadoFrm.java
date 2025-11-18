@@ -149,8 +149,7 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
                 return;
             }
 
-            archivoCargadoDAO.create(registro);
-
+            // 1. PRIMERO guardar el archivo físicamente
             String folderPath = System.getProperty("user.home") + File.separator + "archivos_subidos";
             File carpeta = new File(folderPath);
             if (!carpeta.exists()) carpeta.mkdirs();
@@ -163,27 +162,45 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
                 input.transferTo(output);
             }
 
+            // 2. Configurar el registro con la ruta del archivo
             registro.setRutaArchivo(rutaCompleta);
             registro.setTamañoByte(archivo.getSize());
             registro.setNombreArchivo(nombreArchivo);
-            archivoCargadoDAO.editArchivo(registro);
+            registro.setEstado("CARGADO");
+
+            // 3. CREAR el registro en la base de datos
+            archivoCargadoDAO.create(registro);
+
+            // 4. Parsear el Excel (usará la versión corregida que solo salta 1 fila)
             List<Transaccion> transacciones = parser.parsearExcel(rutaCompleta, registro);
 
+            // 5. Guardar las transacciones
             for (Transaccion t : transacciones) {
                 t.setArchivoCargado(registro);
                 transaccionDAO.create(t);
             }
 
+            // 6. Actualizar el archivo con los totales
             registro.setTotalRegistro(transacciones.size());
             registro.setEstado("PROCESADO");
             archivoCargadoDAO.editArchivo(registro);
 
-            mostrarMensaje("Archivo subido y procesado correctamente.", FacesMessage.SEVERITY_INFO);
+            mostrarMensaje("Archivo subido y procesado correctamente. " + transacciones.size() + " transacciones importadas.", FacesMessage.SEVERITY_INFO);
             estado = NADA;
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al subir archivo", e);
             mostrarMensaje("Error al subir el archivo: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
+
+            // Opcional: Marcar como error si falla
+            if (registro != null) {
+                registro.setEstado("ERROR");
+                try {
+                    archivoCargadoDAO.editArchivo(registro);
+                } catch (Exception ex) {
+                    LOGGER.log(Level.SEVERE, "Error al actualizar estado", ex);
+                }
+            }
         }
     }
 

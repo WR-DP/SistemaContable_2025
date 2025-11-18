@@ -72,7 +72,7 @@ public class TransaccionExcelParse {
             //  Saltar filas
             if (filas.hasNext()) filas.next();
             if (filas.hasNext()) filas.next();
-            int numFila = 1;
+            int numFila = 2;
             while (filas.hasNext()) {
                 Row fila = filas.next();
 
