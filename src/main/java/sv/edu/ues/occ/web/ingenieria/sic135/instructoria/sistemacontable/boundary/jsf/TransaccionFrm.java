@@ -394,8 +394,7 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
         this.listaParaFacturar = seleccionadas;
         this.invoiceJson = buildInvoiceJson();
 
-        // Guardar JSON y PDF en carpeta fctr dentro del webapp
-         try {
+        try {
             // Ruta física del webapp
             String basePath = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/");
             java.nio.file.Path folder = java.nio.file.Paths.get(basePath, FCTR_FOLDER);
@@ -413,17 +412,10 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
 
             // Generar PDF usando OpenPDF
             try (java.io.OutputStream os = java.nio.file.Files.newOutputStream(pdfPath)) {
-
-                //=========================================================
-                // CONFIGURACIÓN BASE DEL DOCUMENTO
-                //=========================================================
                 com.lowagie.text.Document document = new com.lowagie.text.Document();
                 com.lowagie.text.pdf.PdfWriter.getInstance(document, os);
                 document.open();
 
-                //=========================================================
-                // ENCABEZADO PRINCIPAL DE FACTURA
-                //=========================================================
                 com.lowagie.text.Paragraph title = new com.lowagie.text.Paragraph(
                         "FACTURA ELECTRÓNICA",
                         new com.lowagie.text.Font(
@@ -434,59 +426,37 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
                 );
                 title.setAlignment(com.lowagie.text.Element.ALIGN_CENTER);
                 document.add(title);
-
                 document.add(new com.lowagie.text.Paragraph("\n"));
 
-                //=========================================================
-                // DATOS GENERALES DE FACTURA
-                //=========================================================
                 com.lowagie.text.pdf.PdfPTable infoTable = new com.lowagie.text.pdf.PdfPTable(2);
                 infoTable.setWidthPercentage(100);
-
                 infoTable.addCell("Tipo de Facturación:");
                 infoTable.addCell(this.tipoFacturacion != null ? this.tipoFacturacion : "");
-
                 infoTable.addCell("Fecha de emisión:");
                 infoTable.addCell(new java.util.Date().toString());
-
                 infoTable.addCell("Cantidad de transacciones:");
                 infoTable.addCell(String.valueOf(seleccionadas.size()));
-
                 document.add(infoTable);
-
                 document.add(new com.lowagie.text.Paragraph("\n"));
 
-                //=========================================================
-                // TABLA DE ÍTEMS / DETALLE DE FACTURA
-                //=========================================================
                 com.lowagie.text.pdf.PdfPTable table = new com.lowagie.text.pdf.PdfPTable(4);
                 table.setWidths(new int[]{3, 3, 7, 3});
                 table.setWidthPercentage(100);
 
-                // CABECERAS
                 com.lowagie.text.pdf.PdfPCell h1 = new com.lowagie.text.pdf.PdfPCell(new com.lowagie.text.Paragraph("ID"));
                 com.lowagie.text.pdf.PdfPCell h2 = new com.lowagie.text.pdf.PdfPCell(new com.lowagie.text.Paragraph("Fecha"));
                 com.lowagie.text.pdf.PdfPCell h3 = new com.lowagie.text.pdf.PdfPCell(new com.lowagie.text.Paragraph("Descripción"));
                 com.lowagie.text.pdf.PdfPCell h4 = new com.lowagie.text.pdf.PdfPCell(new com.lowagie.text.Paragraph("Monto (USD)"));
-
-                // **Estilo de encabezados** (solo bordes)
                 h1.setHorizontalAlignment(com.lowagie.text.Element.ALIGN_CENTER);
                 h2.setHorizontalAlignment(com.lowagie.text.Element.ALIGN_CENTER);
                 h3.setHorizontalAlignment(com.lowagie.text.Element.ALIGN_CENTER);
                 h4.setHorizontalAlignment(com.lowagie.text.Element.ALIGN_CENTER);
-
                 table.addCell(h1);
                 table.addCell(h2);
                 table.addCell(h3);
                 table.addCell(h4);
 
-                //=========================================================
-                // Filas del detalle
-                //=========================================================
                 for (Transaccion t : seleccionadas) {
-
-                    // IMPORTANTE:
-                    // Estos valores deben estar convertidos a STRING para evitar NPE
                     table.addCell(t.getId() != null ? t.getId().toString() : "");
                     table.addCell(t.getFecha() != null ? t.getFecha().toString() : "");
                     table.addCell(t.getDescripcion() != null ? t.getDescripcion() : "");
@@ -496,9 +466,6 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
                 document.add(table);
                 document.add(new com.lowagie.text.Paragraph("\n"));
 
-                //=========================================================
-                // TOTAL FINAL
-                //=========================================================
                 com.lowagie.text.Paragraph total = new com.lowagie.text.Paragraph(
                         "TOTAL A PAGAR (USD): " + totalFactura,
                         new com.lowagie.text.Font(
@@ -509,33 +476,24 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
                 );
                 total.setAlignment(com.lowagie.text.Element.ALIGN_RIGHT);
                 document.add(total);
-
-                // Cierre del documento
                 document.close();
             }
 
-            // guardar rutas relativas en el bean y en sesión para que la vista pueda enlazarlas tras el redirect
+            // guardar rutas relativas en el bean (la vista las leerá directamente)
             String relativeJsonPath = FCTR_FOLDER + "/" + jsonFileName;
             String relativePdfPath = FCTR_FOLDER + "/" + pdfFileName;
             this.jsonFilePath = relativeJsonPath;
             this.pdfFilePath = relativePdfPath;
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("jsonFilePath", relativeJsonPath);
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pdfFilePath", relativePdfPath);
 
-             // Mensaje y dejar invoiceJson en flash para mostrar en la vista
-             FacesContext fc = FacesContext.getCurrentInstance();
-             fc.getExternalContext().getFlash().put("invoiceJson", this.invoiceJson);
-             fc.getExternalContext().getFlash().put("totalesPorMoneda", this.totalesPorMoneda);
-             fc.getExternalContext().getFlash().put("factCount", this.listaParaFacturar != null ? this.listaParaFacturar.size() : 0);
+            enviarMensaje("Factura generada y guardada en carpeta fctr: " + jsonFileName + ", " + pdfFileName,
+                    FacesMessage.SEVERITY_INFO);
+        } catch (Exception e) {
+            enviarMensaje("Error al generar factura: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
+            return null;
+        }
 
-             enviarMensaje("Factura generada y guardada en carpeta fctr: " + jsonFileName + ", " + pdfFileName, FacesMessage.SEVERITY_INFO);
-         } catch (Exception e) {
-             enviarMensaje("Error al generar factura: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
-             return null;
-         }
-
-         // Redirigir para mostrar resultado (PRG)
-         return "transacciones?faces-redirect=true";
+        // Permanecer en la misma vista de facturación
+        return null;
     }
 
     /**
