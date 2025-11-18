@@ -74,6 +74,16 @@
                         <p:column headerText="Usuario" style="width: 150px;">
                             <h:outputText value="#{a.usuarioCarga}"/>
                         </p:column>
+                        
+                        <!-- redirige a transaccion del archivo cargado -->
+                        <p:column headerText="Transacciones">
+                            <h:link outcome="/paginas/Transaccion.xhtml?faces-redirect=true">
+                                <f:param name="archivoId" value="#{a.idArchivoCargado}"/>
+                                Ver transacciones
+                            </h:link>
+
+                        </p:column>
+
                     </p:dataTable>
                 </div>
             </div>

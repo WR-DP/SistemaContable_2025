@@ -9,15 +9,59 @@ import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 
 @ApplicationScoped
 public class TransaccionExcelParse {
 
+    // Métodos auxiliares
+    private String getString(Cell c) {
+        if (c == null) return "";
+
+        return switch (c.getCellType()) {
+            case STRING -> c.getStringCellValue().trim();
+            case NUMERIC -> String.valueOf(c.getNumericCellValue()).trim();
+            case BOOLEAN -> String.valueOf(c.getBooleanCellValue());
+            default -> "";
+        };
+    }
+
+    private BigDecimal getBigDecimal(Cell c) {
+        if (c == null) return BigDecimal.ZERO;
+
+        return switch (c.getCellType()) {
+            case NUMERIC -> BigDecimal.valueOf(c.getNumericCellValue());
+            case STRING -> {
+                try { yield new BigDecimal(c.getStringCellValue().trim()); }
+                catch (Exception e) { yield BigDecimal.ZERO; }
+            }
+            default -> BigDecimal.ZERO;
+        };
+    }
+
+    private Date getDate(Cell c) {
+        if (c == null) return null;
+        try {
+            if (c.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(c)) {
+                return c.getDateCellValue();
+            }
+
+            if (c.getCellType() == CellType.STRING) {
+                String val = c.getStringCellValue().trim();
+                if (!val.isEmpty()) {
+                    return java.sql.Date.valueOf(val); // yyyy-MM-dd
+                }
+            }
+        } catch (Exception ignored) {
+            return null;
+        }
+
+        return null;
+    }
+
+    // parser principal
     public List<Transaccion> parsearExcel(String archivo, ArchivoCargado archivoCargado) {
-        List<Transaccion> transacciones = new ArrayList<>();
+        List<Transaccion> lista = new ArrayList<>();
 
         try (FileInputStream fis = new FileInputStream(archivo);
              Workbook workbook = new XSSFWorkbook(fis)) {
@@ -25,63 +69,45 @@ public class TransaccionExcelParse {
             Sheet hoja = workbook.getSheetAt(0);
             Iterator<Row> filas = hoja.iterator();
 
-            // Ignorar encabezado
+            //  Saltar filas
             if (filas.hasNext()) filas.next();
-
+            if (filas.hasNext()) filas.next();
             int numFila = 1;
             while (filas.hasNext()) {
                 Row fila = filas.next();
+
+                // Validar si todas las celdas están vacías
+                boolean filaVacia =
+                        (fila.getCell(1) == null || getString(fila.getCell(1)).isBlank()) &&
+                                (fila.getCell(2) == null || getString(fila.getCell(2)).isBlank()) &&
+                                (fila.getCell(3) == null || getString(fila.getCell(3)).isBlank()) &&
+                                (fila.getCell(4) == null || getString(fila.getCell(4)).isBlank());
+
+                if (filaVacia) {
+                    continue;
+                }
 
                 Transaccion t = new Transaccion();
                 t.setId(UUID.randomUUID());
                 t.setArchivoCargado(archivoCargado);
                 t.setFilaExcel(numFila++);
 
-                // Leer columnas
-                Cell cellFecha = fila.getCell(0);
-                Cell cellDesc = fila.getCell(1);
-                Cell cellMonto = fila.getCell(2);
-                Cell cellMoneda = fila.getCell(3);
-
-                // Fecha
-                if (cellFecha != null && cellFecha.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cellFecha)) {
-                    // Excel ya devuelve un java.util.Date compatible con tu entidad
-                    t.setFecha(cellFecha.getDateCellValue());
-                } else if (cellFecha != null && cellFecha.getCellType() == CellType.STRING) {
-                    // Convierte texto tipo "2025-11-10" a java.sql.Date (subtipo de java.util.Date)
-                    t.setFecha(java.sql.Date.valueOf(cellFecha.getStringCellValue()));
+                // Lectura de las columnas
+                Date fecha = getDate(fila.getCell(1));
+                if (fecha == null) {
+                    continue;
                 }
+                t.setFecha(fecha);
+                t.setDescripcion(getString(fila.getCell(2)));
+                t.setMonto(getBigDecimal(fila.getCell(3)));
+                t.setMoneda(getString(fila.getCell(4)));
 
-
-
-
-                // Descripción
-                if (cellDesc != null) {
-                    t.setDescripcion(cellDesc.getStringCellValue());
-                }
-
-                // Monto
-                if (cellMonto != null) {
-                    BigDecimal monto;
-                    switch (cellMonto.getCellType()) {
-                        case NUMERIC -> monto = BigDecimal.valueOf(cellMonto.getNumericCellValue());
-                        case STRING -> monto = new BigDecimal(cellMonto.getStringCellValue());
-                        default -> monto = BigDecimal.ZERO;
-                    }
-                    t.setMonto(monto);
-                }
-
-                // Moneda
-                if (cellMoneda != null) {
-                    t.setMoneda(cellMoneda.getStringCellValue());
-                }
-
-                transacciones.add(t);
+                lista.add(t);
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return transacciones;
+        return lista;
     }
 }

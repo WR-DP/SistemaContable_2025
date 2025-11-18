@@ -26,6 +26,7 @@ import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.
 import java.io.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -87,6 +88,9 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
     }
 
     public void subirArchivo() {
+        System.out.println("=== Ejecutando subirArchivo()");
+        System.out.println("=== Archivo recibido: " + (archivo == null ? "null" : archivo.getFileName()));
+
         if (archivo != null) {
             try (InputStream input = archivo.getInputStream()) {
 
@@ -102,7 +106,7 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
                     input.transferTo(output);
                 }
 
-                // Crear registro
+                // Crear registro del archivo cargado
                 ArchivoCargado nuevo = new ArchivoCargado();
                 nuevo.setId(UUID.randomUUID());
                 nuevo.setFechaCarga(Instant.now());
@@ -113,13 +117,17 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
                 nuevo.setUsuarioCarga("admin");
 
                 archivoCargadoDAO.create(nuevo);
-
+                // Obtener entidad  desde BD
+                ArchivoCargado archivManaged = archivoCargadoDAO.findById(nuevo.getId());
                 // Procesar transacciones desde Excel
                 try {
-                    java.util.List<Transaccion> transacciones = parser.parsearExcel(rutaCompleta, nuevo);
+                    List<Transaccion> transacciones = parser.parsearExcel(rutaCompleta, archivManaged);
                     for (Transaccion t : transacciones) {
+                        t.setArchivoCargado(archivManaged);
                         transaccionDAO.create(t);
                     }
+                    archivManaged.setTotalRegistro(transacciones.size());
+                    archivoCargadoDAO.editArchivo(archivManaged);
                 } catch (Exception ex) {
                     Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error al parsear Excel", ex);
                 }

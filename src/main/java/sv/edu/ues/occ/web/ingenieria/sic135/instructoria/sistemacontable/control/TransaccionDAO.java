@@ -65,7 +65,7 @@ public class TransaccionDAO extends DefaultDataAcces<Transaccion, Object> implem
     }
 
     public void create(Transaccion transaccion) {
-        em.persist(transaccion);
+        em.merge(transaccion);
     }
 
     public void delete(Transaccion transaccion) {

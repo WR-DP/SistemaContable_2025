@@ -7,37 +7,39 @@
         xmlns:ues="jakarta.faces.composite/ues"
         template="/WEB-INF/plantilla/default.xhtml">
 
+    <f:metadata>
+        <f:viewParam name="archivoId" value="#{transaccionFrm.idArchivoSeleccionado}" />
+        <f:viewAction action="#{transaccionFrm.cargarTransaccionesDelArchivo}" />
+    </f:metadata>
+
     <ui:define name="header">
         <h1>Gestión de Transacciones</h1>
     </ui:define>
 
     <!-- tabla -->
     <ui:define name="contenido-tabla">
-        <h:form id="frmTablaTransacciones">
-            <p:growl id="msgsTabla" showDetail="true" life="3000"/>
+        <h:panelGrid>
+            <h:form id="frmTablaTransacciones">
 
-
-            <p:panel id="pnlTablaTransaccion">
-
-                <p:dataTable id="tablaTransacciones"
+                <p:dataTable lazy="true"
+                             rendered="#{transaccionFrm.estado == 'NADA'}"
+                             rows="10"
+                             paginator="true"
+                             paginatorPosition="bottom"
                              value="#{transaccionFrm.modelo}"
                              var="t"
-                             paginator="true"
-                             rows="8"
-                             rendered="#{transaccionFrm.estado == 'NADA'}"
                              selectionMode="single"
                              selection="#{transaccionFrm.registro}"
-                             rowKey="#{t.id}"
-                             paginatorPosition="bottom"
-                             emptyMessage="No hay transacciones registradas."
                              styleClass="tabla-crud">
 
                     <p:ajax event="rowSelect"
                             listener="#{transaccionFrm.seleccionarRegistro}"
-                            update=":frmDetalle :pnlTabla"/>
+                            update=":pnlDetalle :pnlTabla"/>
 
                     <p:column headerText="Fecha">
-                        <h:outputText value="#{t.fecha}"/>
+                        <h:outputText value="#{t.fecha}">
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </h:outputText>
                     </p:column>
 
                     <p:column headerText="Descripción">
@@ -45,69 +47,115 @@
                     </p:column>
 
                     <p:column headerText="Monto">
-                        <h:outputText value="#{t.monto}"/>
+                        <h:outputText value="$#{t.monto}"/>
                     </p:column>
 
                     <p:column headerText="Moneda">
                         <h:outputText value="#{t.moneda}"/>
                     </p:column>
 
-                    <!-- archivoCargado -->
-                    <p:column headerText="Archivo Origen">
-                        <h:outputText value="#{t.archivoCargado != null ? t.archivoCargado.nombreArchivo : '—'}"/>
-                    </p:column>
                 </p:dataTable>
 
                 <ues:botones-top formulario="#{transaccionFrm}" actualizar=":pnlDetalle :pnlTabla"/>
 
-            </p:panel>
-        </h:form>
+            </h:form>
+        </h:panelGrid>
     </ui:define>
 
-    <!-- detalle -->
+    <!-- detalla -->
     <ui:define name="contenido-detalle">
-        <h:form id="frmDetalle" rendered="#{transaccionFrm.estado != 'NADA'}" enctype="multipart/form-data">
-            <p:growl id="msgsDetalle" showDetail="true" life="4000"/>
 
-            <p:panel id="pnlDetalleTransaccion" header="Datos de la Transacción">
+        <p:tabView id="tabTransaccion"
+                   cache="false"
+                   dynamic="true"
+                   rendered="#{transaccionFrm.estado != 'NADA'}">
+            <p:tab closable="false" title="Detalle de transacción">
 
-                <p:panelGrid columns="2">
-                    <h:outputLabel for="registroId" value="ID:"/>
-                    <p:inputText id="registroId" value="#{transaccionFrm.registro.id}" readonly="true" disabled="true"/>
+                <h:panelGroup id="pnlTransaccionWrapper">
+                    <h:form id="frmTransaccionCrear">
 
-                    <h:outputLabel for="fecha" value="Fecha:"/>
-                    <p:datePicker id="fecha" value="#{transaccionFrm.registro.fecha}"
-                                  pattern="yyyy-MM-dd"
-                                  showIcon="true"
-                                  required="true"/>
+                        <h:panelGrid columns="2">
 
-                    <h:outputLabel for="descripcion" value="Descripción:"/>
-                    <p:inputTextarea id="descripcion" value="#{transaccionFrm.registro.descripcion}"
-                                     rows="3" cols="30"
-                                     required="true"
-                                     requiredMessage="Ingrese una descripción."/>
+                            <p:outputLabel for="txtIdTrans" value="ID:"/>
+                            <p:inputText id="txtIdTrans"
+                                         value="#{transaccionFrm.registro.id}"
+                                         readonly="true"
+                                         disabled="true"/>
 
-                    <h:outputLabel for="monto" value="Monto:"/>
-                    <p:inputNumber id="monto" value="#{transaccionFrm.registro.monto}"
-                                   symbol="$"
-                                   symbolPosition="p"
-                                   required="true"/>
+                            <p:outputLabel for="dpFechaTrans" value="Fecha:"/>
+                            <p:datePicker id="dpFechaTrans"
+                                          value="#{transaccionFrm.registro.fecha}"
+                                          pattern="yyyy-MM-dd"
+                                          required="true"
+                                          showIcon="true"
+                                          touchUI="false"/>
 
-                    <h:outputLabel for="moneda" value="Moneda:"/>
-                    <p:selectOneMenu id="moneda" value="#{transaccionFrm.registro.moneda}">
-                        <f:selectItem itemLabel="USD" itemValue="USD"/>
-                    </p:selectOneMenu>
+                            <p:outputLabel for="txtDescripcion" value="Descripción:"/>
+                            <p:inputTextarea id="txtDescripcion"
+                                             value="#{transaccionFrm.registro.descripcion}"
+                                             rows="3" cols="30"
+                                             required="true"
+                                             requiredMessage="La descripción es obligatoria."/>
 
-                    <!-- muestra el archivo cargado de donde proviene la transaccion -->
-                    <h:outputLabel for="archivoOrigen" value="Archivo Origen:"/>
-                    <p:inputText id="archivoOrigen" value="#{transaccionFrm.registro.archivoCargado != null ? transaccionFrm.registro.archivoCargado.nombreArchivo : ''}"
-                                 readonly="true"/>
-                </p:panelGrid>
-            </p:panel>
-            <br/>
+                            <p:outputLabel for="txtMonto" value="Monto:"/>
+                            <p:inputNumber id="txtMonto"
+                                           value="#{transaccionFrm.registro.monto}"
+                                           symbol="$"
+                                           required="true"/>
 
-            <ues:botones-crud
-                    formulario="#{transaccionFrm}" actualizar=":pnlDetalle :pnlTabla"/>
-        </h:form>
+                            <p:outputLabel for="cmbMoneda" value="Moneda:"/>
+                            <p:selectOneMenu id="cmbMoneda"
+                                             value="#{transaccionFrm.registro.moneda}">
+                                <f:selectItem itemLabel="USD" itemValue="USD"/>
+                            </p:selectOneMenu>
+
+                        </h:panelGrid>
+
+                        <ues:botones-crud
+                                formulario="#{transaccionFrm}"
+                                actualizar=":pnlTabla :tabTransaccion"/>
+
+                    </h:form>
+                </h:panelGroup>
+
+            </p:tab>
+
+            <!-- clasificacion -->
+            <p:tab title="Clasificación Contable"
+                   disabled="#{transaccionFrm.estado != 'MODIFICAR'}">
+
+                <h:form id="frmClasificacion">
+
+                    <p:panel header="Transacción Seleccionada">
+
+                        <h:panelGrid columns="2" cellpadding="5">
+
+                            <h:outputLabel value="Fecha:" />
+                            <h:outputText value="#{transaccionFrm.registro.fecha}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+
+                            <h:outputLabel value="Descripción:" />
+                            <h:outputText value="#{transaccionFrm.registro.descripcion}" />
+
+                            <h:outputLabel value="Monto:" />
+                            <h:outputText value="$#{transaccionFrm.registro.monto}" />
+
+                            <h:outputLabel value="Moneda:" />
+                            <h:outputText value="#{transaccionFrm.registro.moneda}" />
+
+                        </h:panelGrid>
+
+                    </p:panel>
+
+
+
+                </h:form>
+
+            </p:tab>
+
+        </p:tabView>
+
     </ui:define>
+
 </ui:composition>
