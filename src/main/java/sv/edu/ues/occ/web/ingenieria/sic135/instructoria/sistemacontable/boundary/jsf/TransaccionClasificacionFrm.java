@@ -83,6 +83,9 @@ public class TransaccionClasificacionFrm implements Serializable {
                 });
     }
 
+    //Nuveo registro
+
+
     // Acciones de clasificación
     public void clasificarManual() {
         if (transaccionSeleccionado != null && cuentasSeleccionadas != null) {
