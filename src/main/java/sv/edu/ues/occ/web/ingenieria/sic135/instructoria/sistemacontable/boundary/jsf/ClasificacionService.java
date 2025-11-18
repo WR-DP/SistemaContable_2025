@@ -1,6 +1,9 @@
 package sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.boundary.jsf;
 
+import jakarta.enterprise.context.Dependent;
+import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.CuentaContableDAO;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.TransaccionClasificacionDAO;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.CuentaContable;
@@ -8,8 +11,10 @@ import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.TransaccionClasificacion;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.TransaccionClasificacion;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -18,7 +23,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
-public class ClasificacionService {
+
+@Dependent
+@Named
+public class ClasificacionService implements Serializable {
 
     private static final Logger LOGGER = Logger.getLogger(ClasificacionService.class.getName());
 
@@ -82,7 +90,7 @@ public class ClasificacionService {
             tc.setOrigen("MANUAL");
             tc.setCuentaContableDebe(cuenta);
             tc.setConfianzaClasificacion(new BigDecimal("1.00"));
-            tc.setCreatedAt(Instant.now());
+            tc.setCreatedAt(Date.from(Instant.now()));
             transaccionClasificacionDAO.create(tc);
             return true;
         } catch (Exception e) {
