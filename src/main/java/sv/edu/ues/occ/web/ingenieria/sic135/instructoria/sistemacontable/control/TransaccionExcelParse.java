@@ -14,7 +14,7 @@ import java.util.*;
 @ApplicationScoped
 public class TransaccionExcelParse {
 
-    // Metodos auxiliares
+    // Métodos auxiliares
     private String getString(Cell c) {
         if (c == null) return "";
 
@@ -32,7 +32,7 @@ public class TransaccionExcelParse {
         return switch (c.getCellType()) {
             case NUMERIC -> BigDecimal.valueOf(c.getNumericCellValue());
             case STRING -> {
-                try { yield new BigDecimal(c.getStringCellValue()); }
+                try { yield new BigDecimal(c.getStringCellValue().trim()); }
                 catch (Exception e) { yield BigDecimal.ZERO; }
             }
             default -> BigDecimal.ZERO;
@@ -41,20 +41,25 @@ public class TransaccionExcelParse {
 
     private Date getDate(Cell c) {
         if (c == null) return null;
+        try {
+            if (c.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(c)) {
+                return c.getDateCellValue();
+            }
 
-        if (c.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(c)) {
-            return c.getDateCellValue();
-        }
-
-        if (c.getCellType() == CellType.STRING) {
-            try { return java.sql.Date.valueOf(c.getStringCellValue().trim()); }
-            catch (Exception ignored) {}
+            if (c.getCellType() == CellType.STRING) {
+                String val = c.getStringCellValue().trim();
+                if (!val.isEmpty()) {
+                    return java.sql.Date.valueOf(val); // yyyy-MM-dd
+                }
+            }
+        } catch (Exception ignored) {
+            return null;
         }
 
         return null;
     }
 
-    //parser principal
+    // parser principal
     public List<Transaccion> parsearExcel(String archivo, ArchivoCargado archivoCargado) {
         List<Transaccion> lista = new ArrayList<>();
 
@@ -64,17 +69,21 @@ public class TransaccionExcelParse {
             Sheet hoja = workbook.getSheetAt(0);
             Iterator<Row> filas = hoja.iterator();
 
-
+            //  Saltar filas
+            if (filas.hasNext()) filas.next();
             if (filas.hasNext()) filas.next();
             int numFila = 1;
             while (filas.hasNext()) {
                 Row fila = filas.next();
 
-                // si toda la fila vacia saltar
-                if (fila.getCell(1) == null &&
-                        fila.getCell(2) == null &&
-                        fila.getCell(3) == null &&
-                        fila.getCell(4) == null) {
+                // Validar si todas las celdas están vacías
+                boolean filaVacia =
+                        (fila.getCell(1) == null || getString(fila.getCell(1)).isBlank()) &&
+                                (fila.getCell(2) == null || getString(fila.getCell(2)).isBlank()) &&
+                                (fila.getCell(3) == null || getString(fila.getCell(3)).isBlank()) &&
+                                (fila.getCell(4) == null || getString(fila.getCell(4)).isBlank());
+
+                if (filaVacia) {
                     continue;
                 }
 
@@ -83,10 +92,15 @@ public class TransaccionExcelParse {
                 t.setArchivoCargado(archivoCargado);
                 t.setFilaExcel(numFila++);
 
-                t.setFecha(getDate(fila.getCell(1))); // Columna 1 Fecha
-                t.setDescripcion(getString(fila.getCell(2)));// Columna 2 Descripción
-                t.setMonto(getBigDecimal(fila.getCell(3))); // Columna 3 Monto
-                t.setMoneda(getString(fila.getCell(4)));    // Columna 4 Moneda
+                // Lectura de las columnas
+                Date fecha = getDate(fila.getCell(1));
+                if (fecha == null) {
+                    continue;
+                }
+                t.setFecha(fecha);
+                t.setDescripcion(getString(fila.getCell(2)));
+                t.setMonto(getBigDecimal(fila.getCell(3)));
+                t.setMoneda(getString(fila.getCell(4)));
 
                 lista.add(t);
             }
