@@ -125,6 +125,7 @@
             <p:tab title="Clasificación Contable"
                    disabled="#{transaccionFrm.estado != 'MODIFICAR'}">
                 <h:panelGrid>
+
                     <h:panelGroup id="pnlClasificacion">
                         <h:form id="frmClasificacion">
                             <h:outputLabel value="Tipo Transaccion: "/>
@@ -171,30 +172,29 @@
                             </h:panelGrid>
 
                             <p:commandButton
-                            boton para editar clasificacion
                             />
 
                         </h:form>
                     </h:panelGroup>
 
 
-                    <h:panelGroup id="pnlTransaccionClasificacion">
-                        <p:growl/>
-                        <p:growl/>
+                    <h:panelGroup id="pnlDetalleClasificacion">
+                        <p:growl id="growlDetalleClasificacion" showDetail="true"/>
+                        <p:growl id="growl-stickyTabClasificacion" for="sticky-key" showDetail="true" sticky="true"/>
 
-                        <h:panelGrid rendered="#{}">
+                        <h:panelGrid rendered="#{transaccionFrm.transaccionClasificacion.estado != 'NADA'}">
                             <h:form id="frmDetalleClasificacion">
                                 <p:panel header="Transacción Seleccionada">
                                     <h:panelGrid columns="2" cellpadding="5">
 
                                         <p:outputLabel for="txtId" value="ID:"/>
-                                        <p:inputText id="txtId" value="#{transaccionClasificacionFrm.registro.id}"
+                                        <p:inputText id="txtId" value="#{transaccionFrm.transaccionClasificacionFrm.registro.id}"
                                                      readonly="true"
                                                      disabled="true"/>
 
                                         <p:outputLabel for="txtTipoTransaccion" value="Tipo Transaccion:"/>
                                         <p:inputText id="txtTipoTransaccion"
-                                                     value="#{transaccionClasificacionFrm.registro.tipoTransaccion}"
+                                                     value="#{transaccionFrm.transaccionClasificacionFrm.registro.tipoTransaccion}"
                                                      size="75"
                                                      required="true"/>
 
@@ -264,7 +264,7 @@
 
                                     </h:panelGrid>
 
-                                    <ues:botones-crud formulario="#{transaccionFrm.}"
+                                    <ues:botones-crud formulario="#{}"/>
 
                                 </p:panel>
 
