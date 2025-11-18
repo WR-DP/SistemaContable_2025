@@ -125,6 +125,7 @@
             <p:tab title="Clasificación Contable"
                    disabled="#{transaccionFrm.estado != 'MODIFICAR'}">
                 <h:panelGrid>
+
                     <h:panelGroup id="pnlClasificacion">
                         <h:form id="frmClasificacion">
                             <h:outputLabel value="Tipo Transaccion: "/>
@@ -171,100 +172,24 @@
                             </h:panelGrid>
 
                             <p:commandButton
-                            boton para editar clasificacion
                             />
 
                         </h:form>
                     </h:panelGroup>
 
 
-                    <h:panelGroup id="pnlTransaccionClasificacion">
-                        <p:growl/>
-                        <p:growl/>
+                    <h:panelGroup id="pnlDetalleClasificacion">
+                        <p:growl id="growlDetalleClasificacion" showDetail="true"/>
+                        <p:growl id="growl-stickyTabClasificacion" for="sticky-key" showDetail="true" sticky="true"/>
 
-                        <h:panelGrid rendered="#{}">
+                        <h:panelGrid rendered="#{transaccionClasificacionFrm.estado != 'NADA'}">
                             <h:form id="frmDetalleClasificacion">
                                 <p:panel header="Transacción Seleccionada">
                                     <h:panelGrid columns="2" cellpadding="5">
 
-                                        <p:outputLabel for="txtId" value="ID:"/>
-                                        <p:inputText id="txtId" value="#{transaccionClasificacionFrm.registro.id}"
-                                                     readonly="true"
-                                                     disabled="true"/>
-
-                                        <p:outputLabel for="txtTipoTransaccion" value="Tipo Transaccion:"/>
-                                        <p:inputText id="txtTipoTransaccion"
-                                                     value="#{transaccionClasificacionFrm.registro.tipoTransaccion}"
-                                                     size="75"
-                                                     required="true"/>
-
-                                        <p:outputLabel for="acCategoria" value="Categoria :"/>
-                                        <h:panelGrid>
-                                            <h:panelGrid columns="2">
-                                                <p:outputLabel value="Seleccione la categoria: "
-                                                               for="acCategoria"/>
-                                                <p:autoComplete id="acCategoria"
-                                                                value="#{}"
-                                                                completeMethod="#{}"
-                                                                var=""
-                                                                converter=""
-                                                                itemLabel="#{}"
-                                                                itemValue="#{}"
-                                                                forceSelection="true"
-                                                                dropdown="true"
-                                                                size="40"
-                                                                placeholder="Ingrese el nombre de la caracteristica"
-                                                                emptyMessage="No se encontraron caracteristica con ese nombre"
-
-                                                />
-                                            </h:panelGrid>
-                                            <p:commandButton value="" type="button"
-                                                             process="@form"
-                                                             actionListener="#{}"
-                                                             update=""
-                                            />
-                                        </h:panelGrid>
-
-
-                                        <p:outputLabel for="acNombre" value="Nombre de Cuenta :"/>
-                                        <h:panelGrid>
-                                            <h:panelGrid columns="2">
-                                                <p:outputLabel value="Seleccione la cuenta: "
-                                                               for="acNombre"/>
-                                                <p:autoComplete id="acNombre"
-                                                                value="#{}"
-                                                                completeMethod="#{}"
-                                                                var=""
-                                                                converter=""
-                                                                itemLabel="#{}"
-                                                                itemValue="#{}"
-                                                                forceSelection="true"
-                                                                dropdown="true"
-                                                                size="40"
-                                                                placeholder="Ingrese el nombre de la cuenta"
-                                                                emptyMessage="No se encontraron cuentas con ese nombre"
-
-                                                />
-                                            </h:panelGrid>
-                                            <p:commandButton value="" type="button"
-                                                             process="@form"
-                                                             actionListener="#{}"
-                                                             update=""
-                                            />
-                                        </h:panelGrid>
-
-                                        <p:outputLabel for="chkActivo" value="Activo:"/>
-                                        <p:selectBooleanCheckbox id="chkActivo" value="#{productoFrm.registro.activo}"/>
-                                        <p:outputLabel for="txtObservacion" value="Comentarios:"/>
-
-                                        <p:inputTextarea id="txtObservacion" value="#{productoFrm.registro.comentarios}"
-                                                         cols="75"
-                                                         rows="4"/>
-
-
                                     </h:panelGrid>
 
-                                    <ues:botones-crud formulario="#{transaccionFrm.}"
+
 
                                 </p:panel>
 

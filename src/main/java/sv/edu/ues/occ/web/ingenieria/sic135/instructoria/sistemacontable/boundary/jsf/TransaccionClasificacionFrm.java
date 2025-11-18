@@ -3,22 +3,30 @@ package sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.bounda
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.CuentaContableDAO;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.DAOInterface;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.TransaccionClasificacionDAO;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.TransaccionDAO;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.CuentaContable;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.TransaccionClasificacion;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class TransaccionClasificacionFrm implements Serializable {
+@Named
+@ViewScoped
+public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasificacion> implements Serializable {
     private static final long serialVersionUID = 1L;
-    private static final Logger logger= Logger.getLogger(TransaccionClasificacionFrm.class.getName());
+    private static final Logger logger = Logger.getLogger(TransaccionClasificacionFrm.class.getName());
 
     //Estado del Formulario
     private Transaccion transaccionSeleccionado;
@@ -26,55 +34,125 @@ public class TransaccionClasificacionFrm implements Serializable {
     private List<CuentaContable> cuentasSugeridas;
     private CuentaContable cuentasSeleccionadas;
     private String filtroDescripcion;
-    private Boolean soloPendientes= true;
-    private boolean procesadoIA=false;
-    private int transaccionesProcesadas=0;
-    private int trasnsaccionesTotales=0;
+    private Boolean soloPendientes = true;
+    private boolean procesadoIA = false;
+    private int transaccionesProcesadas = 0;
+    private int trasnsaccionesTotales = 0;
 
+    @Inject
+    private FacesContext facesContext;
+    @Inject
+    private TransaccionClasificacionDAO transaccionClasificacionDAO;
     @Inject
     private TransaccionDAO transaccionDAO;
-
     @Inject
     private CuentaContableDAO cuentaContableDAO;
-
     @Inject
     private ClasificacionService clasificasionesService;
     private Transaccion transaccionSeleccionada;
 
+
+    @Override
+    protected FacesContext getFacesContext() {
+        return facesContext;
+    }
+
+    @Override
+    protected DAOInterface<TransaccionClasificacion, Object> getDao() {
+        return transaccionClasificacionDAO;
+    }
+
+    @Override
+    protected String getIdAsText(TransaccionClasificacion r) {
+        if (r != null && r.getId() != null) {
+            return r.getId().toString();
+        }
+        return null;
+    }
+
+    @Override
+    protected TransaccionClasificacion getIdByText(String id) {
+        if (id != null && this.modelo != null) {
+            final String buscado = id;
+            return this.modelo.getWrappedData().stream()
+                    .filter(r -> r.getId().toString().equals(buscado))
+                    .findFirst().orElse(null);
+        }
+        return null;
+    }
+
+
+    @Override
+    public DAOInterface<TransaccionClasificacion, Object> getDataAccess() {
+        return transaccionClasificacionDAO;
+    }
+
+    @Override
+    protected TransaccionClasificacion buscarRegistroPorId(Object id) {
+        //Buscar por idTransaccionClasificacion
+        if(id == null ) return null;
+        try{
+            //entidad de tipo Long
+            return transaccionClasificacionDAO.findById(id);
+        }catch (Exception e){
+            if(this.modelo != null){
+                final String buscado = id.toString();
+                return this.modelo.getWrappedData().stream()
+                        .filter(r -> r.getId() != null && r.getId().toString().equals(buscado))
+                        .findFirst().orElse(null);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    protected TransaccionClasificacion nuevoRegistro() {
+        TransaccionClasificacion  tc = new TransaccionClasificacion();
+        //tc.setId( ); //creo que no hace falta setearlo de momento por que es auto generado
+        tc.setOrigen("MANUAL");
+        tc.setTipoTransaccion("");
+        tc.setCreatedAt(Date.from(new Date().toInstant()));
+        return tc;
+    }
+
     @PostConstruct
-    public void init(){
-        cargarTransaccionesPendientes();
+    @Override
+    public void inicializar() {
+        super.inicializar();
+
+
     }
 
     // Implementacion del manejo de Datos
-    public void cargarTransaccionesPendientes(){
-        try{
+    public void cargarTransaccionesPendientes() {
+        try {
             transaccionesPendientes = transaccionDAO.findTransaccionesPendientes();
-        }catch (Exception e){
-            logger.log(Level.SEVERE,"Error cargado Transacciones Pendientes",e);
-            mostrarMensajeError("Error al cargar  transacciones: "+e.getMessage());
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error cargado Transacciones Pendientes", e);
+            mostrarMensajeError("Error al cargar  transacciones: " + e.getMessage());
         }
     }
 
     public void onTransaccionSelect(SelectEvent<Transaccion> event) {
         transaccionSeleccionado = event.getObject();
-        if(transaccionSeleccionado!=null){
+        if (transaccionSeleccionado != null) {
             cargarSugerenciasIA();
         }
     }
-    private void cargarSugerenciasIA(){
-        if(transaccionSeleccionado==null) return;
 
-        procesadoIA=true;
+    private void cargarSugerenciasIA() {
+        if (transaccionSeleccionado == null) return;
+
+        procesadoIA = true;
 
         clasificasionesService.obtenerSugerenciasIA(transaccionSeleccionado)
-                .thenAccept(sugerencias ->{
+                .thenAccept(sugerencias -> {
                     cuentasSugeridas = sugerencias;
-                    procesadoIA=false;
+                    procesadoIA = false;
 
                     PrimeFaces.current().ajax().update("SUgerenciasPanel");
                 })
-                .exceptionally(throwable->{
+                .exceptionally(throwable -> {
                     logger.log(Level.SEVERE, "Error obteniendo sugerencias de IA", throwable);
                     procesadoIA = false;
                     cuentasSugeridas = cuentaContableDAO.findCuentaPrincipales();
@@ -154,7 +232,7 @@ public class TransaccionClasificacionFrm implements Serializable {
                     transaccionesProcesadas = clasificadas;
 
                     mostrarMensajeExito("Proceso completado: " + clasificadas +
-                            " de " + trasnsaccionesTotales+ " transacciones clasificadas");
+                            " de " + trasnsaccionesTotales + " transacciones clasificadas");
                     cargarTransaccionesPendientes();
                 })
                 .exceptionally(throwable -> {
@@ -212,19 +290,50 @@ public class TransaccionClasificacionFrm implements Serializable {
     }
 
     // Getters y Setters
-    public Transaccion getTransaccionSeleccionada() { return transaccionSeleccionado; }
-    public void setTransaccionSeleccionada(Transaccion transaccionSeleccionada) { this.transaccionSeleccionada = transaccionSeleccionada; }
-    public List<Transaccion> getTransaccionesPendientes() { return transaccionesPendientes; }
-    public List<CuentaContable> getCuentasSugeridas() { return cuentasSugeridas; }
-    public CuentaContable getCuentaSeleccionada() { return cuentasSeleccionadas; }
-    public void setCuentaSeleccionada(CuentaContable cuentaSeleccionada) { this.cuentasSeleccionadas = cuentaSeleccionada; }
-    public String getFiltroDescripcion() { return filtroDescripcion; }
-    public void setFiltroDescripcion(String filtroDescripcion) { this.filtroDescripcion = filtroDescripcion; }
+    public Transaccion getTransaccionSeleccionada() {
+        return transaccionSeleccionado;
+    }
+
+    public void setTransaccionSeleccionada(Transaccion transaccionSeleccionada) {
+        this.transaccionSeleccionada = transaccionSeleccionada;
+    }
+
+    public List<Transaccion> getTransaccionesPendientes() {
+        return transaccionesPendientes;
+    }
+
+    public List<CuentaContable> getCuentasSugeridas() {
+        return cuentasSugeridas;
+    }
+
+    public CuentaContable getCuentaSeleccionada() {
+        return cuentasSeleccionadas;
+    }
+
+    public void setCuentaSeleccionada(CuentaContable cuentaSeleccionada) {
+        this.cuentasSeleccionadas = cuentaSeleccionada;
+    }
+
+    public String getFiltroDescripcion() {
+        return filtroDescripcion;
+    }
+
+    public void setFiltroDescripcion(String filtroDescripcion) {
+        this.filtroDescripcion = filtroDescripcion;
+    }
 
     // Eliminado el getter/setter para soloPendientes
 
-    public boolean isProcesandoIA() { return procesadoIA; }
-    public int getTransaccionesProcesadas() { return transaccionesProcesadas; }
-    public int getTransaccionesTotales() { return trasnsaccionesTotales; }
+    public boolean isProcesandoIA() {
+        return procesadoIA;
+    }
+
+    public int getTransaccionesProcesadas() {
+        return transaccionesProcesadas;
+    }
+
+    public int getTransaccionesTotales() {
+        return trasnsaccionesTotales;
+    }
 
 }

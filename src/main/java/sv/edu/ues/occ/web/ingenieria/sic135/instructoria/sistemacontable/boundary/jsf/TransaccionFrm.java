@@ -34,20 +34,14 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
     private FacesContext facesContext;
     @Inject
     private TransaccionDAO transaccionDAO;
-
-    //injectar el parser para enviarle los datos
     @Inject
     private TransaccionExcelParse parser;
-
-    //traer los metodos que corresponden a la clasificacion
     @Inject
     private TransaccionClasificacionDAO transaccionClasificacionDAO;
 
     private List<Transaccion> listaTransacciones;
-
     // referencia al archivo cargado para enlazar con las transacciones
     private ArchivoCargado archivoSeleccionado;
-
     private Transaccion transaccionSeleccionado;
 
     // Campos para filtrado por periodo contable

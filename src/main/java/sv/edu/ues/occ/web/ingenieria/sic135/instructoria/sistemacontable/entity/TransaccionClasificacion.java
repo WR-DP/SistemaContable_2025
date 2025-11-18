@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Date;
 
 @Entity
 @Table(name = "transaccion_clasificacion", schema = "public")
@@ -45,7 +46,7 @@ public class TransaccionClasificacion {
     private BigDecimal confianzaClasificacion;
 
     @Column(name = "created_at")
-    private Instant createdAt;
+    private Date createdAt;
 
 
 
@@ -113,11 +114,11 @@ public class TransaccionClasificacion {
         this.confianzaClasificacion = confianzaClasificacion;
     }
 
-    public Instant getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
