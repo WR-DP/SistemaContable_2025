@@ -216,7 +216,7 @@
 
                     <!-- Botones -->
                     <div class="form-actions-clean">
-                        <p:commandButton value="Subir Archivo"
+                        <p:commandButton value="Subir Archivo y Guardar Datos"
                                          icon="pi pi-upload"
                                          actionListener="#{archivoCargadoFrm.subirArchivo}"
                                          update=":pnlTabla :frmArchivoCargado"
@@ -224,10 +224,14 @@
                                          styleClass="btn-submit"
                                          rendered="#{archivoCargadoFrm.estado == 'CREAR'}"/>
 
-                        <ues:botones-crud formulario="#{archivoCargadoFrm}" actualizar=":pnlDetalle :pnlTabla"/>
                     </div>
                 </div>
             </div>
         </h:form>
     </ui:define>
+
+    <ui:define name="extra">
+
+    </ui:define>
+
 </ui:composition>

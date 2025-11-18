@@ -17,11 +17,14 @@ import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.
 
 import java.io.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.boundary.jsf.ESTADO_CRUD.NADA;
 
 @Named
 @ViewScoped
@@ -79,61 +82,108 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
     }
 
 
+//    public void subirArchivo() {
+//        System.out.println("=== Ejecutando subirArchivo()");
+//        System.out.println("=== Archivo recibido: " + (archivo == null ? "null" : archivo.getFileName()));
+//
+//        if (archivo != null) {
+//            try (InputStream input = archivo.getInputStream()) {
+//
+//                String folderPath = System.getProperty("user.home") + File.separator + "archivos_subidos";
+//                File carpeta = new File(folderPath);
+//                if (!carpeta.exists()) carpeta.mkdirs();
+//
+//                String nombreArchivo = archivo.getFileName();
+//                String rutaCompleta = folderPath + File.separator + nombreArchivo;
+//
+//                // Guardar archivo físico
+//                try (FileOutputStream output = new FileOutputStream(rutaCompleta)) {
+//                    input.transferTo(output);
+//                }
+//
+//                // Crear registro del archivo cargado
+//                ArchivoCargado nuevo = new ArchivoCargado();
+//                nuevo.setId(UUID.randomUUID());
+//                nuevo.setFechaCarga(Instant.now());
+//                nuevo.setNombreArchivo(nombreArchivo);
+//                nuevo.setRutaArchivo(rutaCompleta);
+//                nuevo.setTamañoByte(archivo.getSize());
+//                nuevo.setEstado("CARGADO");
+//                nuevo.setUsuarioCarga("admin");
+//
+//                archivoCargadoDAO.create(nuevo);
+//                // Obtener entidad  desde BD
+//                ArchivoCargado archivManaged = archivoCargadoDAO.findById(nuevo.getId());
+//                // Procesar transacciones desde Excel
+//                try {
+//                    List<Transaccion> transacciones = parser.parsearExcel(rutaCompleta, archivManaged);
+//                    for (Transaccion t : transacciones) {
+//                        t.setArchivoCargado(archivManaged);
+//                        transaccionDAO.create(t);
+//                    }
+//                    archivManaged.setTotalRegistro(transacciones.size());
+//                    archivoCargadoDAO.editArchivo(archivManaged);
+//                } catch (Exception ex) {
+//                    Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error al parsear Excel", ex);
+//                }
+//
+//                mostrarMensaje("Archivo cargado correctamente: " + nombreArchivo, FacesMessage.SEVERITY_INFO);
+//
+//            } catch (Exception e) {
+//                Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Error al subir archivo", e);
+//                mostrarMensaje("Error al subir el archivo: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
+//            }
+//        } else {
+//            mostrarMensaje("Debe seleccionar un archivo antes de subirlo.", FacesMessage.SEVERITY_WARN);
+//        }
+//    }
 
 
     public void subirArchivo() {
-        System.out.println("=== Ejecutando subirArchivo()");
-        System.out.println("=== Archivo recibido: " + (archivo == null ? "null" : archivo.getFileName()));
+        try {
+            System.out.println("=== Ejecutando subirArchivo()");
+            System.out.println("=== Archivo recibido: " + (archivo == null ? "null" : archivo.getFileName()));
 
-        if (archivo != null) {
-            try (InputStream input = archivo.getInputStream()) {
-
-                String folderPath = System.getProperty("user.home") + File.separator + "archivos_subidos";
-                File carpeta = new File(folderPath);
-                if (!carpeta.exists()) carpeta.mkdirs();
-
-                String nombreArchivo = archivo.getFileName();
-                String rutaCompleta = folderPath + File.separator + nombreArchivo;
-
-                // Guardar archivo físico
-                try (FileOutputStream output = new FileOutputStream(rutaCompleta)) {
-                    input.transferTo(output);
-                }
-
-                // Crear registro del archivo cargado
-                ArchivoCargado nuevo = new ArchivoCargado();
-                nuevo.setId(UUID.randomUUID());
-                nuevo.setFechaCarga(Instant.now());
-                nuevo.setNombreArchivo(nombreArchivo);
-                nuevo.setRutaArchivo(rutaCompleta);
-                nuevo.setTamañoByte(archivo.getSize());
-                nuevo.setEstado("CARGADO");
-                nuevo.setUsuarioCarga("admin");
-
-                archivoCargadoDAO.create(nuevo);
-                // Obtener entidad  desde BD
-                ArchivoCargado archivManaged = archivoCargadoDAO.findById(nuevo.getId());
-                // Procesar transacciones desde Excel
-                try {
-                    List<Transaccion> transacciones = parser.parsearExcel(rutaCompleta, archivManaged);
-                    for (Transaccion t : transacciones) {
-                        t.setArchivoCargado(archivManaged);
-                        transaccionDAO.create(t);
-                    }
-                    archivManaged.setTotalRegistro(transacciones.size());
-                    archivoCargadoDAO.editArchivo(archivManaged);
-                } catch (Exception ex) {
-                    Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error al parsear Excel", ex);
-                }
-
-                mostrarMensaje("Archivo cargado correctamente: " + nombreArchivo, FacesMessage.SEVERITY_INFO);
-
-            } catch (Exception e) {
-                Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Error al subir archivo", e);
-                mostrarMensaje("Error al subir el archivo: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
+            if (archivo == null || archivo.getContent() == null) {
+                mostrarMensaje("Debe seleccionar un archivo antes de subirlo.", FacesMessage.SEVERITY_WARN);
+                return;
             }
-        } else {
-            mostrarMensaje("Debe seleccionar un archivo antes de subirlo.", FacesMessage.SEVERITY_WARN);
+
+            archivoCargadoDAO.create(registro);
+
+            String folderPath = System.getProperty("user.home") + File.separator + "archivos_subidos";
+            File carpeta = new File(folderPath);
+            if (!carpeta.exists()) carpeta.mkdirs();
+
+            String nombreArchivo = archivo.getFileName();
+            String rutaCompleta = folderPath + File.separator + nombreArchivo;
+
+            try (InputStream input = archivo.getInputStream();
+                 FileOutputStream output = new FileOutputStream(rutaCompleta)) {
+                input.transferTo(output);
+            }
+
+            registro.setRutaArchivo(rutaCompleta);
+            registro.setTamañoByte(archivo.getSize());
+            registro.setNombreArchivo(nombreArchivo);
+            archivoCargadoDAO.editArchivo(registro);
+            List<Transaccion> transacciones = parser.parsearExcel(rutaCompleta, registro);
+
+            for (Transaccion t : transacciones) {
+                t.setArchivoCargado(registro);
+                transaccionDAO.create(t);
+            }
+
+            registro.setTotalRegistro(transacciones.size());
+            registro.setEstado("PROCESADO");
+            archivoCargadoDAO.editArchivo(registro);
+
+            mostrarMensaje("Archivo subido y procesado correctamente.", FacesMessage.SEVERITY_INFO);
+            estado = NADA;
+
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al subir archivo", e);
+            mostrarMensaje("Error al subir el archivo: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
         }
     }
 
@@ -141,7 +191,6 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
         FacesMessage msj = new FacesMessage(severity, s, null);
         getFacesContext().addMessage(null, msj);
     }
-
 
     public UploadedFile getArchivo() {
         return archivo;
@@ -169,7 +218,7 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
 
     @Override
     protected ArchivoCargado buscarRegistroPorId(Object id) {
-        if (id != null && id instanceof String buscado && this.modelo != null) {
+        if (id instanceof String buscado && this.modelo != null) {
             return this.modelo.getWrappedData().stream()
                     .filter(r -> r.getIdArchivoCargado().toString().equals(buscado))
                     .findFirst()

@@ -23,11 +23,12 @@
 
                 <p:dataTable lazy="true"
                              rendered="#{transaccionFrm.estado == 'NADA'}"
-                             rows="10"
+                             rows="50"
                              paginator="true"
                              paginatorPosition="bottom"
-                             value="#{transaccionFrm.modelo}"
+                             value="#{transaccionFrm.listaTransacciones}"
                              var="t"
+                             rowKey="#{t.id}"
                              selectionMode="single"
                              selection="#{transaccionFrm.registro}"
                              styleClass="tabla-crud">

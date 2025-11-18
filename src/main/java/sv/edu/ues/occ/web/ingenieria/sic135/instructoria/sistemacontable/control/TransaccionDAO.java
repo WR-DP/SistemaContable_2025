@@ -237,6 +237,8 @@ public class TransaccionDAO extends DefaultDataAcces<Transaccion, Object> implem
                 .setParameter("archivoId", archivoId)
                 .getResultList();
     }
+
+
     /**
      * Busca transacciones pendientes cuya descripción coincide parcialmente con un filtro.
      * @param filtroDescripcion EL texto  a buscar en la descripcion
