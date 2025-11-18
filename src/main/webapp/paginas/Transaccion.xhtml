@@ -7,7 +7,6 @@
         xmlns:ues="jakarta.faces.composite/ues"
         template="/WEB-INF/plantilla/default.xhtml">
 
-    <!-- recibe el parametro-->
     <f:metadata>
         <f:viewParam name="archivoId" value="#{transaccionFrm.idArchivoSeleccionado}" />
         <f:viewAction action="#{transaccionFrm.cargarTransaccionesDelArchivo}" />
@@ -17,7 +16,7 @@
         <h1>Gestión de Transacciones</h1>
     </ui:define>
 
-    <!-- tabla de transaccions-->
+    <!-- tabla -->
     <ui:define name="contenido-tabla">
         <h:panelGrid>
             <h:form id="frmTablaTransacciones">
@@ -63,14 +62,13 @@
         </h:panelGrid>
     </ui:define>
 
-    <!-- detalle de la transaccion -->
+    <!-- detalla -->
     <ui:define name="contenido-detalle">
 
         <p:tabView id="tabTransaccion"
                    cache="false"
                    dynamic="true"
                    rendered="#{transaccionFrm.estado != 'NADA'}">
-
             <p:tab closable="false" title="Detalle de transacción">
 
                 <h:panelGroup id="pnlTransaccionWrapper">
@@ -122,61 +120,39 @@
 
             </p:tab>
 
-            <!-- clasificacion cuenta contable -->
-            <p:tab  closable="false" title="Clasificación Contable" disabled="#{transaccionFrm.estado != 'MODIFICAR'}">
+            <!-- clasificacion -->
+            <p:tab title="Clasificación Contable"
+                   disabled="#{transaccionFrm.estado != 'MODIFICAR'}">
 
                 <h:form id="frmClasificacion">
-                    <!-- transaccion seleccionada-->
+
                     <p:panel header="Transacción Seleccionada">
-                        <h:panelGrid columns="2">
 
-                            <h:outputLabel value="ID Transacción:"/>
-                            <h:outputText value="#{transaccionFrm.registro.id}"/>
+                        <h:panelGrid columns="2" cellpadding="5">
 
-                            <h:outputLabel value="Descripción:"/>
-                            <h:outputText value="#{transaccionFrm.registro.descripcion}"/>
+                            <h:outputLabel value="Fecha:" />
+                            <h:outputText value="#{transaccionFrm.registro.fecha}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
 
-                            <h:outputLabel value="Monto:"/>
-                            <h:outputText value="$#{transaccionFrm.registro.monto}"/>
+                            <h:outputLabel value="Descripción:" />
+                            <h:outputText value="#{transaccionFrm.registro.descripcion}" />
 
-                            <h:outputLabel value="Moneda:"/>
-                            <h:outputText value="#{transaccionFrm.registro.moneda}"/>
+                            <h:outputLabel value="Monto:" />
+                            <h:outputText value="$#{transaccionFrm.registro.monto}" />
 
+                            <h:outputLabel value="Moneda:" />
+                            <h:outputText value="#{transaccionFrm.registro.moneda}" />
 
                         </h:panelGrid>
-                    </p:panel>
-
-                    <br/>
-
-                    <!-- ===== hasta aqui revisado  ===== -->
-                    <p:panel header="Clasificación contable">
-
-                        <p:panelGrid columns="2">
-
-                            <!-- Tipo de transacción -->
-                            <h:outputLabel value="Tipo de transacción:"/>
-
-                            <!-- Categoría -->
-                            <h:outputLabel value="Categoría:"/>
-
-                            <!-- Cuenta debe -->
-                            <h:outputLabel value="Cuenta contable - Debe:"/>
-
-                            <!-- Cuenta haber -->
-                            <h:outputLabel value="Cuenta contable - Haber:"/>
-
-
-
-                        </p:panelGrid>
 
                     </p:panel>
+
+
 
                 </h:form>
 
             </p:tab>
-
-
-
 
         </p:tabView>
 

@@ -88,6 +88,9 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
     }
 
     public void subirArchivo() {
+        System.out.println("=== Ejecutando subirArchivo()");
+        System.out.println("=== Archivo recibido: " + (archivo == null ? "null" : archivo.getFileName()));
+
         if (archivo != null) {
             try (InputStream input = archivo.getInputStream()) {
 
@@ -114,6 +117,7 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
                 nuevo.setUsuarioCarga("admin");
 
                 archivoCargadoDAO.create(nuevo);
+                // Obtener entidad  desde BD
                 ArchivoCargado archivManaged = archivoCargadoDAO.findById(nuevo.getId());
                 // Procesar transacciones desde Excel
                 try {

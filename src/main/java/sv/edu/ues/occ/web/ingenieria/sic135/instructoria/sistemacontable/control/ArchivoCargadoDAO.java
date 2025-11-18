@@ -39,7 +39,7 @@ public class ArchivoCargadoDAO extends DefaultDataAcces<ArchivoCargado, Object> 
     }
 
     @Override
-    public void edit(Transaccion transaccionSeleccionado) { // Este DAO no edita transacciones
+    public void edit(Transaccion transaccionSeleccionado) {// Este DAO NO edita transacciones
     }
     public void editArchivo(ArchivoCargado archivo) {
         em.merge(archivo);
