@@ -16,8 +16,19 @@
         <h1>Gestión de Transacciones</h1>
     </ui:define>
 
+
     <!-- tabla -->
     <ui:define name="contenido-tabla">
+
+        <div style="text-align:left; margin-bottom: 1rem;">
+            <p:commandButton
+                    value="Volver al Archivo"
+                    icon="pi pi-arrow-left"
+                    styleClass="btn-clean-green"
+                    rendered="#{transaccionFrm.estado == 'NADA'}"
+                    onclick="window.location='archivoCargado.jsf'; return false;" />
+        </div>
+
         <h:panelGrid>
             <h:form id="frmTablaTransacciones">
 
