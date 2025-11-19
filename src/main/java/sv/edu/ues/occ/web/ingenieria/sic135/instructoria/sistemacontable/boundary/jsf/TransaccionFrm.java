@@ -754,10 +754,56 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
     //getter del transaccionClasificacionfrm
     public TransaccionClasificacionFrm getTransaccionClasificacionFrm() {
         if(this.registro != null && this.registro.getId() != null){
-            transaccionClasificacionFrm.setIdCategoria(registro.getId());
+            // 1) pasar la transacción al formulario de clasificación (para que usela en sugerencias IA)
+            transaccionClasificacionFrm.setTransaccionSeleccionada(this.registro);
 
-//            transaccionClasificacionFrm.setIdCuentaContableDebe(registro.getId());
-//            transaccionClasificacionFrm.setIdCuentaContableHaber(registro.getId());
+            // 2) intentar precargar una clasificación existente para rellenar categoría / cuentas
+            try {
+                TransaccionClasificacion existente = transaccionClasificacionDAO.findByTransaccionId(this.registro.getId());
+
+
+                if (existente != null) {
+                    // Categoria (puede ser Long en la entidad)
+                    if (existente.getCategoria() != null && existente.getCategoria().getId() != null) {
+                        try {
+                            // intentar asignar convertiendo si el setter acepta UUID
+                            transaccionClasificacionFrm.setIdCategoria(java.util.UUID.fromString(existente.getCategoria().getId().toString()));
+                        } catch (Exception e) {
+                            try {
+                                // si no, intentar asignar como Long (si el setter lo acepta)
+                                java.lang.reflect.Method m = transaccionClasificacionFrm.getClass().getMethod("setIdCategoria", existente.getCategoria().getId().getClass());
+                                m.invoke(transaccionClasificacionFrm, existente.getCategoria().getId());
+                            } catch (Exception ignored) { /* tipos no compatibles: no asignar */ }
+                        }
+                    }
+
+                    // Cuenta Debe
+                    if (existente.getCuentaContableDebe() != null && existente.getCuentaContableDebe().getId() != null) {
+                        try {
+                            transaccionClasificacionFrm.setIdCuentaContableDebe(java.util.UUID.fromString(existente.getCuentaContableDebe().getId().toString()));
+                        } catch (Exception e) {
+                            try {
+                                java.lang.reflect.Method m = transaccionClasificacionFrm.getClass().getMethod("setIdCuentaContableDebe", existente.getCuentaContableDebe().getId().getClass());
+                                m.invoke(transaccionClasificacionFrm, existente.getCuentaContableDebe().getId());
+                            } catch (Exception ignored) { /* tipos no compatibles */ }
+                        }
+                    }
+
+                    // Cuenta Haber
+                    if (existente.getCuentaContableHaber() != null && existente.getCuentaContableHaber().getId() != null) {
+                        try {
+                            transaccionClasificacionFrm.setIdCuentaContableHaber(java.util.UUID.fromString(existente.getCuentaContableHaber().getId().toString()));
+                        } catch (Exception e) {
+                            try {
+                                java.lang.reflect.Method m = transaccionClasificacionFrm.getClass().getMethod("setIdCuentaContableHaber", existente.getCuentaContableHaber().getId().getClass());
+                                m.invoke(transaccionClasificacionFrm, existente.getCuentaContableHaber().getId());
+                            } catch (Exception ignored) { /* tipos no compatibles */ }
+                        }
+                    }
+                }
+            } catch (Exception ignored) {
+                // si falla, al menos tenemos la transacción en el formulario para pedir sugerencias IA
+            }
         }
         return transaccionClasificacionFrm;
     }
