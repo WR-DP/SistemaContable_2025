@@ -30,6 +30,4 @@ public class CategoriaDAO extends DefaultDataAcces<Categoria, Object> implements
         return Categoria.class;
     }
 
-
-
 }

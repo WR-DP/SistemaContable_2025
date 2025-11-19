@@ -113,8 +113,7 @@
                         </h:panelGrid>
 
                         <ues:botones-crud
-                                formulario="#{transaccionFrm}"
-                                actualizar=":pnlTabla :tabTransaccion"/>
+                                formulario="#{transaccionFrm}" actualizar=":pnlTabla :tabTransaccion"/>
 
                     </h:form>
                 </h:panelGroup>
@@ -126,16 +125,28 @@
                    disabled="#{transaccionFrm.estado != 'MODIFICAR'}">
                 <h:panelGrid>
 
-                    <h:panelGroup id="pnlClasificacion">
+                        <h:panelGroup id="pnlClasificacion">
                         <h:form id="frmClasificacion">
-                            <h:outputLabel value="Tipo Transaccion: "/>
-                            <h:outputText value="#{transaccionClasificacionFrm.registro.tipoTransaccion}"/>
+                            <h:panelGrid columns="2">
+                            <h:outputLabel value="Tipo de Transacción:" />
+                                <p:selectOneMenu value="#{transaccionClasificacionFrm.registro.tipoTransaccion}"
+                                                 rendered="#{transaccionFrm.estado == 'MODIFICAR'}">
 
-                            <h:outputLabel value="Nombre de Catergoria: "/>
-                            <h:outputText value="#{transaccionClasificacionFrm.registro.categoriaId.nombre}"/>
+                                    <f:selectItem itemLabel="Seleccione" itemValue="#{null}" />
+                                    <f:selectItem itemLabel="COMPRA" itemValue="COMPRA" />
+                                    <f:selectItem itemLabel="VENTA" itemValue="VENTA" />
+                                </p:selectOneMenu>
 
-                            <h:outputLabel value="Descripsion de Catergoria: "/>
-                            <h:outputText value="#{transaccionClasificacionFrm.registro.categoriaId.descripcion}"/>
+                                <h:outputLabel value="Nombre de Categoría:" />
+
+
+
+
+
+                                <h:outputLabel value="Descripción de Categoría:" />
+                            <h:outputText value="#{transaccionClasificacionFrm.registro.categoriaId.descripcion}" />
+                            </h:panelGrid>
+
 
 
                             <p:column headerText="Naturaleza de la cuenta"/>
@@ -177,59 +188,6 @@
                         </h:form>
                     </h:panelGroup>
 
-
-                    <h:panelGroup id="pnlDetalleClasificacion">
-                        <p:growl id="growlDetalleClasificacion" showDetail="true"/>
-                        <p:growl id="growl-stickyTabClasificacion" for="sticky-key" showDetail="true" sticky="true"/>
-
-                        <h:panelGrid rendered="#{transaccionClasificacionFrm.estado != 'NADA'}">
-                            <h:form id="frmDetalleClasificacion">
-                                <p:panel header="Transacción Seleccionada">
-                                    <h:panelGrid columns="2" cellpadding="5">
-
-                                        <p:outputLabel for="txtId" value="ID:"/>
-                                        <p:inputText id="txtId" value="#{transaccionClasificacionFrm.registro.id}"
-                                                     readonly="true"
-                                                     disabled="true"/>
-
-                                        <p:outputLabel for="txtTipoTransaccion" value="Tipo Transaccion:"/>
-                                        <p:inputText id="txtTipoTransaccion"
-                                                     value="#{transaccionClasificacionFrm.registro.tipoTransaccion}"
-                                                     size="75"
-                                                     required="true"/>
-
-                                        <p:outputLabel for="acCategoria" value="Categoria :"/>
-                                        <h:panelGrid>
-                                            <h:panelGrid columns="2">
-                                                <p:outputLabel value="Seleccione la categoria: "
-                                                               for="acCategoria"/>
-
-                                            </h:panelGrid>
-
-                                        </h:panelGrid>
-
-                                        <p:outputLabel for="acNombre" value="Nombre de Cuenta :"/>
-                                        <h:panelGrid>
-                                            <h:panelGrid columns="2">
-                                                <p:outputLabel value="Seleccione la cuenta: "
-                                                               for="acNombre"/>
-
-                                            </h:panelGrid>
-
-                                        </h:panelGrid>
-
-                                    </h:panelGrid>
-
-                                </p:panel>
-
-
-                                <ues:botones-crud formulario=""/>
-
-                            </h:form>
-
-                        </h:panelGrid>
-
-                    </h:panelGroup>
 
                 </h:panelGrid>
 
