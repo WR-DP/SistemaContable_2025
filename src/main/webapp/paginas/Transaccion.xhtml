@@ -176,32 +176,56 @@
                             <h:panelGrid columns="2">
                                 <h:panelGrid>
                                     <h2>Cuenta Contable Debe</h2>
-                                    <p:column headerText="Nombre de Cuenta: "/>
-                                    <h:outputText
-                                            value="#{transaccionFrm.transaccionClasificacionFrm.registro.cuentaContableDebe.nombre}"/>
+                                    <p:outputLabel for="acCuentaDebe" value="Categoria :"/>
+                                    <h:panelGrid>
+                                        <h:panelGrid columns="2">
+                                            <p:outputLabel value="Seleccione la cuenta: " for="acCuentaDebe"/>
+                                            <p:autoComplete id="acCuentaDebe"
+                                                            value="#{transaccionClasificacionFrm.cuentaSeleccionada}"
+                                                            completeMethod="#{transaccionClasificacionFrm.completarCuenta}"
+                                                            var="cuentaD"
+                                                            converter="cuentaConversor"
+                                                            itemLabel="#{cuentaD.nombre}"
+                                                            itemValue="#{cuentaD}"
+                                                            forceSelection="true"
+                                                            dropdown="true"
+                                                            size="40"
+                                                            placeholder="Ingrese el nombre de la cuenta"
+                                                            emptyMessage="No se encontraron cuentas con ese nombre"
 
-                                    <p:column headerText="Codigo de Cuenta: "/>
-                                    <h:outputText
-                                            value="#{transaccionFrm.transaccionClasificacionFrm.registro.cuentaContableDebe.codigo}"/>
+                                            />
+                                        </h:panelGrid>
+                                    </h:panelGrid>
 
-                                    <p:column headerText=" Descripcion: "/>
-                                    <h:outputText
-                                            value="#{transaccionFrm.transaccionClasificacionFrm.registro.cuentaContableDebe.descripcion}"/>
+
+
+
                                 </h:panelGrid>
 
                                 <h:panelGrid>
                                     <h2>Cuenta Contable Haber</h2>
-                                    <p:column headerText="Nombre de Cuenta: "/>
-                                    <h:outputText
-                                            value="#{transaccionFrm.transaccionClasificacionFrm.registro.cuentaContableHaber.nombre}"/>
+                                    <p:outputLabel for="acCuentaHaber" value="Categoria :"/>
+                                    <h:panelGrid>
+                                        <h:panelGrid columns="2">
+                                            <p:outputLabel value="Seleccione la cuenta: " for="acCuentaHaber"/>
+                                            <p:autoComplete id="acCuentaHaber"
+                                                            value="#{transaccionClasificacionFrm.cuentaSeleccionada}"
+                                                            completeMethod="#{transaccionClasificacionFrm.completarCuenta}"
+                                                            var="cuentaH"
+                                                            converter="cuentaConversor"
+                                                            itemLabel="#{cuentaH.nombre}"
+                                                            itemValue="#{cuentaH}"
+                                                            forceSelection="true"
+                                                            dropdown="true"
+                                                            size="40"
+                                                            placeholder="Ingrese el nombre de la cuenta"
+                                                            emptyMessage="No se encontraron cuentas con ese nombre"
 
-                                    <p:column headerText="Codigo de Cuenta: "/>
-                                    <h:outputText
-                                            value="#{transaccionFrm.transaccionClasificacionFrm.registro.cuentaContableHaber.codigo}"/>
+                                            />
+                                        </h:panelGrid>
+                                    </h:panelGrid>
 
-                                    <p:column headerText=" Descripcion: "/>
-                                    <h:outputText
-                                            value="#{transaccionFrm.transaccionClasificacionFrm.registro.cuentaContableHaber.codigo}"/>
+
                                 </h:panelGrid>
                             </h:panelGrid>
 

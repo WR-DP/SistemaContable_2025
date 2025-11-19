@@ -2,6 +2,7 @@ package sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.bounda
 
 import jakarta.annotation.PostConstruct;
 import jakarta.ejb.EJB;
+import jakarta.el.MethodExpression;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
@@ -265,7 +266,7 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
     public void buscarTransacciones() {
         try {
             if (filtroDescripcion != null && !filtroDescripcion.trim().isEmpty()) {
-                // Usa el método DAO que busca solo en pendientes
+
                 transaccionesPendientes = transaccionDAO.finndByDescripcion(filtroDescripcion);
             } else {
                 cargarTransaccionesPendientes();
@@ -400,6 +401,20 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
             return categoriaDAO.findByNombreLike(query);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error completando categorias: " + e.getMessage(), e);
+            return Collections.emptyList();
+        }
+    }
+
+
+    //completarCuenta
+    public List<CuentaContable> completarCuenta(String query) {
+        try {
+            if (query == null || query.trim().isEmpty()) {
+                return cuentaContableDAO.findCuentaPrincipales();
+            }
+            return cuentaContableDAO.findByNombreLike(query);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error completando cuentas: " + e.getMessage(), e);
             return Collections.emptyList();
         }
     }
