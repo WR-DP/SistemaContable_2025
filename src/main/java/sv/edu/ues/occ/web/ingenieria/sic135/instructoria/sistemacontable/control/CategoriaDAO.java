@@ -8,6 +8,7 @@ import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Stateless
 @LocalBean
@@ -35,6 +36,15 @@ public class CategoriaDAO extends DefaultDataAcces<Categoria, Object> implements
         return em.find(Categoria.class, id);
     }
 
+    // Búsqueda por nombre (LIKE, case-insensitive)
+    public List<Categoria> findByNombreLike(String q) {
+        if (q == null) q = "";
+        String pattern = "%" + q.toLowerCase() + "%";
+        return em.createQuery("SELECT c FROM Categoria c WHERE LOWER(c.nombre) LIKE :pat ORDER BY c.nombre", Categoria.class)
+                .setParameter("pat", pattern)
+                .setMaxResults(50)
+                .getResultList();
+    }
 
 
 }

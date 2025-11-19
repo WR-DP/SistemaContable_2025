@@ -31,7 +31,12 @@ public class CuentaContableDAO extends DefaultDataAcces<CuentaContable, Object> 
         return CuentaContable.class;
     }
 
-
+    //findByNombreLike
+    public List<CuentaContable> findByNombreLike(String nombre) {
+        return em.createQuery("SELECT c FROM CuentaContable c WHERE LOWER(c.nombre) LIKE :nombre AND c.activa = TRUE ORDER BY c.codigo", CuentaContable.class)
+                .setParameter("nombre", "%" + nombre.toLowerCase() + "%")
+                .getResultList();
+    }
 
     //Buscar cuenta por el codigo (usado por la IA)
     public CuentaContable findByCodigo(String codigo) {

@@ -23,6 +23,8 @@ import java.util.UUID;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Named("transaccionFrm")
 @ViewScoped
@@ -754,11 +756,141 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
     //getter del transaccionClasificacionfrm
     public TransaccionClasificacionFrm getTransaccionClasificacionFrm() {
         if(this.registro != null && this.registro.getId() != null){
-            transaccionClasificacionFrm.setIdCategoria(registro.getId());
+            // 1) pasar la transacción al formulario de clasificación (para que usela en sugerencias IA)
+            transaccionClasificacionFrm.setTransaccionSeleccionada(this.registro);
 
-//            transaccionClasificacionFrm.setIdCuentaContableDebe(registro.getId());
-//            transaccionClasificacionFrm.setIdCuentaContableHaber(registro.getId());
+            // 2) intentar precargar una clasificación existente para rellenar categoría / cuentas
+            try {
+                TransaccionClasificacion existente = transaccionClasificacionDAO.findByTransaccionId(this.registro.getId());
+
+
+                if (existente != null) {
+                    // Categoria (puede ser Long en la entidad)
+                    if (existente.getCategoria() != null && existente.getCategoria().getId() != null) {
+                        try {
+                            // intentar asignar convertiendo si el setter acepta UUID
+                            transaccionClasificacionFrm.setIdCategoria(java.util.UUID.fromString(existente.getCategoria().getId().toString()));
+                        } catch (Exception e) {
+                            try {
+                                // si no, intentar asignar como Long (si el setter lo acepta)
+                                java.lang.reflect.Method m = transaccionClasificacionFrm.getClass().getMethod("setIdCategoria", existente.getCategoria().getId().getClass());
+                                m.invoke(transaccionClasificacionFrm, existente.getCategoria().getId());
+                            } catch (Exception ignored) { /* tipos no compatibles: no asignar */ }
+                        }
+                    }
+
+                    // Cuenta Debe
+                    if (existente.getCuentaContableDebe() != null && existente.getCuentaContableDebe().getId() != null) {
+                        try {
+                            transaccionClasificacionFrm.setIdCuentaContableDebe(java.util.UUID.fromString(existente.getCuentaContableDebe().getId().toString()));
+                        } catch (Exception e) {
+                            try {
+                                java.lang.reflect.Method m = transaccionClasificacionFrm.getClass().getMethod("setIdCuentaContableDebe", existente.getCuentaContableDebe().getId().getClass());
+                                m.invoke(transaccionClasificacionFrm, existente.getCuentaContableDebe().getId());
+                            } catch (Exception ignored) { /* tipos no compatibles */ }
+                        }
+                    }
+
+                    // Cuenta Haber
+                    if (existente.getCuentaContableHaber() != null && existente.getCuentaContableHaber().getId() != null) {
+                        try {
+                            transaccionClasificacionFrm.setIdCuentaContableHaber(java.util.UUID.fromString(existente.getCuentaContableHaber().getId().toString()));
+                        } catch (Exception e) {
+                            try {
+                                java.lang.reflect.Method m = transaccionClasificacionFrm.getClass().getMethod("setIdCuentaContableHaber", existente.getCuentaContableHaber().getId().getClass());
+                                m.invoke(transaccionClasificacionFrm, existente.getCuentaContableHaber().getId());
+                            } catch (Exception ignored) { /* tipos no compatibles */ }
+                        }
+                    }
+                }
+            } catch (Exception ignored) {
+                // si falla, al menos tenemos la transacción en el formulario para pedir sugerencias IA
+            }
         }
         return transaccionClasificacionFrm;
     }
+
+    public void guardarClasificacionesSeleccionadas() {
+        List<Transaccion> seleccionadas = getSeleccionadas();
+        if (seleccionadas == null || seleccionadas.isEmpty()) {
+            enviarMensaje("No hay transacciones seleccionadas para guardar.", FacesMessage.SEVERITY_WARN);
+            return;
+        }
+
+        int guardadas = 0;
+        try {
+            for (Transaccion t : seleccionadas) {
+                if (t == null || t.getId() == null) continue;
+
+                TransaccionClasificacion existente = null;
+                try {
+                    existente = transaccionClasificacionDAO.findByTransaccionId(t.getId());
+                } catch (Exception ignored) {}
+
+                if (existente == null) {
+                    TransaccionClasificacion tc = new TransaccionClasificacion();
+                    tc.setTransaccion(t);
+                    tc.setOrigen("MANUAL");
+                    tc.setTipoTransaccion(tipoFacturacion != null ? tipoFacturacion : "");
+                    tc.setCreatedAt(new Date());
+                    transaccionClasificacionDAO.create(tc);
+                } else {
+                    // Actualizar tipo si se tiene uno en el bean (opcional)
+                    if (tipoFacturacion != null && !tipoFacturacion.isBlank()) {
+                        existente.setTipoTransaccion(tipoFacturacion);
+                    }
+                }
+                guardadas++;
+            }
+
+            // limpiar selección y recargar listado relacionado
+            if (seleccionMap != null) seleccionMap.clear();
+            // recargar lista de transacciones del archivo si aplica
+            try {
+                if (archivoSeleccionado != null && archivoSeleccionado.getIdArchivoCargado() != null) {
+                    listaTransacciones = transaccionDAO.findByArchivoId(archivoSeleccionado.getIdArchivoCargado());
+                    if (modelo != null) modelo.setWrappedData(listaTransacciones);
+                }
+            } catch (Exception ignored) {}
+
+            enviarMensaje("Clasificaciones guardadas: " + guardadas, FacesMessage.SEVERITY_INFO);
+        } catch (Exception e) {
+            enviarMensaje("Error guardando clasificaciones: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
+        }
+    }
+
+    public void guardarTodoDelTab() {
+        try {
+            int guardadas = 0;
+            if (listaTransacciones != null) {
+                for (Transaccion t : listaTransacciones) {
+                    if (t == null) continue;
+                    try {
+                        // si el id es nulo, crear; si no, actualizar
+                        if (t.getId() == null) {
+                            transaccionDAO.create(t);
+                        }
+                        guardadas++;
+                    } catch (Exception ex) {
+                        // ignorar una transaccion fallida y continuar
+                        Logger.getLogger(TransaccionFrm.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+                    }
+                }
+            }
+
+            // reutilizar el metodo existente para persistir clasificaciones seleccionadas
+            guardarClasificacionesSeleccionadas();
+
+            enviarMensaje("Guardadas transacciones procesadas: " + guardadas, FacesMessage.SEVERITY_INFO);
+        } catch (Exception e) {
+            enviarMensaje("Error guardando datos del tab: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
+            e.printStackTrace();
+        }
+    }
+
+    public void setTransaccionClasificacionFrm(TransaccionClasificacionFrm transaccionClasificacionFrm) {
+        this.transaccionClasificacionFrm = transaccionClasificacionFrm;
+    }
+
+
 }

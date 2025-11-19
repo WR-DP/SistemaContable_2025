@@ -9,6 +9,7 @@ import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.Collections;
@@ -36,5 +37,21 @@ public class TransaccionClasificacionDAO extends DefaultDataAcces<TransaccionCla
         return TransaccionClasificacion.class;
     }
 
+
+    //findByTransaccionId
+    public TransaccionClasificacion findByTransaccionId(UUID transaccionId) {
+        if (transaccionId == null) return null;
+        try {
+            List<TransaccionClasificacion> list = em.createQuery(
+                            "SELECT tc FROM TransaccionClasificacion tc WHERE tc.transaccion.id = :tid",
+                            TransaccionClasificacion.class)
+                    .setParameter("tid", transaccionId)
+                    .setMaxResults(1)
+                    .getResultList();
+            return list.isEmpty() ? null : list.getFirst();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
 }

@@ -1,6 +1,8 @@
 package sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.boundary.jsf;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.ejb.EJB;
+import jakarta.el.MethodExpression;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
@@ -9,11 +11,13 @@ import jakarta.inject.Named;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.*;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Categoria;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.CuentaContable;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.TransaccionClasificacion;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -54,10 +58,21 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
     protected UUID idCuentaContableDebe;
     protected UUID idCuentaContableHaber;
 
+    protected Boolean cuentaEsDebe = Boolean.TRUE;
+
+
     //par apoder recomendar la categoria
     @Inject
     CategoriaDAO categoriaDAO;
     protected UUID idCategoria;
+
+    protected Categoria categoriaSeleccionada;
+
+
+    //muestra lista de categorias
+    public List<Categoria> getListaCategorias() {
+        return categoriaDAO.findAll();
+    }
 
 
     @Override
@@ -127,7 +142,6 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
     @Override
     public void inicializar() {
         super.inicializar();
-//intanciacion necesaria
 
 
     }
@@ -255,7 +269,7 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
     public void buscarTransacciones() {
         try {
             if (filtroDescripcion != null && !filtroDescripcion.trim().isEmpty()) {
-                // Usa el método DAO que busca solo en pendientes
+
                 transaccionesPendientes = transaccionDAO.finndByDescripcion(filtroDescripcion);
             } else {
                 cargarTransaccionesPendientes();
@@ -371,6 +385,49 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
 
     public void setIdCategoria(UUID idCategoria) {
         this.idCategoria = idCategoria;
+    }
+
+    public Categoria getCategoriaSeleccionada() {
+        return categoriaSeleccionada;
+    }
+
+    public void setCategoriaSeleccionada(Categoria categoriaSeleccionada) {
+        this.categoriaSeleccionada = categoriaSeleccionada;
+    }
+
+    public List<Categoria> completarCategoria(String query) {
+        try {
+            if (query == null || query.trim().isEmpty()) {
+                // DefaultDataAcces normalmente provee findAll()
+                return categoriaDAO.findAll();
+            }
+            return categoriaDAO.findByNombreLike(query);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error completando categorias: " + e.getMessage(), e);
+            return Collections.emptyList();
+        }
+    }
+
+
+    //completarCuenta
+    public List<CuentaContable> completarCuenta(String query) {
+        try {
+            if (query == null || query.trim().isEmpty()) {
+                return cuentaContableDAO.findCuentaPrincipales();
+            }
+            return cuentaContableDAO.findByNombreLike(query);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error completando cuentas: " + e.getMessage(), e);
+            return Collections.emptyList();
+        }
+    }
+
+    public Boolean getCuentaEsDebe() {
+        return cuentaEsDebe;
+    }
+
+    public void setCuentaEsDebe(Boolean cuentaEsDebe) {
+        this.cuentaEsDebe = cuentaEsDebe;
     }
 
 

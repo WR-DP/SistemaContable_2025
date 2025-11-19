@@ -430,19 +430,6 @@
                 </div>
             </a>
 
-            <div class="feature-item">
-                <div class="feature-icon">
-                    <i class="fas fa-chart-line"></i>
-                </div>
-                <span class="feature-label">Reportes</span>
-            </div>
-
-            <div class="feature-item">
-                <div class="feature-icon">
-                    <i class="fas fa-university"></i>
-                </div>
-                <span class="feature-label">Gestión</span>
-            </div>
         </div>
 
         <!-- Botón centrado -->
