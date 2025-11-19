@@ -9,6 +9,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Root;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.ArchivoCargado;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.TransaccionClasificacion;
 
@@ -524,4 +525,7 @@ public class TransaccionDAO extends DefaultDataAcces<Transaccion, Object> implem
         }
     }
 
+    public ArchivoCargado findArchivoById(UUID id){
+        return em.find(ArchivoCargado.class, id);
+    }
 }

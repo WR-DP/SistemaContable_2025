@@ -15,6 +15,7 @@ import java.util.UUID;
 @Stateless
 public class TransaccionBean {
 
+
     @PersistenceContext(unitName = "SICPu")
     private EntityManager em;
 
