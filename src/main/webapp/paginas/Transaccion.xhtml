@@ -126,16 +126,28 @@
                    disabled="#{transaccionFrm.estado != 'MODIFICAR'}">
                 <h:panelGrid>
 
-                    <h:panelGroup id="pnlClasificacion">
+                        <h:panelGroup id="pnlClasificacion">
                         <h:form id="frmClasificacion">
-                            <h:outputLabel value="Tipo Transaccion: "/>
-                            <h:outputText value="#{transaccionClasificacionFrm.registro.tipoTransaccion}"/>
+                            <h:panelGrid columns="2">
+                            <h:outputLabel value="Tipo de Transacción:" />
+                                <p:selectOneMenu value="#{transaccionClasificacionFrm.registro.tipoTransaccion}"
+                                                 rendered="#{transaccionFrm.estado == 'MODIFICAR'}">
 
-                            <h:outputLabel value="Nombre de Catergoria: "/>
-                            <h:outputText value="#{transaccionClasificacionFrm.registro.categoria.nombre}"/>
+                                    <f:selectItem itemLabel="Seleccione" itemValue="#{null}" />
+                                    <f:selectItem itemLabel="COMPRA" itemValue="COMPRA" />
+                                    <f:selectItem itemLabel="VENTA" itemValue="VENTA" />
+                                </p:selectOneMenu>
 
-                            <h:outputLabel value="Descripsion de Catergoria: "/>
-                            <h:outputText value="#{transaccionClasificacionFrm.registro.categoria.descripcion}"/>
+                                <h:outputLabel value="Nombre de Categoría:" />
+
+
+
+
+
+                                <h:outputLabel value="Descripción de Categoría:" />
+                            <h:outputText value="#{transaccionClasificacionFrm.registro.categoriaId.descripcion}" />
+                            </h:panelGrid>
+
 
 
                             <p:column headerText="Naturaleza de la cuenta"/>

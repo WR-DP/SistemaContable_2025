@@ -1,6 +1,7 @@
 package sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.boundary.jsf;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.ejb.EJB;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.view.ViewScoped;
@@ -9,6 +10,7 @@ import jakarta.inject.Named;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.*;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Categoria;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.CuentaContable;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.TransaccionClasificacion;
@@ -58,6 +60,11 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
     @Inject
     CategoriaDAO categoriaDAO;
     protected UUID idCategoria;
+
+    //muestra lista de categorias
+    public List<Categoria> getListaCategorias() {
+        return categoriaDAO.findAll();
+    }
 
 
     @Override
@@ -127,7 +134,6 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
     @Override
     public void inicializar() {
         super.inicializar();
-//intanciacion necesaria
 
 
     }

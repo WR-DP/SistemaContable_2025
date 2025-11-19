@@ -10,5 +10,6 @@ public interface DAOInterface <T, ID> {
     T update(T entity) throws IllegalStateException, IllegalArgumentException;
     List<T> findRange(int first, int max) throws IllegalArgumentException;
     int count () throws IllegalStateException;
+    List<T> findAll() throws IllegalStateException;
 
 }

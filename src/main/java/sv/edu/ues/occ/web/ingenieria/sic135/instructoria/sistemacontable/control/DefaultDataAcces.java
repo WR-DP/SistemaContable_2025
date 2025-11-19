@@ -132,6 +132,22 @@ public abstract class DefaultDataAcces <T, ID> implements DAOInterface<T, ID> {
         return em.createQuery(cq).getSingleResult().intValue();
     }
 
+    @Override
+    public List<T> findAll() throws IllegalStateException {
+        try {
+            EntityManager em = getEntityManager();
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<T> cq = cb.createQuery(getEntityClass());
+            Root<T> root = cq.from(getEntityClass());
+            cq.select(root);
+            return em.createQuery(cq).getResultList();
+        } catch (Exception ex) {
+            throw new IllegalStateException("Error al obtener todos los registros", ex);
+        }
+    }
+
+
+
 //    public abstract void edit(Transaccion transaccionSeleccionado);
 
 
