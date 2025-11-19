@@ -159,20 +159,17 @@
                                     <h2>Cuenta Contable Haber</h2>
                                     <p:column headerText="Nombre de Cuenta: "/>
                                     <h:outputText
-                                            value="#{transaccionClasificacionFrm.registro.cuentaContableDebeId.nombre}"/>
+                                            value="#{transaccionClasificacionFrm.registro.cuentaContableHaberId.nombre}"/>
 
                                     <p:column headerText="Codigo de Cuenta: "/>
                                     <h:outputText
-                                            value="#{transaccionClasificacionFrm.registro.cuentaContableDebeId.codigo}"/>
+                                            value="#{transaccionClasificacionFrm.registro.cuentaContableHaberId.codigo}"/>
 
                                     <p:column headerText="Codigo de Descripcion: "/>
                                     <h:outputText
-                                            value="#{transaccionClasificacionFrm.registro.cuentaContableDebeId.codigo}"/>
+                                            value="#{transaccionClasificacionFrm.registro.cuentaContableHaberId.codigo}"/>
                                 </h:panelGrid>
                             </h:panelGrid>
-
-                            <p:commandButton
-                            />
 
                         </h:form>
                     </h:panelGroup>
@@ -222,8 +219,8 @@
 
                                 </p:panel>
 
-
-                                <ues:botones-crud formulario=""/>
+                                <!-- LÍNEA CORREGIDA: Se agregó formulario válido -->
+                                <ues:botones-crud formulario="#{transaccionClasificacionFrm}" actualizar=":pnlTabla :tabTransaccion"/>
 
                             </h:form>
 
