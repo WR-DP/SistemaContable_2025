@@ -128,14 +128,27 @@
 
                     <h:panelGroup id="pnlClasificacion">
                         <h:form id="frmClasificacion">
-                            <h:outputLabel value="Tipo Transaccion: "/>
-                            <h:outputText value="#{transaccionFrm.transaccionClasificacionFrm.registro.tipoTransaccion}"/>
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="Tipo de Transacción:"/>
+                                <p:selectOneMenu
+                                        value="#{transaccionFrm.transaccionClasificacionFrm.registro.tipoTransaccion}"
+                                        rendered="#{transaccionFrm.estado == 'MODIFICAR'}">
 
-                            <h:outputLabel value="Nombre de Catergoria: "/>
-                            <h:outputText value="#{transaccionFrm.transaccionClasificacionFrm.registro.categoria.nombre}"/>
+                                    <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                    <f:selectItem itemLabel="COMPRA" itemValue="COMPRA"/>
+                                    <f:selectItem itemLabel="VENTA" itemValue="VENTA"/>
+                                </p:selectOneMenu>
 
-                            <h:outputLabel value="Descripsion de Catergoria: "/>
-                            <h:outputText value="#{transaccionFrm.transaccionClasificacionFrm.registro.categoria.descripcion}"/>
+                                <h:outputLabel value="Nombre de Categoría:"/>
+
+
+                                <h:panelGrid>
+                                    <h:outputLabel value="Descripción de Categoría:"/>
+                                    <h:outputText
+                                            value="#{transaccionFrm.transaccionClasificacionFrm.registro.categoria.descripcion}"/>
+                                </h:panelGrid>
+
+                            </h:panelGrid>
 
 
                             <p:column headerText="Naturaleza de la cuenta"/>
@@ -172,12 +185,6 @@
                             </h:panelGrid>
 
                         </h:form>
-                    </h:panelGroup>
-
-
-                    <h:panelGroup id="pnlDetalleClasificacion">
-
-
                     </h:panelGroup>
 
                 </h:panelGrid>
