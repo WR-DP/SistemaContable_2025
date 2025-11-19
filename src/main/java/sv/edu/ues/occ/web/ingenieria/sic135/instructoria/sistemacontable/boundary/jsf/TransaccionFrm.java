@@ -837,8 +837,6 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
                     if (tipoFacturacion != null && !tipoFacturacion.isBlank()) {
                         existente.setTipoTransaccion(tipoFacturacion);
                     }
-                    // no sobrescribimos categoría/cuentas aquí para evitar perder datos
-                    transaccionClasificacionDAO.edit(existente);
                 }
                 guardadas++;
             }
