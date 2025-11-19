@@ -144,8 +144,10 @@
 
                                 <h:panelGrid>
                                     <h:outputLabel value="Descripción de Categoría:"/>
-                                    <h:outputText
-                                            value="#{transaccionFrm.transaccionClasificacionFrm.registro.categoria.descripcion}"/>
+                                    <h:outputText value="#{transaccionFrm.transaccionClasificacionFrm.registro.categoria.descripcion}"
+                                                  rendered="#{not empty transaccionFrm.transaccionClasificacionFrm.registro and not empty transaccionFrm.transaccionClasificacionFrm.registro.categoria}" />
+                                    <h:outputText value="(no seleccionada)"
+                                                  rendered="#{empty transaccionFrm.transaccionClasificacionFrm.registro or empty transaccionFrm.transaccionClasificacionFrm.registro.categoria}" />
                                 </h:panelGrid>
 
                             </h:panelGrid>
