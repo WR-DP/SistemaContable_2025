@@ -69,10 +69,11 @@ public class TransaccionExcelParse {
             Sheet hoja = workbook.getSheetAt(0);
             Iterator<Row> filas = hoja.iterator();
 
-            //  Saltar filas
-            if (filas.hasNext()) filas.next();
-            if (filas.hasNext()) filas.next();
-            int numFila = 2;
+            //  Saltar solamente una fila
+            if(filas.hasNext()){
+                filas.next();
+            }
+            int numFila = 2;// empezar  desde la fila 2(porque se salta la fila 1)
             while (filas.hasNext()) {
                 Row fila = filas.next();
 
