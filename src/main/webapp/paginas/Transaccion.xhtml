@@ -75,46 +75,99 @@
                 <h:panelGroup id="pnlTransaccionWrapper">
                     <h:form id="frmTransaccionCrear">
 
-                        <h:panelGrid columns="2">
+                        <div class="form-card-clean">
 
-                            <p:outputLabel for="txtIdTrans" value="ID:"/>
-                            <p:inputText id="txtIdTrans"
-                                         value="#{transaccionFrm.registro.id}"
-                                         readonly="true"
-                                         disabled="true"/>
+                            <!-- HEADER -->
+                            <div class="form-header-clean">
+                                <h2>
+                                    <i class="pi pi-dollar"></i>
+                                    <h:outputText value="Nueva Transacción" rendered="#{transaccionFrm.estado == 'CREAR'}"/>
+                                    <h:outputText value="Editar Transacción" rendered="#{transaccionFrm.estado != 'CREAR'}"/>
+                                </h2>
+                                <p class="form-subtitle-clean">
+                                    Complete los detalles de la transacción contable
+                                </p>
+                            </div>
 
-                            <p:outputLabel for="dpFechaTrans" value="Fecha:"/>
-                            <p:datePicker id="dpFechaTrans"
-                                          value="#{transaccionFrm.registro.fecha}"
-                                          pattern="yyyy-MM-dd"
-                                          required="true"
-                                          showIcon="true"
-                                          touchUI="false"/>
+                            <!-- BODY -->
+                            <div class="form-body-clean">
 
-                            <p:outputLabel for="txtDescripcion" value="Descripción:"/>
-                            <p:inputTextarea id="txtDescripcion"
-                                             value="#{transaccionFrm.registro.descripcion}"
-                                             rows="3" cols="30"
-                                             required="true"
-                                             requiredMessage="La descripción es obligatoria."/>
+                                <!-- Fila 1: ID + Fecha -->
+                                <div class="form-row">
+                                    <div class="form-col">
+                                        <label for="txtIdTrans" class="field-label">ID:</label>
+                                        <p:inputText id="txtIdTrans"
+                                                     value="#{transaccionFrm.registro.id}"
+                                                     readonly="true"
+                                                     disabled="true"
+                                                     styleClass="field-input field-readonly"/>
+                                    </div>
 
-                            <p:outputLabel for="txtMonto" value="Monto:"/>
-                            <p:inputNumber id="txtMonto"
-                                           value="#{transaccionFrm.registro.monto}"
-                                           symbol="$"
-                                           required="true"/>
+                                    <div class="form-col">
+                                        <label for="dpFechaTrans" class="field-label">
+                                            Fecha: <span class="required-mark">*</span>
+                                        </label>
+                                        <p:datePicker id="dpFechaTrans"
+                                                      value="#{transaccionFrm.registro.fecha}"
+                                                      pattern="dd-MM-yyyy"
+                                                      required="true"
+                                                      requiredMessage="La fecha es obligatoria."
+                                                      showIcon="true"
+                                                      styleClass="field-input"/>
+                                    </div>
+                                </div>
 
-                            <p:outputLabel for="cmbMoneda" value="Moneda:"/>
-                            <p:selectOneMenu id="cmbMoneda"
-                                             value="#{transaccionFrm.registro.moneda}">
-                                <f:selectItem itemLabel="USD" itemValue="USD"/>
-                            </p:selectOneMenu>
+                                <!-- Fila 2: Descripción -->
+                                <div class="form-row">
+                                    <div class="form-col">
+                                        <label for="txtDescripcion" class="field-label">
+                                            Descripción: <span class="required-mark">*</span>
+                                        </label>
+                                        <p:inputTextarea id="txtDescripcion"
+                                                         value="#{transaccionFrm.registro.descripcion}"
+                                                         rows="3"
+                                                         placeholder="Descripción de la transacción"
+                                                         required="true"
+                                                         requiredMessage="La descripción es obligatoria."
+                                                         styleClass="field-input"/>
+                                    </div>
+                                </div>
 
-                        </h:panelGrid>
+                                <!-- Fila 3: Monto + Moneda -->
+                                <div class="form-row">
+                                    <div class="form-col">
+                                        <label for="txtMonto" class="field-label">
+                                            Monto: <span class="required-mark">*</span>
+                                        </label>
+                                        <p:inputNumber id="txtMonto"
+                                                       value="#{transaccionFrm.registro.monto}"
+                                                       symbol="$"
+                                                       decimalPlaces="2"
+                                                       required="true"
+                                                       requiredMessage="Debe ingresar un monto."
+                                                       styleClass="field-input"/>
+                                    </div>
 
-                        <ues:botones-crud
-                                formulario="#{transaccionFrm}"
-                                actualizar=":pnlTabla :tabTransaccion"/>
+                                    <div class="form-col">
+                                        <label for="cmbMoneda" class="field-label">
+                                            Moneda: <span class="required-mark">*</span>
+                                        </label>
+                                        <p:selectOneMenu id="cmbMoneda"
+                                                         value="#{transaccionFrm.registro.moneda}"
+                                                         styleClass="field-select">
+                                            <f:selectItem itemLabel="USD" itemValue="USD"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                </div>
+
+                                <!-- Botones CRUD -->
+                                <ues:botones-crud
+                                        formulario="#{transaccionFrm}"
+                                        actualizar=":pnlTabla :tabTransaccion :frmTransaccionCrear"/>
+
+
+                            </div>
+                        </div>
 
                     </h:form>
                 </h:panelGroup>
