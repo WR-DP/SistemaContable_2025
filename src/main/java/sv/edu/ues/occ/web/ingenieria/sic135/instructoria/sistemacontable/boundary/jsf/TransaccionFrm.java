@@ -23,6 +23,8 @@ import java.util.UUID;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Named("transaccionFrm")
 @ViewScoped
@@ -855,5 +857,38 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
         } catch (Exception e) {
             enviarMensaje("Error guardando clasificaciones: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
         }
+    }
+
+    public void guardarTodoDelTab() {
+        try {
+            int guardadas = 0;
+            if (listaTransacciones != null) {
+                for (Transaccion t : listaTransacciones) {
+                    if (t == null) continue;
+                    try {
+                        // si el id es nulo, crear; si no, actualizar
+                        if (t.getId() == null) {
+                            transaccionDAO.create(t);
+                        }
+                        guardadas++;
+                    } catch (Exception ex) {
+                        // ignorar una transaccion fallida y continuar
+                        Logger.getLogger(TransaccionFrm.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+                    }
+                }
+            }
+
+            // reutilizar el metodo existente para persistir clasificaciones seleccionadas
+            guardarClasificacionesSeleccionadas();
+
+            enviarMensaje("Guardadas transacciones procesadas: " + guardadas, FacesMessage.SEVERITY_INFO);
+        } catch (Exception e) {
+            enviarMensaje("Error guardando datos del tab: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
+            e.printStackTrace();
+        }
+    }
+
+    public void setTransaccionClasificacionFrm(TransaccionClasificacionFrm transaccionClasificacionFrm) {
+        this.transaccionClasificacionFrm = transaccionClasificacionFrm;
     }
 }

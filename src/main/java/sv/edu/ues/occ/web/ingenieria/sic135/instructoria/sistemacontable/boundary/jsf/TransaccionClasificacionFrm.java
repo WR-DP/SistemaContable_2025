@@ -58,6 +58,9 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
     protected UUID idCuentaContableDebe;
     protected UUID idCuentaContableHaber;
 
+    protected Boolean cuentaEsDebe = Boolean.TRUE;
+
+
     //par apoder recomendar la categoria
     @Inject
     CategoriaDAO categoriaDAO;
@@ -418,5 +421,14 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
             return Collections.emptyList();
         }
     }
+
+    public Boolean getCuentaEsDebe() {
+        return cuentaEsDebe;
+    }
+
+    public void setCuentaEsDebe(Boolean cuentaEsDebe) {
+        this.cuentaEsDebe = cuentaEsDebe;
+    }
+
 
 }
