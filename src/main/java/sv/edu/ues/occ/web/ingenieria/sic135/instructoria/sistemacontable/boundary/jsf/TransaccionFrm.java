@@ -152,7 +152,6 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
         } catch (Exception ignored) {}
     }
 
-    @Override
     protected Transaccion nuevoRegistro() {
         Transaccion t = new Transaccion();
         t.setId(UUID.randomUUID());
@@ -161,6 +160,8 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
         t.setDescripcion("");
         t.setMoneda("USD");
         t.setCreatedAt(new Date());
+        t.setArchivoCargado(archivoSeleccionado);
+
         return t;
     }
 
@@ -711,20 +712,32 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
                 enviarMensaje("No se recibió el ID del archivo.", FacesMessage.SEVERITY_WARN);
                 return;
             }
+
             UUID id = UUID.fromString(idArchivoSeleccionado);
-            List<Transaccion> tmp = transaccionDAO.findByArchivoId(id);
-            listaTransacciones = tmp != null ? tmp : java.util.Collections.emptyList();
+
+            // CARGAR ARCHIVO PARA ASOCIAR NUEVAS TRANSACCIONES
+            archivoSeleccionado = transaccionDAO.findArchivoById(id);
+
+            if (archivoSeleccionado == null) {
+                enviarMensaje("El archivo no existe en la base de datos.", FacesMessage.SEVERITY_ERROR);
+                return;
+            }
+
+            // CARGAR TRANSACCIONES
+            listaTransacciones = transaccionDAO.findByArchivoId(id);
+
             if (modelo != null) {
                 modelo.setWrappedData(listaTransacciones);
             }
-            enviarMensaje("Transacciones cargadas del archivo seleccionado.", FacesMessage.SEVERITY_INFO);
+
+            enviarMensaje("Transacciones cargadas correctamente.", FacesMessage.SEVERITY_INFO);
 
         } catch (Exception e) {
             enviarMensaje("Error cargando transacciones: " + e.getMessage(),
                     FacesMessage.SEVERITY_ERROR);
-            e.printStackTrace();
         }
     }
+
     public void seleccionarRegistro(SelectEvent<Transaccion> event) {
         this.registro = event.getObject();
         this.estado = ESTADO_CRUD.MODIFICAR;
