@@ -51,7 +51,6 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
     private ClasificacionService clasificasionesService;
     private Transaccion transaccionSeleccionada;
 
-
     @Override
     protected FacesContext getFacesContext() {
         return facesContext;
@@ -81,7 +80,6 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
         return null;
     }
 
-
     @Override
     public DAOInterface<TransaccionClasificacion, Object> getDataAccess() {
         return transaccionClasificacionDAO;
@@ -89,10 +87,8 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
 
     @Override
     protected TransaccionClasificacion buscarRegistroPorId(Object id) {
-        //Buscar por idTransaccionClasificacion
         if(id == null ) return null;
         try{
-            //entidad de tipo Long
             return transaccionClasificacionDAO.findById(id);
         }catch (Exception e){
             if(this.modelo != null){
@@ -107,11 +103,10 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
 
     @Override
     protected TransaccionClasificacion nuevoRegistro() {
-        TransaccionClasificacion  tc = new TransaccionClasificacion();
-        //tc.setId( ); //creo que no hace falta setearlo de momento por que es auto generado
+        TransaccionClasificacion tc = new TransaccionClasificacion();
         tc.setOrigen("MANUAL");
         tc.setTipoTransaccion("");
-        tc.setCreatedAt(Date.from(new Date().toInstant()));
+        tc.setCreatedAt(new Date());
         return tc;
     }
 
@@ -119,8 +114,6 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
     @Override
     public void inicializar() {
         super.inicializar();
-
-
     }
 
     // Implementacion del manejo de Datos
@@ -129,7 +122,7 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
             transaccionesPendientes = transaccionDAO.findTransaccionesPendientes();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error cargado Transacciones Pendientes", e);
-            mostrarMensajeError("Error al cargar  transacciones: " + e.getMessage());
+            mostrarMensajeError("Error al cargar transacciones: " + e.getMessage());
         }
     }
 
@@ -149,8 +142,7 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
                 .thenAccept(sugerencias -> {
                     cuentasSugeridas = sugerencias;
                     procesadoIA = false;
-
-                    PrimeFaces.current().ajax().update("SUgerenciasPanel");
+                    PrimeFaces.current().ajax().update("sugerenciasPanel");
                 })
                 .exceptionally(throwable -> {
                     logger.log(Level.SEVERE, "Error obteniendo sugerencias de IA", throwable);
@@ -161,14 +153,10 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
                 });
     }
 
-    //Nuveo registro
-
-
     // Acciones de clasificación
     public void clasificarManual() {
         if (transaccionSeleccionado != null && cuentasSeleccionadas != null) {
             try {
-                // Llama al servicio, que asignará la CuentaContable
                 boolean exito = clasificasionesService.clasificarTransaccionManual(
                         transaccionSeleccionado,
                         cuentasSeleccionadas
@@ -177,7 +165,7 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
                 if (exito) {
                     mostrarMensajeExito("Transacción clasificada exitosamente");
                     limpiarSeleccion();
-                    cargarTransaccionesPendientes(); // Recarga la lista
+                    cargarTransaccionesPendientes();
                 } else {
                     mostrarMensajeError("Error al clasificar la transacción");
                 }
@@ -246,7 +234,6 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
     public void buscarTransacciones() {
         try {
             if (filtroDescripcion != null && !filtroDescripcion.trim().isEmpty()) {
-                // Usa el método DAO que busca solo en pendientes
                 transaccionesPendientes = transaccionDAO.finndByDescripcion(filtroDescripcion);
             } else {
                 cargarTransaccionesPendientes();
@@ -262,30 +249,114 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
         cargarTransaccionesPendientes();
     }
 
-    // Métodos de utilidad (se mantienen igual)
+    // Métodos de utilidad
     private void limpiarSeleccion() {
-        trasnsaccionesTotales = 0;
+        transaccionSeleccionado = null;
         cuentasSeleccionadas = null;
         cuentasSugeridas = null;
+        trasnsaccionesTotales = 0;
+    }
+
+    public List<CuentaContable> completarCuenta(String query) {
+        try {
+            return cuentaContableDAO.buscarPorNombreOCodigo(query);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error en autocompletar cuentas", e);
+            return List.of();
+        }
+    }
+
+    public void onCuentaDebeSelect(SelectEvent<CuentaContable> event) {
+        CuentaContable cuenta = event.getObject();
+        if (this.registro != null) {
+            this.registro.setCuentaContableDebe(cuenta);
+            logger.info("Cuenta débito seleccionada: " + cuenta.getNombre());
+        }
+    }
+
+    public void onCuentaHaberSelect(SelectEvent<CuentaContable> event) {
+        CuentaContable cuenta = event.getObject();
+        if (this.registro != null) {
+            this.registro.setCuentaContableHaber(cuenta);
+            logger.info("Cuenta haber seleccionada: " + cuenta.getNombre());
+        }
+    }
+
+    public void prepararNuevaClasificacion(Transaccion transaccion) {
+        this.transaccionSeleccionado = transaccion;
+        this.registro = nuevoRegistro();
+        this.registro.setTransaccion(transaccion);
+        this.estado = ESTADO_CRUD.CREAR;
+    }
+
+    public void cargarClasificacionExistente(Transaccion transaccion) {
+        this.transaccionSeleccionado = transaccion;
+        try {
+            List<TransaccionClasificacion> clasificaciones =
+                    transaccionClasificacionDAO.findByTransaccion(transaccion);
+
+            if (clasificaciones != null && !clasificaciones.isEmpty()) {
+                this.registro = clasificaciones.get(0);
+                this.estado = ESTADO_CRUD.MODIFICAR;
+            } else {
+                prepararNuevaClasificacion(transaccion);
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error cargando clasificación existente", e);
+            prepararNuevaClasificacion(transaccion);
+        }
+    }
+
+    // MÉTODO CANCELAR CORREGIDO
+    public void cancelar() {
+        try {
+            // CORRECCIÓN 1: Usar new TransaccionClasificacion() en lugar de new TransaccionClasificacionDAO()
+            this.registro = new TransaccionClasificacion();
+
+            // CORRECCIÓN 2: Usar el enum ESTADO_CRUD.NADA en lugar del String "NADA"
+            this.estado = ESTADO_CRUD.NADA;
+
+            // Limpiar selecciones
+            this.transaccionSeleccionado = null;
+            this.cuentasSeleccionadas = null;
+
+            // Mensaje de confirmación
+            mostrarMensajeInfo("Operación cancelada - La clasificación ha sido cancelada.");
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error al cancelar operación", e);
+            mostrarMensajeError("No se pudo cancelar la operación: " + e.getMessage());
+        }
+    }
+
+    // Método adicional para limpiar completamente
+    public void limpiarTodo() {
+        this.registro = new TransaccionClasificacion();
+        this.estado = ESTADO_CRUD.NADA;
+        this.transaccionSeleccionado = null;
+        this.cuentasSeleccionadas = null;
+        this.cuentasSugeridas = null;
+        this.filtroDescripcion = null;
+        mostrarMensajeInfo("Formulario limpiado completamente");
     }
 
     private void mostrarMensajeExito(String mensaje) {
-        FacesContext.getCurrentInstance().addMessage(null,
+        facesContext.addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Éxito", mensaje));
     }
 
     private void mostrarMensajeError(String mensaje) {
-        FacesContext.getCurrentInstance().addMessage(null,
+        facesContext.addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error", mensaje));
     }
 
     private void mostrarMensajeAdvertencia(String mensaje) {
-        FacesContext.getCurrentInstance().addMessage(null,
+        facesContext.addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_WARN, "Advertencia", mensaje));
     }
 
     private void mostrarMensajeInfo(String mensaje) {
-        FacesContext.getCurrentInstance().addMessage(null,
+        facesContext.addMessage(null,
                 new FacesMessage(FacesMessage.SEVERITY_INFO, "Información", mensaje));
     }
 
@@ -322,8 +393,6 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
         this.filtroDescripcion = filtroDescripcion;
     }
 
-    // Eliminado el getter/setter para soloPendientes
-
     public boolean isProcesandoIA() {
         return procesadoIA;
     }
@@ -335,5 +404,4 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
     public int getTransaccionesTotales() {
         return trasnsaccionesTotales;
     }
-
 }

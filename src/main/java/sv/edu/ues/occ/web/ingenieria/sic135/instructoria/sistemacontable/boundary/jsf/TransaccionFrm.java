@@ -23,6 +23,7 @@ import java.util.UUID;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Named("transaccionFrm")
 @ViewScoped
@@ -713,6 +714,135 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
         this.registro = event.getObject();
         this.estado = ESTADO_CRUD.MODIFICAR;
     }
+
+    //METODOS PARA VISTA  DE DOS COLUMNAS(DEBITO/HABER)
+    public List<TransaccionClasificacion> getClasificacionesDebe() {
+        try{
+            return transaccionClasificacionDAO.getEntityManager().createQuery(
+                    "SELECT tc FROM TransaccionClasificacion tc " +
+                            "WHERE tc.cuentaContableDebe IS NOT NULL " +
+                            "ORDER BY tc.transaccion.fecha, tc.id",
+                    TransaccionClasificacion.class
+            ).getResultList();
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public List<TransaccionClasificacion> getClasificacionesHaber() {
+        try{
+            return transaccionClasificacionDAO.getEntityManager().createQuery(
+                    "SELECT tc FROM TransaccionClasificacion tc " +
+                    "WHERE tc.cuentaContableHaber IS NOT NULL " +
+                            "ORDER BY tc.transaccion.fecha, tc.id",
+                    TransaccionClasificacion.class
+            ).getResultList();
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    public BigDecimal getTotalDebe(){
+        return getClasificacionesDebe().stream()
+                .map(tc-> tc.getTransaccion().getMonto())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal getTotalHaber(){
+        return getClasificacionesHaber().stream()
+                .map(tc->tc.getTransaccion().getMonto())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal getBalance(){
+        return getTotalDebe().subtract(getTotalHaber());
+    }
+
+    public String getBalanceCOlor() {
+        return getBalance().compareTo(BigDecimal.ZERO) == 0 ?"blue":"red";
+    }
+
+    public String getBalanceMessage(){
+        BigDecimal balance = getBalance();
+        if (balance.compareTo(BigDecimal.ZERO) == 0) {
+            return "CUADRADO - Las sumas de débito y haber son iguales";
+        } else if (balance.compareTo(BigDecimal.ZERO) > 0) {
+            return "DESCUADRADO - El débito es mayor que el haber por: " + balance;
+        } else {
+            return "DESCUADRADO - El haber es mayor que el débito por: " + balance.abs();
+        }
+    }
+
+    //Metodo para obtener partidas contables completas (con debito y haber)
+    public List<TransaccionClasificacion> getPartidasContablesCompletas() {
+        try {
+            return transaccionClasificacionDAO.getEntityManager().createQuery(
+                    "SELECT tc FROM TransaccionClasificacion tc " +
+                            "WHERE tc.cuentaContableDebe IS NOT NULL " +
+                            "AND tc.cuentaContableHaber IS NOT NULL " +
+                            "ORDER BY tc.transaccion.fecha, tc.id",
+                    TransaccionClasificacion.class
+            ).getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+    //Metodo para obtener transacciones clasificadas(para filtros)+
+    public List<Transaccion> getTransaccionesClasificadas() {
+        try {
+            return transaccionDAO.findRange(0, transaccionDAO.count()).stream()
+                    .filter(t -> t.getTransaccionClasificacionCollection() != null &&
+                            !t.getTransaccionClasificacionCollection().isEmpty())
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    //Metodo para obtener transacciones  pendientes de clasificar
+    public List<Transaccion> getTransaccionesPendientes() {
+        try {
+            return transaccionDAO.findTransaccionesPendientes();
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
+
+    //Mertodo para verificar  si una transaccion tiene  partida  contable completa
+    public boolean tienePartidaCompleta(Transaccion transaccion) {
+        if (transaccion == null || transaccion.getTransaccionClasificacionCollection() == null) {
+            return false;
+        }
+
+        return transaccion.getTransaccionClasificacionCollection().stream()
+                .anyMatch(tc -> tc.getCuentaContableDebe() != null && tc.getCuentaContableHaber() != null);
+    }
+
+    //Metodo para obtener el tipode partida contable
+    public String getTipoPartida(TransaccionClasificacion clasificacion) {
+        if (clasificacion == null) return "SIN CLASIFICAR";
+
+        if (clasificacion.getCuentaContableDebe() != null && clasificacion.getCuentaContableHaber() != null) {
+            return "PARTIDA COMPLETA";
+        } else if (clasificacion.getCuentaContableDebe() != null) {
+            return "SOLO DÉBITO";
+        } else if (clasificacion.getCuentaContableHaber() != null) {
+            return "SOLO HABER";
+        } else {
+            return "SIN CUENTAS";
+        }
+    }
+
+
+
+
+
+
+
 
     //getters and setters
     public TransaccionExcelParse getParser() {return parser;}
