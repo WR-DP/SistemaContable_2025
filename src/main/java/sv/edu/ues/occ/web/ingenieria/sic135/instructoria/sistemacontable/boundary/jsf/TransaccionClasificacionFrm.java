@@ -16,6 +16,7 @@ import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.TransaccionClasificacion;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -60,6 +61,9 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
     @Inject
     CategoriaDAO categoriaDAO;
     protected UUID idCategoria;
+
+    protected Categoria categoriaSeleccionada;
+
 
     //muestra lista de categorias
     public List<Categoria> getListaCategorias() {
@@ -379,5 +383,25 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
         this.idCategoria = idCategoria;
     }
 
+    public Categoria getCategoriaSeleccionada() {
+        return categoriaSeleccionada;
+    }
+
+    public void setCategoriaSeleccionada(Categoria categoriaSeleccionada) {
+        this.categoriaSeleccionada = categoriaSeleccionada;
+    }
+
+    public List<Categoria> completarCategoria(String query) {
+        try {
+            if (query == null || query.trim().isEmpty()) {
+                // DefaultDataAcces normalmente provee findAll()
+                return categoriaDAO.findAll();
+            }
+            return categoriaDAO.findByNombreLike(query);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error completando categorias: " + e.getMessage(), e);
+            return Collections.emptyList();
+        }
+    }
 
 }

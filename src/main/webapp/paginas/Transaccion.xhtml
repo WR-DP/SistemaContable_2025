@@ -139,7 +139,26 @@
                                     <f:selectItem itemLabel="VENTA" itemValue="VENTA"/>
                                 </p:selectOneMenu>
 
-                                <h:outputLabel value="Nombre de Categoría:"/>
+                                <p:outputLabel for="acCategoria" value="Categoria :"/>
+                                <h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <p:outputLabel value="Seleccione la categoria: " for="acCategoria"/>
+                                        <p:autoComplete id="acCategoria"
+                                                        value="#{transaccionClasificacionFrm.categoriaSeleccionada}"
+                                                        completeMethod="#{transaccionClasificacionFrm.completarCategoria}"
+                                                        var="categoria"
+                                                        converter="categoriaConversor"
+                                                        itemLabel="#{categoria.nombre}"
+                                                        itemValue="#{categoria}"
+                                                        forceSelection="true"
+                                                        dropdown="true"
+                                                        size="40"
+                                                        placeholder="Ingrese el nombre de la caracteristica"
+                                                        emptyMessage="No se encontraron caracteristica con ese nombre"
+
+                                        />
+                                    </h:panelGrid>
+                                </h:panelGrid>
 
 
                                 <h:panelGrid>
@@ -186,6 +205,14 @@
                                 </h:panelGrid>
                             </h:panelGrid>
 
+                            <p:commandButton id="guardarTodasSelecciones"
+                                             value="Guardar selecciones"
+                                             icon="pi pi-save"
+                                             action="#{transaccionFrm.guardarClasificacionesSeleccionadas}"
+                                             process="@this listaTabla seleccionForm"
+                                             update="@form messages tablaTransacciones"
+                                             onstart="PF('statusDialog').show()"
+                                             oncomplete="PF('statusDialog').hide()" />
                         </h:form>
                     </h:panelGroup>
 

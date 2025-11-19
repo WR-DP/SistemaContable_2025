@@ -807,4 +807,55 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
         }
         return transaccionClasificacionFrm;
     }
+
+    public void guardarClasificacionesSeleccionadas() {
+        List<Transaccion> seleccionadas = getSeleccionadas();
+        if (seleccionadas == null || seleccionadas.isEmpty()) {
+            enviarMensaje("No hay transacciones seleccionadas para guardar.", FacesMessage.SEVERITY_WARN);
+            return;
+        }
+
+        int guardadas = 0;
+        try {
+            for (Transaccion t : seleccionadas) {
+                if (t == null || t.getId() == null) continue;
+
+                TransaccionClasificacion existente = null;
+                try {
+                    existente = transaccionClasificacionDAO.findByTransaccionId(t.getId());
+                } catch (Exception ignored) {}
+
+                if (existente == null) {
+                    TransaccionClasificacion tc = new TransaccionClasificacion();
+                    tc.setTransaccion(t);
+                    tc.setOrigen("MANUAL");
+                    tc.setTipoTransaccion(tipoFacturacion != null ? tipoFacturacion : "");
+                    tc.setCreatedAt(new Date());
+                    transaccionClasificacionDAO.create(tc);
+                } else {
+                    // Actualizar tipo si se tiene uno en el bean (opcional)
+                    if (tipoFacturacion != null && !tipoFacturacion.isBlank()) {
+                        existente.setTipoTransaccion(tipoFacturacion);
+                    }
+                    // no sobrescribimos categoría/cuentas aquí para evitar perder datos
+                    transaccionClasificacionDAO.edit(existente);
+                }
+                guardadas++;
+            }
+
+            // limpiar selección y recargar listado relacionado
+            if (seleccionMap != null) seleccionMap.clear();
+            // recargar lista de transacciones del archivo si aplica
+            try {
+                if (archivoSeleccionado != null && archivoSeleccionado.getIdArchivoCargado() != null) {
+                    listaTransacciones = transaccionDAO.findByArchivoId(archivoSeleccionado.getIdArchivoCargado());
+                    if (modelo != null) modelo.setWrappedData(listaTransacciones);
+                }
+            } catch (Exception ignored) {}
+
+            enviarMensaje("Clasificaciones guardadas: " + guardadas, FacesMessage.SEVERITY_INFO);
+        } catch (Exception e) {
+            enviarMensaje("Error guardando clasificaciones: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
+        }
+    }
 }
