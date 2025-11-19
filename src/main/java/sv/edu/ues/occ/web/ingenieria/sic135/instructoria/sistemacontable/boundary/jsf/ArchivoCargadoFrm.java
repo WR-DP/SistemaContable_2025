@@ -4,6 +4,7 @@ package sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.bounda
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
+import jakarta.faces.event.ActionEvent;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
@@ -241,6 +242,45 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
                     .orElse(null);
         }
         return null;
+    }
+
+    @Inject
+    DeleteManagerContable deleteManagerContable;
+
+    @Override
+    public void btnEliminarHandler(ActionEvent event) {
+
+        if (this.registro == null) {
+            enviarMensaje("No hay archivo seleccionado", FacesMessage.SEVERITY_ERROR);
+            return;
+        }
+
+        UUID id = this.registro.getIdArchivoCargado();
+
+        int totalTrans = deleteManagerContable.contarTransaccionesDeArchivo(id);
+        int totalClasif = deleteManagerContable.contarClasificacionesDeArchivo(id);
+
+        if (totalTrans > 0) {
+            enviarMensaje(
+                    "Este archivo tiene " + totalTrans + " transacciones y " +
+                            totalClasif + " clasificaciones asociadas.",
+                    FacesMessage.SEVERITY_WARN
+            );
+        }
+
+        try {
+
+            deleteManagerContable.eliminarArchivoEnCascada(id);
+
+            enviarMensaje("Archivo eliminado correctamente.", FacesMessage.SEVERITY_INFO);
+
+            inicializarRegistros();
+            this.estado = ESTADO_CRUD.NADA;
+            this.registro = null;
+
+        } catch (Exception ex) {
+            enviarMensaje("Error al eliminar: " + ex.getMessage(), FacesMessage.SEVERITY_ERROR);
+        }
     }
 
 }

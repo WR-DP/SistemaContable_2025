@@ -41,7 +41,7 @@ public abstract class DefaultFrm<T> implements Serializable {
     private void inicializarListas() {
     }
 
-    private void inicializarRegistros() {
+    protected void inicializarRegistros() {
         this.modelo = new LazyDataModel<T>() {
 
             @Override
