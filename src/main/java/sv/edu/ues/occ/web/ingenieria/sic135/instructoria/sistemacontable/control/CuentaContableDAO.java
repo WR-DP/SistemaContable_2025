@@ -49,4 +49,9 @@ public class CuentaContableDAO extends DefaultDataAcces<CuentaContable, Object> 
         return em.createQuery("SELECT c FROM CuentaContable c WHERE c.cuentaPadre IS NULL AND c.activa = TRUE ORDER BY c.codigo", CuentaContable.class)
                 .getResultList();
     }
+
+    //findByID
+    public CuentaContable findByID(Long id) {
+        return em.find(CuentaContable.class, id);
+    }
 }

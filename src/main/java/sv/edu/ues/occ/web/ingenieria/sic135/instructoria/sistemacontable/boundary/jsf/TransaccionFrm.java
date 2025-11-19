@@ -39,6 +39,9 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
     @Inject
     private TransaccionClasificacionDAO transaccionClasificacionDAO;
 
+    @Inject
+    protected TransaccionClasificacionFrm transaccionClasificacionFrm;
+
     private List<Transaccion> listaTransacciones;
     // referencia al archivo cargado para enlazar con las transacciones
     private ArchivoCargado archivoSeleccionado;
@@ -747,4 +750,15 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
     public Integer getTrimestreFiltro() { return trimestreFiltro; }
     public void setTrimestreFiltro(Integer trimestreFiltro) { this.trimestreFiltro = trimestreFiltro; }
 
+
+    //getter del transaccionClasificacionfrm
+    public TransaccionClasificacionFrm getTransaccionClasificacionFrm() {
+        if(this.registro != null && this.registro.getId() != null){
+            transaccionClasificacionFrm.setIdCategoria(registro.getId());
+
+//            transaccionClasificacionFrm.setIdCuentaContableDebe(registro.getId());
+//            transaccionClasificacionFrm.setIdCuentaContableHaber(registro.getId());
+        }
+        return transaccionClasificacionFrm;
+    }
 }

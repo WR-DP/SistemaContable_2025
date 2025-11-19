@@ -8,10 +8,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
-import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.CuentaContableDAO;
-import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.DAOInterface;
-import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.TransaccionClasificacionDAO;
-import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.TransaccionDAO;
+import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.control.*;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.CuentaContable;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.Transaccion;
 import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.TransaccionClasificacion;
@@ -19,6 +16,7 @@ import sv.edu.ues.occ.web.ingenieria.sic135.instructoria.sistemacontable.entity.
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,14 +40,24 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
     @Inject
     private FacesContext facesContext;
     @Inject
-    private TransaccionClasificacionDAO transaccionClasificacionDAO;
+    TransaccionClasificacionDAO transaccionClasificacionDAO;
     @Inject
-    private TransaccionDAO transaccionDAO;
-    @Inject
-    private CuentaContableDAO cuentaContableDAO;
+    TransaccionDAO transaccionDAO;
+
     @Inject
     private ClasificacionService clasificasionesService;
     private Transaccion transaccionSeleccionada;
+
+    //cuenta contable para poder recomendar la cuenta
+    @Inject
+    CuentaContableDAO cuentaContableDAO;
+    protected UUID idCuentaContableDebe;
+    protected UUID idCuentaContableHaber;
+
+    //par apoder recomendar la categoria
+    @Inject
+    CategoriaDAO categoriaDAO;
+    protected UUID idCategoria;
 
 
     @Override
@@ -119,6 +127,7 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
     @Override
     public void inicializar() {
         super.inicializar();
+//intanciacion necesaria
 
 
     }
@@ -335,5 +344,34 @@ public class TransaccionClasificacionFrm extends DefaultFrm<TransaccionClasifica
     public int getTransaccionesTotales() {
         return trasnsaccionesTotales;
     }
+
+
+    //getter y setter para recomendaciones
+
+
+    public UUID getIdCuentaContableDebe() {
+        return idCuentaContableDebe;
+    }
+
+    public void setIdCuentaContableDebe(UUID idCuentaContableDebe) {
+        this.idCuentaContableDebe = idCuentaContableDebe;
+    }
+
+    public UUID getIdCuentaContableHaber() {
+        return idCuentaContableHaber;
+    }
+
+    public void setIdCuentaContableHaber(UUID idCuentaContableHaber) {
+        this.idCuentaContableHaber = idCuentaContableHaber;
+    }
+
+    public UUID getIdCategoria() {
+        return idCategoria;
+    }
+
+    public void setIdCategoria(UUID idCategoria) {
+        this.idCategoria = idCategoria;
+    }
+
 
 }

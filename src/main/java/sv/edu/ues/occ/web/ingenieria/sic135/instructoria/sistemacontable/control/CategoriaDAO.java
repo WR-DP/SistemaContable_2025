@@ -30,6 +30,11 @@ public class CategoriaDAO extends DefaultDataAcces<Categoria, Object> implements
         return Categoria.class;
     }
 
+    //findByID
+    public Categoria findByID(Long id) {
+        return em.find(Categoria.class, id);
+    }
+
 
 
 }
