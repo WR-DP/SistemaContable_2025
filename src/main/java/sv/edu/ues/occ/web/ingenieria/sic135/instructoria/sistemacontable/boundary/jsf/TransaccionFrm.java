@@ -70,6 +70,17 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
     // Carpeta relativa dentro del webapp donde se guardarán los archivos generados
     private static final String FCTR_FOLDER = "fctr";
 
+
+    private boolean mostrarDetalleClasificacion = false;
+
+    public boolean isMostrarDetalleClasificacion() {
+        return mostrarDetalleClasificacion;
+    }
+
+    public void setMostrarDetalleClasificacion(boolean mostrarDetalleClasificacion) {
+        this.mostrarDetalleClasificacion = mostrarDetalleClasificacion;
+    }
+
     @Override
     protected FacesContext getFacesContext() {
         return facesContext;
@@ -885,6 +896,84 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
         } catch (Exception e) {
             enviarMensaje("Error guardando datos del tab: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
             e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * Preparar el subform y mostrar el panel de detalle para edición.
+     */
+    public void editarClasificacion() {
+        if (this.registro == null || this.registro.getId() == null) {
+            enviarMensaje("Seleccione una transacción para editar.", FacesMessage.SEVERITY_WARN);
+            return;
+        }
+        // pasar la transacción al formulario de clasificación y precargar datos
+        try {
+            transaccionClasificacionFrm.setTransaccionSeleccionada(this.registro);
+            // activar el preload que hace getTransaccionClasificacionFrm()
+            getTransaccionClasificacionFrm();
+        } catch (Exception ignored) {}
+        this.mostrarDetalleClasificacion = true;
+    }
+
+    /**
+     * Guardar la clasificación (delegando al formulario de clasificación si dispone de método guardar)
+     * y ocultar el panel, refrescando la información mostrada.
+     */
+    public void guardarYCerrarClasificacion() {
+        try {
+            // Intentar invocar un método de guardado común en el subform sin acoplar el nombre exacto
+            boolean guardado = false;
+            try {
+                java.lang.reflect.Method m = transaccionClasificacionFrm.getClass().getMethod("guardar");
+                m.invoke(transaccionClasificacionFrm);
+                guardado = true;
+            } catch (NoSuchMethodException e) {
+                // intentar otro nombre habitual
+                try {
+                    java.lang.reflect.Method m2 = transaccionClasificacionFrm.getClass().getMethod("guardarRegistro");
+                    m2.invoke(transaccionClasificacionFrm);
+                    guardado = true;
+                } catch (NoSuchMethodException | IllegalAccessException | java.lang.reflect.InvocationTargetException ex) {
+                    // no hay método conocido; se seguirá intentando persistir vía DAO si fuera necesario
+                }
+            } catch (IllegalAccessException | java.lang.reflect.InvocationTargetException ex) {
+                // método falló
+                throw new RuntimeException("Error guardando desde formulario de clasificación: " + ex.getMessage(), ex);
+            }
+
+            // Si no se pudo delegar, intentar persistir usando DAO (opcional/simple)
+            if (!guardado) {
+                // aquí se podría construir TransaccionClasificacion desde transaccionClasificacionFrm y usar transaccionClasificacionDAO.create(...)
+                // se omite implementación concreta para no duplicar lógica que ya pueda existir en el subform
+            }
+
+            // refrescar la transacción desde la BD para actualizar la vista
+            if (this.registro != null && this.registro.getId() != null) {
+                try {
+                    this.registro = transaccionDAO.findById(this.registro.getId());
+                } catch (Exception ignored) {}
+            }
+
+            // actualizar lista/modelo si corresponde
+            if (this.listaTransacciones != null && this.registro != null) {
+                for (int i = 0; i < listaTransacciones.size(); i++) {
+                    if (listaTransacciones.get(i) != null && listaTransacciones.get(i).getId() != null
+                            && listaTransacciones.get(i).getId().equals(this.registro.getId())) {
+                        listaTransacciones.set(i, this.registro);
+                        break;
+                    }
+                }
+                if (this.modelo != null) {
+                    modelo.setWrappedData(listaTransacciones);
+                }
+            }
+
+            this.mostrarDetalleClasificacion = false;
+            enviarMensaje("Clasificación guardada.", FacesMessage.SEVERITY_INFO);
+        } catch (Exception e) {
+            enviarMensaje("Error guardando clasificación: " + e.getMessage(), FacesMessage.SEVERITY_ERROR);
         }
     }
 

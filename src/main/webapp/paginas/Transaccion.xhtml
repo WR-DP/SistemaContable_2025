@@ -67,201 +67,267 @@
     <!-- detalla -->
     <ui:define name="contenido-detalle">
 
-        <p:tabView id="tabTransaccion"
-                   cache="false"
-                   dynamic="true"
-                   rendered="#{transaccionFrm.estado != 'NADA'}">
-            <p:tab closable="false" title="Detalle de transacción">
+        <h:form id="frmDetalleTransaccion">
+            <p:tabView id="tabTransaccion"
+                       cache="false"
+                       dynamic="true"
+                       rendered="#{transaccionFrm.estado != 'NADA'}">
+                <p:tab closable="false" title="Detalle de transacción">
 
-                <h:panelGroup id="pnlTransaccionWrapper">
-                    <h:form id="frmTransaccionCrear">
+                    <h:panelGroup id="pnlTransaccionWrapper">
+                        <h:form id="frmTransaccionCrear">
 
-                        <h:panelGrid columns="2">
+                            <h:panelGrid columns="2">
 
-                            <p:outputLabel for="txtIdTrans" value="ID:"/>
-                            <p:inputText id="txtIdTrans"
-                                         value="#{transaccionFrm.registro.id}"
-                                         readonly="true"
-                                         disabled="true"/>
+                                <p:outputLabel for="txtIdTrans" value="ID:"/>
+                                <p:inputText id="txtIdTrans"
+                                             value="#{transaccionFrm.registro.id}"
+                                             readonly="true"
+                                             disabled="true"/>
 
-                            <p:outputLabel for="dpFechaTrans" value="Fecha:"/>
-                            <p:datePicker id="dpFechaTrans"
-                                          value="#{transaccionFrm.registro.fecha}"
-                                          pattern="yyyy-MM-dd"
-                                          required="true"
-                                          showIcon="true"
-                                          touchUI="false"/>
+                                <p:outputLabel for="dpFechaTrans" value="Fecha:"/>
+                                <p:datePicker id="dpFechaTrans"
+                                              value="#{transaccionFrm.registro.fecha}"
+                                              pattern="yyyy-MM-dd"
+                                              required="true"
+                                              showIcon="true"
+                                              touchUI="false"/>
 
-                            <p:outputLabel for="txtDescripcion" value="Descripción:"/>
-                            <p:inputTextarea id="txtDescripcion"
-                                             value="#{transaccionFrm.registro.descripcion}"
-                                             rows="3" cols="30"
-                                             required="true"
-                                             requiredMessage="La descripción es obligatoria."/>
+                                <p:outputLabel for="txtDescripcion" value="Descripción:"/>
+                                <p:inputTextarea id="txtDescripcion"
+                                                 value="#{transaccionFrm.registro.descripcion}"
+                                                 rows="3" cols="30"
+                                                 required="true"
+                                                 requiredMessage="La descripción es obligatoria."/>
 
-                            <p:outputLabel for="txtMonto" value="Monto:"/>
-                            <p:inputNumber id="txtMonto"
-                                           value="#{transaccionFrm.registro.monto}"
-                                           symbol="$"
-                                           required="true"/>
+                                <p:outputLabel for="txtMonto" value="Monto:"/>
+                                <p:inputNumber id="txtMonto"
+                                               value="#{transaccionFrm.registro.monto}"
+                                               symbol="$"
+                                               required="true"/>
 
-                            <p:outputLabel for="cmbMoneda" value="Moneda:"/>
-                            <p:selectOneMenu id="cmbMoneda"
-                                             value="#{transaccionFrm.registro.moneda}">
-                                <f:selectItem itemLabel="USD" itemValue="USD"/>
-                            </p:selectOneMenu>
-
-                        </h:panelGrid>
-
-                        <ues:botones-crud
-                                formulario="#{transaccionFrm}"
-                                actualizar=":pnlTabla :tabTransaccion"/>
-
-                    </h:form>
-                </h:panelGroup>
-
-            </p:tab>
-
-            <!-- clasificacion -->
-            <p:tab title="Clasificación Contable"
-                   disabled="#{transaccionFrm.estado != 'MODIFICAR'}">
-                <h:panelGrid>
-
-                    <h:panelGroup id="pnlClasificacion">
-                        <p:growl id="growlClasificacion" showDetail="true"/>
-                        <p:growl id="growl-stickyTablaClasificacion" for="sticky-key" showDetail="true"/>
-
-                        <h:form id="frmClasificacion">
-                            <h:panelGrid>
-                                <h:panelGrid columns="2">
-                                    <h:outputLabel for="txtTransaccion" value="Tipo de Transacción:"/>
-                                    <p:selectOneMenu id="txtTransaccion"
-                                                     value="#{transaccionClasificacionFrm.registro.tipoTransaccion}"
-                                                     rendered="#{transaccionFrm.estado == 'MODIFICAR'}">
-
-                                        <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
-                                        <f:selectItem itemLabel="COMPRA" itemValue="COMPRA"/>
-                                        <f:selectItem itemLabel="VENTA" itemValue="VENTA"/>
-                                    </p:selectOneMenu>
-
-                                    <p:outputLabel for="acCategoria" value="Categoria :"/>
-                                    <h:panelGrid>
-                                        <h:panelGrid columns="2">
-                                            <p:outputLabel value="Seleccione la categoria: " for="acCategoria"/>
-                                            <p:autoComplete id="acCategoria"
-                                                            value="#{transaccionClasificacionFrm.categoriaSeleccionada}"
-                                                            completeMethod="#{transaccionClasificacionFrm.completarCategoria}"
-                                                            var="categoria"
-                                                            converter="categoriaConversor"
-                                                            itemLabel="#{categoria.nombre}"
-                                                            itemValue="#{categoria}"
-                                                            forceSelection="true"
-                                                            required="true"
-                                                            dropdown="true"
-                                                            size="40"
-                                                            placeholder="Ingrese el nombre de la caracteristica"
-                                                            emptyMessage="No se encontraron caracteristica con ese nombre"
-                                            />
-                                        </h:panelGrid>
-                                    </h:panelGrid>
-
-
-                                    <h:panelGrid>
-                                        <h:outputLabel for="txtCategoria" value="Descripción de Categoría:"/>
-                                        <h:outputText id="txtCategoria"
-                                                      value="#{transaccionClasificacionFrm.registro.categoria.descripcion}"
-                                                      rendered="#{not empty transaccionClasificacionFrm.registro and not empty transaccionClasificacionFrm.registro.categoria}"/>
-                                        <h:outputText value="(no seleccionada)"
-                                                      rendered="#{empty transaccionClasificacionFrm.registro or empty transaccionClasificacionFrm.registro.categoria}"/>
-                                    </h:panelGrid>
-
-                                </h:panelGrid>
-
-
-                                <p:outputLabel for="chkDireccionAsientosContables" value="Direccion de la cuenta:"/>
-                                <h:panelGrid>
-                                    <p:selectOneRadio id="chkDireccionAsientosContables"
-                                                      value="#{transaccionClasificacionFrm.cuentaEsDebe}">
-                                        <f:selectItem itemLabel="Debe" itemValue="#{true}"/>
-                                        <f:selectItem itemLabel="Haber" itemValue="#{false}"/>
-                                        <p:ajax event="change" process="@this"
-                                                update="cuentaPanel infoCuentaDebe infoCuentaHaber"/>
-                                    </p:selectOneRadio>
-                                </h:panelGrid>
-
-                                <h:panelGroup id="cuentaPanel">
-                                    <p:outputLabel for="autoCompleteDebe" value="Buscar Cuenta Débito:"
-                                                   rendered="#{transaccionClasificacionFrm.cuentaEsDebe}"/>
-                                    <p:autoComplete id="autoCompleteDebe"
-                                                    value="#{transaccionClasificacionFrm.registro.cuentaContableDebe}"
-                                                    completeMethod="#{transaccionClasificacionFrm.completarCuenta}"
-                                                    var="cuentaD"
-                                                    converter="cuentaConversor"
-                                                    itemLabel="#{cuentaD.nombre}"
-                                                    itemValue="#{cuentaD}"
-                                                    forceSelection="true"
-                                                    dropdown="true"
-                                                    required="true"
-                                                    size="40"
-                                                    placeholder="Ingrese el nombre de la cuenta"
-                                                    emptyMessage="No se encontraron cuentas con ese nombre"
-                                                    rendered="#{transaccionClasificacionFrm.cuentaEsDebe}"/>
-
-                                    <!-- Información de la Cuenta Débito Seleccionada -->
-                                    <h:panelGroup id="infoCuentaDebe">
-                                        <p:outputPanel
-                                                rendered="#{transaccionClasificacionFrm.cuentaEsDebe and transaccionClasificacionFrm.registro.cuentaContableDebe != null}">
-                                            <!-- contenido info debe -->
-                                        </p:outputPanel>
-                                    </h:panelGroup>
-
-                                    <!-- COLUMNA HABER -->
-                                    <p:outputLabel for="autoCompleteHaber" value="Buscar Cuenta Haber:"
-                                                   rendered="#{not transaccionClasificacionFrm.cuentaEsDebe}"/>
-                                    <p:autoComplete id="autoCompleteHaber"
-                                                    value="#{transaccionClasificacionFrm.registro.cuentaContableHaber}"
-                                                    completeMethod="#{transaccionClasificacionFrm.completarCuenta}"
-                                                    var="cuenta"
-                                                    converter="cuentaConversor"
-                                                    itemLabel="#{cuenta.nombre}"
-                                                    itemValue="#{cuenta}"
-                                                    forceSelection="true"
-                                                    dropdown="true"
-                                                    required="true"
-                                                    size="40"
-                                                    placeholder="Ingrese el nombre de la cuenta"
-                                                    emptyMessage="No se encontraron cuentas con ese nombre"
-                                                    rendered="#{not transaccionClasificacionFrm.cuentaEsDebe}"/>
-
-                                    <!-- Información de la Cuenta Haber Seleccionada -->
-                                    <h:panelGroup id="infoCuentaHaber">
-                                        <p:outputPanel
-                                                rendered="#{not transaccionClasificacionFrm.cuentaEsDebe and transaccionClasificacionFrm.registro.cuentaContableHaber != null}">
-                                            <!-- contenido info haber -->
-                                        </p:outputPanel>
-                                    </h:panelGroup>
-                                </h:panelGroup>
-
-                                <h:panelGrid>
-                                    <p:commandButton id="btnGuardarTodo"
-                                                     value="Guardar todo"
-                                                     icon="pi pi-save"
-                                                     action="#{transaccionFrm.guardarTodoDelTab}"
-                                                     update=":tabTransaccion:pnlClasificacion "
-                                                     process="@form"
-                                                     ajax="true"
-                                    />
-                                </h:panelGrid>
+                                <p:outputLabel for="cmbMoneda" value="Moneda:"/>
+                                <p:selectOneMenu id="cmbMoneda"
+                                                 value="#{transaccionFrm.registro.moneda}">
+                                    <f:selectItem itemLabel="USD" itemValue="USD"/>
+                                </p:selectOneMenu>
 
                             </h:panelGrid>
 
+                            <ues:botones-crud
+                                    formulario="#{transaccionFrm}"
+                                    actualizar=":pnlTabla :tabTransaccion"/>
+
                         </h:form>
                     </h:panelGroup>
-                </h:panelGrid>
 
-            </p:tab>
+                </p:tab>
 
-        </p:tabView>
+                <!-- clasificacion -->
+                <p:tab title="Clasificación Contable"
+                       disabled="#{transaccionFrm.estado != 'MODIFICAR'}">
+                    <h:panelGrid>
+
+                        <h:panelGroup id="pnlTabClasificacion"
+                                      rendered="#{not transaccionFrm.mostrarDetalleClasificacion}">
+                            <p:growl id="growlClasificacion" showDetail="true"/>
+                            <h:panelGrid columns="2" cellpadding="4">
+                                <!-- Tipo de transacción -->
+                                <h:outputLabel value="Tipo de Transacción:"/>
+                                <h:outputText value="#{transaccionClasificacionFrm.registro.tipoTransaccion}"
+                                              rendered="#{not empty transaccionClasificacionFrm.registro and not empty transaccionClasificacionFrm.registro.tipoTransaccion}"/>
+                                <h:outputText value="(no asignado)"
+                                              rendered="#{empty transaccionClasificacionFrm.registro or empty transaccionClasificacionFrm.registro.tipoTransaccion}"/>
+
+                                <!-- Categoria nombre -->
+                                <h:outputLabel value="Categoría:"/>
+                                <h:outputText value="#{transaccionClasificacionFrm.registro.categoria.nombre}"
+                                              rendered="#{not empty transaccionClasificacionFrm.registro and not empty transaccionClasificacionFrm.registro.categoria}"/>
+                                <h:outputText value="(no seleccionada)"
+                                              rendered="#{empty transaccionClasificacionFrm.registro or empty transaccionClasificacionFrm.registro.categoria}"/>
+
+                                <!-- Descripción de la categoría -->
+                                <h:outputLabel value="Descripción de Categoría:"/>
+                                <h:outputText value="#{transaccionClasificacionFrm.registro.categoria.descripcion}"
+                                              rendered="#{not empty transaccionClasificacionFrm.registro and not empty transaccionClasificacionFrm.registro.categoria}"/>
+                                <h:outputText value="-"
+                                              rendered="#{empty transaccionClasificacionFrm.registro or empty transaccionClasificacionFrm.registro.categoria}"/>
+
+                                <!-- Dirección Debe/Haber -->
+                                <h:outputLabel value="Dirección de la cuenta:"/>
+                                <h:outputText value="#{transaccionClasificacionFrm.cuentaEsDebe ? 'Debe' : 'Haber'}"
+                                              rendered="#{not empty transaccionClasificacionFrm.registro}"/>
+
+                                <!-- Detalle cuenta contable (si existe) -->
+                                <h:outputLabel value="Cuenta contable:"/>
+                                <h:panelGrid columns="1" rendered="#{not empty transaccionClasificacionFrm.registro}">
+                                    <h:panelGrid columns="2"
+                                                 rendered="#{transaccionClasificacionFrm.cuentaEsDebe and not empty transaccionClasificacionFrm.registro.cuentaContableDebe}">
+                                        <h:outputLabel value="Nombre:"/>
+                                        <h:outputText
+                                                value="#{transaccionClasificacionFrm.registro.cuentaContableDebe.nombre}"/>
+                                        <h:outputLabel value="Código:"/>
+                                        <h:outputText
+                                                value="#{transaccionClasificacionFrm.registro.cuentaContableDebe.codigo}"/>
+                                        <h:outputLabel value="Descripción:"/>
+                                        <h:outputText
+                                                value="#{transaccionClasificacionFrm.registro.cuentaContableDebe.descripcion}"/>
+                                    </h:panelGrid>
+
+                                    <h:panelGrid columns="2"
+                                                 rendered="#{not transaccionClasificacionFrm.cuentaEsDebe and not empty transaccionClasificacionFrm.registro.cuentaContableHaber}">
+                                        <h:outputLabel value="Nombre:"/>
+                                        <h:outputText
+                                                value="#{transaccionClasificacionFrm.registro.cuentaContableHaber.nombre}"/>
+                                        <h:outputLabel value="Código:"/>
+                                        <h:outputText
+                                                value="#{transaccionClasificacionFrm.registro.cuentaContableHaber.codigo}"/>
+                                        <h:outputLabel value="Descripción:"/>
+                                        <h:outputText
+                                                value="#{transaccionClasificacionFrm.registro.cuentaContableHaber.descripcion}"/>
+                                    </h:panelGrid>
+
+                                    <!-- Si no hay cuenta asignada -->
+                                    <h:outputText value="(no hay cuenta contable asignada)"
+                                                  rendered="#{(transaccionClasificacionFrm.cuentaEsDebe and empty transaccionClasificacionFrm.registro.cuentaContableDebe)
+                                     or (not transaccionClasificacionFrm.cuentaEsDebe and empty transaccionClasificacionFrm.registro.cuentaContableHaber)}"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+
+                            <p:commandButton  value="Editar clasificación"
+                                              action="#{transaccionFrm.editarClasificacion}"
+                                              update="pnlClasificacion pnlDetalleClasificacion"
+                                              process="@this" />
+
+                        </h:panelGroup>
+
+
+                        <h:panelGroup id="pnlDetalleClasificacion"
+                                      rendered="#{transaccionFrm.mostrarDetalleClasificacion}">
+                            <h:form id="frmClasificacion">
+                                <h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:outputLabel for="txtTransaccion" value="Tipo de Transacción:"/>
+                                        <p:selectOneMenu id="txtTransaccion"
+                                                         value="#{transaccionClasificacionFrm.registro.tipoTransaccion}"
+                                                         rendered="#{transaccionFrm.estado == 'MODIFICAR'}">
+
+                                            <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                            <f:selectItem itemLabel="COMPRA" itemValue="COMPRA"/>
+                                            <f:selectItem itemLabel="VENTA" itemValue="VENTA"/>
+                                        </p:selectOneMenu>
+
+                                        <p:outputLabel for="acCategoria" value="Categoria :"/>
+                                        <h:panelGrid>
+                                            <h:panelGrid columns="2">
+                                                <p:outputLabel value="Seleccione la categoria: " for="acCategoria"/>
+                                                <p:autoComplete id="acCategoria"
+                                                                value="#{transaccionClasificacionFrm.categoriaSeleccionada}"
+                                                                completeMethod="#{transaccionClasificacionFrm.completarCategoria}"
+                                                                var="categoria"
+                                                                converter="categoriaConversor"
+                                                                itemLabel="#{categoria.nombre}"
+                                                                itemValue="#{categoria}"
+                                                                forceSelection="true"
+                                                                required="true"
+                                                                dropdown="true"
+                                                                size="40"
+                                                                placeholder="Ingrese el nombre de la caracteristica"
+                                                                emptyMessage="No se encontraron caracteristica con ese nombre"/>
+                                            </h:panelGrid>
+                                        </h:panelGrid>
+
+                                        <h:panelGrid>
+                                            <h:outputLabel for="txtCategoria" value="Descripción de Categoría:"/>
+                                            <h:outputText id="txtCategoria"
+                                                          value="#{transaccionClasificacionFrm.registro.categoria.descripcion}"
+                                                          rendered="#{not empty transaccionClasificacionFrm.registro and not empty transaccionClasificacionFrm.registro.categoria}"/>
+                                            <h:outputText value="(no seleccionada)"
+                                                          rendered="#{empty transaccionClasificacionFrm.registro or empty transaccionClasificacionFrm.registro.categoria}"/>
+                                        </h:panelGrid>
+                                    </h:panelGrid>
+
+                                    <p:outputLabel for="chkDireccionAsientosContables" value="Direccion de la cuenta:"/>
+                                    <h:panelGrid>
+                                        <p:selectOneRadio id="chkDireccionAsientosContables"
+                                                          value="#{transaccionClasificacionFrm.cuentaEsDebe}">
+                                            <f:selectItem itemLabel="Debe" itemValue="#{true}"/>
+                                            <f:selectItem itemLabel="Haber" itemValue="#{false}"/>
+                                            <p:ajax event="change" process="@this"
+                                                    update="cuentaPanel infoCuentaDebe infoCuentaHaber :tabTransaccion:pnlClasificacion"/>
+                                        </p:selectOneRadio>
+                                    </h:panelGrid>
+
+                                    <h:panelGroup id="cuentaPanel">
+                                        <p:outputLabel for="autoCompleteDebe" value="Buscar Cuenta Débito:"
+                                                       rendered="#{transaccionClasificacionFrm.cuentaEsDebe}"/>
+                                        <p:autoComplete id="autoCompleteDebe"
+                                                        value="#{transaccionClasificacionFrm.registro.cuentaContableDebe}"
+                                                        completeMethod="#{transaccionClasificacionFrm.completarCuenta}"
+                                                        var="cuentaD"
+                                                        converter="cuentaConversor"
+                                                        itemLabel="#{cuentaD.nombre}"
+                                                        itemValue="#{cuentaD}"
+                                                        forceSelection="true"
+                                                        dropdown="true"
+                                                        required="true"
+                                                        size="40"
+                                                        placeholder="Ingrese el nombre de la cuenta"
+                                                        emptyMessage="No se encontraron cuentas con ese nombre"
+                                                        rendered="#{transaccionClasificacionFrm.cuentaEsDebe}"/>
+
+                                        <h:panelGroup id="infoCuentaDebe">
+                                            <p:outputPanel
+                                                    rendered="#{transaccionClasificacionFrm.cuentaEsDebe and transaccionClasificacionFrm.registro.cuentaContableDebe != null}">
+                                                <!-- Puedes mostrar información adicional editable o solo visual aquí -->
+                                            </p:outputPanel>
+                                        </h:panelGroup>
+
+                                        <p:outputLabel for="autoCompleteHaber" value="Buscar Cuenta Haber:"
+                                                       rendered="#{not transaccionClasificacionFrm.cuentaEsDebe}"/>
+                                        <p:autoComplete id="autoCompleteHaber"
+                                                        value="#{transaccionClasificacionFrm.registro.cuentaContableHaber}"
+                                                        completeMethod="#{transaccionClasificacionFrm.completarCuenta}"
+                                                        var="cuenta"
+                                                        converter="cuentaConversor"
+                                                        itemLabel="#{cuenta.nombre}"
+                                                        itemValue="#{cuenta}"
+                                                        forceSelection="true"
+                                                        dropdown="true"
+                                                        required="true"
+                                                        size="40"
+                                                        placeholder="Ingrese el nombre de la cuenta"
+                                                        emptyMessage="No se encontraron cuentas con ese nombre"
+                                                        rendered="#{not transaccionClasificacionFrm.cuentaEsDebe}"/>
+
+                                        <h:panelGroup id="infoCuentaHaber">
+                                            <p:outputPanel
+                                                    rendered="#{not transaccionClasificacionFrm.cuentaEsDebe and transaccionClasificacionFrm.registro.cuentaContableHaber != null}">
+                                            </p:outputPanel>
+                                        </h:panelGroup>
+                                    </h:panelGroup>
+
+                                    <h:panelGrid>
+                                        <p:commandButton value="Guardar"
+                                                         action="#{transaccionFrm.guardarYCerrarClasificacion}"
+                                                         update="pnlClasificacion pnlDetalleClasificacion "
+                                                         process="@form"/>
+
+                                        <p:commandButton value="Cancelar"
+                                                         action="#{transaccionFrm.setMostrarDetalleClasificacion(false)}"
+                                                         immediate="true"
+                                                         update="pnlClasificacion pnlDetalleClasificacion "/>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+                            </h:form>
+                        </h:panelGroup>
+
+                    </h:panelGrid>
+
+                </p:tab>
+
+            </p:tabView>
+        </h:form>
 
     </ui:define>
 
