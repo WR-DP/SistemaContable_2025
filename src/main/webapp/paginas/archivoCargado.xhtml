@@ -24,6 +24,7 @@
                     Carga de Archivos Contables
                 </div>
 
+                <!-- Se modifico para que solo con seleccionar ver detalle se pueda modificar el registro -->
                 <div class="table-container">
                     <p:dataTable id="tablaArchivos"
                                  value="#{archivoCargadoFrm.modelo}"
@@ -31,8 +32,7 @@
                                  paginator="true"
                                  rows="8"
                                  rendered="#{archivoCargadoFrm.estado == 'NADA'}"
-                                 selectionMode="single"
-                                 selection="#{archivoCargadoFrm.registro}"
+
                                  rowKey="#{a.id}"
                                  paginatorPosition="bottom"
                                  emptyMessage="No se encontraron archivos cargados.">
@@ -74,7 +74,14 @@
                         <p:column headerText="Usuario" style="width: 150px;">
                             <h:outputText value="#{a.usuarioCarga}"/>
                         </p:column>
-                        
+
+                        <p:column headerText="Detalle">
+                            <p:commandLink value="Ver Detalle"
+                                           actionListener="#{archivoCargadoFrm.abrirDetalleDesdeTabla(a)}"
+                                           update=":pnlDetalle :pnlTabla"
+                                           styleClass="btn-detalle"/>
+                        </p:column>
+
                         <!-- redirige a transaccion del archivo cargado -->
                         <p:column headerText="Transacciones">
                             <h:link outcome="/paginas/Transaccion.xhtml?faces-redirect=true">
@@ -214,17 +221,8 @@
                         </div>
                     </div>
 
-                    <!-- Botones -->
-                    <div class="form-actions-clean">
-                        <p:commandButton value="Subir Archivo y Guardar Datos"
-                                         icon="pi pi-upload"
-                                         actionListener="#{archivoCargadoFrm.subirArchivo}"
-                                         update=":pnlTabla :frmArchivoCargado"
-                                         ajax="false"
-                                         styleClass="btn-submit"
-                                         rendered="#{archivoCargadoFrm.estado == 'CREAR'}"/>
+                    <ues:botones-crud formulario="#{archivoCargadoFrm}" actualizar=":pnlDetalle :pnlTabla"/>
 
-                    </div>
                 </div>
             </div>
         </h:form>

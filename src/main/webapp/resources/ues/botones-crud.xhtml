@@ -47,13 +47,6 @@
                                  styleClass="btn-crud btn-crud-delete"
                                  onclick="return confirm('¿Está seguro que desea eliminar este registro?');"/>
 
-                <!-- Botón Cancelar (siempre visible) -->
-                <p:commandButton value="Cancelar"
-                                 icon="pi pi-times"
-                                 actionListener="#{cc.attrs.formulario.btnCancelarHandler}"
-                                 update="#{cc.attrs.actualizar}"
-                                 styleClass="btn-crud btn-crud-cancel"
-                                 immediate="true"/>
             </div>
         </cc:implementation>
     </ui:composition>

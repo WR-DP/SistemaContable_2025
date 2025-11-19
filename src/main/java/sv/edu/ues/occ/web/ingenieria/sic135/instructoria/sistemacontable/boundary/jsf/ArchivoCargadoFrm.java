@@ -283,4 +283,10 @@ public class ArchivoCargadoFrm extends DefaultFrm<ArchivoCargado> implements Ser
         }
     }
 
+    public void abrirDetalleDesdeTabla(ArchivoCargado seleccionado) {
+        this.registro = seleccionado;
+        this.seleccion = null; // <-- LIMPIA SELECCIÓN
+        this.estado = ESTADO_CRUD.MODIFICAR;
+    }
+
 }

@@ -98,8 +98,10 @@ public abstract class DefaultFrm<T> implements Serializable {
 
     public void btnCancelarHandler(ActionEvent actionEvent) {
         this.registro = null;
+        this.seleccion = null; // <-- LIMPIA LA SELECCIÓN REAL
         this.estado = ESTADO_CRUD.NADA;
     }
+
 
     public void btnGuardarHandler(ActionEvent actionEvent) {
         try {
@@ -170,13 +172,16 @@ public abstract class DefaultFrm<T> implements Serializable {
     }
 
     public void seleccionarRegistro(SelectEvent<T> r) {
-        if(r!=null && r.getObject() != null){
-            this.registro = r.getObject();
+        if(r != null && r.getObject() != null){
+            this.seleccion = r.getObject();   // <-- SELECCIÓN REAL
+            this.registro = r.getObject();    // <-- CARGAR REGISTRO
             this.estado = ESTADO_CRUD.MODIFICAR;
         } else{
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,"Advertencia", "No se selecciono ningun registro"));
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_WARN,"Advertencia", "No se seleccionó ningún registro"));
         }
     }
+
 
     public void enviarMensaje(String s, FacesMessage.Severity severity) {
         FacesMessage msj = new FacesMessage();
@@ -217,6 +222,15 @@ public abstract class DefaultFrm<T> implements Serializable {
     }
     public boolean isEnModoEdicion() {
         return this.estado != ESTADO_CRUD.NADA;
+    }
+    protected T seleccion; // <-- ESTA ES LA SELECCIÓN REAL DE LA TABLA
+
+    public T getSeleccion() {
+        return seleccion;
+    }
+
+    public void setSeleccion(T seleccion) {
+        this.seleccion = seleccion;
     }
 
 
