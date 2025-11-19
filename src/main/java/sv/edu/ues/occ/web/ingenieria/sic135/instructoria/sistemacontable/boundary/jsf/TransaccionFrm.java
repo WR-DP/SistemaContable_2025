@@ -891,4 +891,6 @@ public class TransaccionFrm extends DefaultFrm<Transaccion> implements Serializa
     public void setTransaccionClasificacionFrm(TransaccionClasificacionFrm transaccionClasificacionFrm) {
         this.transaccionClasificacionFrm = transaccionClasificacionFrm;
     }
+
+
 }

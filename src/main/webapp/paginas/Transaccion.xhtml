@@ -20,42 +20,43 @@
     <ui:define name="contenido-tabla">
         <h:panelGrid>
             <h:form id="frmTablaTransacciones">
+                <h:panelGroup id="pnlTabla">
+                    <p:dataTable lazy="true"
+                                 rendered="#{transaccionFrm.estado == 'NADA'}"
+                                 rows="#{transaccionFrm.pageSize}"
+                                 paginator="true"
+                                 paginatorPosition="bottom"
+                                 value="#{transaccionFrm.listaTransacciones}"
+                                 var="t"
+                                 rowKey="#{t.id}"
+                                 selectionMode="single"
+                                 selection="#{transaccionFrm.registro}"
+                                 styleClass="tabla-crud">
 
-                <p:dataTable lazy="true"
-                             rendered="#{transaccionFrm.estado == 'NADA'}"
-                             rows="50"
-                             paginator="true"
-                             paginatorPosition="bottom"
-                             value="#{transaccionFrm.listaTransacciones}"
-                             var="t"
-                             rowKey="#{t.id}"
-                             selectionMode="single"
-                             selection="#{transaccionFrm.registro}"
-                             styleClass="tabla-crud">
+                        <p:ajax event="rowSelect"
+                                listener="#{transaccionFrm.seleccionarRegistro}"
+                                update=":pnlDetalle :pnlTabla"/>
 
-                    <p:ajax event="rowSelect"
-                            listener="#{transaccionFrm.seleccionarRegistro}"
-                            update=":pnlDetalle :pnlTabla"/>
+                        <p:column headerText="Fecha">
+                            <h:outputText value="#{t.fecha}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                        </p:column>
 
-                    <p:column headerText="Fecha">
-                        <h:outputText value="#{t.fecha}">
-                            <f:convertDateTime pattern="dd/MM/yyyy"/>
-                        </h:outputText>
-                    </p:column>
+                        <p:column headerText="Descripción">
+                            <h:outputText value="#{t.descripcion}"/>
+                        </p:column>
 
-                    <p:column headerText="Descripción">
-                        <h:outputText value="#{t.descripcion}"/>
-                    </p:column>
+                        <p:column headerText="Monto">
+                            <h:outputText value="$#{t.monto}"/>
+                        </p:column>
 
-                    <p:column headerText="Monto">
-                        <h:outputText value="$#{t.monto}"/>
-                    </p:column>
+                        <p:column headerText="Moneda">
+                            <h:outputText value="#{t.moneda}"/>
+                        </p:column>
 
-                    <p:column headerText="Moneda">
-                        <h:outputText value="#{t.moneda}"/>
-                    </p:column>
-
-                </p:dataTable>
+                    </p:dataTable>
+                </h:panelGroup>
 
                 <ues:botones-top formulario="#{transaccionFrm}" actualizar=":pnlDetalle :pnlTabla"/>
 
@@ -135,8 +136,8 @@
                                 <h:panelGrid columns="2">
                                     <h:outputLabel for="txtTransaccion" value="Tipo de Transacción:"/>
                                     <p:selectOneMenu id="txtTransaccion"
-                                            value="#{transaccionClasificacionFrm.registro.tipoTransaccion}"
-                                            rendered="#{transaccionFrm.estado == 'MODIFICAR'}">
+                                                     value="#{transaccionClasificacionFrm.registro.tipoTransaccion}"
+                                                     rendered="#{transaccionFrm.estado == 'MODIFICAR'}">
 
                                         <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
                                         <f:selectItem itemLabel="COMPRA" itemValue="COMPRA"/>
@@ -168,8 +169,8 @@
                                     <h:panelGrid>
                                         <h:outputLabel for="txtCategoria" value="Descripción de Categoría:"/>
                                         <h:outputText id="txtCategoria"
-                                                value="#{transaccionClasificacionFrm.registro.categoria.descripcion}"
-                                                rendered="#{not empty transaccionClasificacionFrm.registro and not empty transaccionClasificacionFrm.registro.categoria}"/>
+                                                      value="#{transaccionClasificacionFrm.registro.categoria.descripcion}"
+                                                      rendered="#{not empty transaccionClasificacionFrm.registro and not empty transaccionClasificacionFrm.registro.categoria}"/>
                                         <h:outputText value="(no seleccionada)"
                                                       rendered="#{empty transaccionClasificacionFrm.registro or empty transaccionClasificacionFrm.registro.categoria}"/>
                                     </h:panelGrid>
@@ -253,7 +254,7 @@
                                 </h:panelGrid>
 
                             </h:panelGrid>
-                        
+
                         </h:form>
                     </h:panelGroup>
                 </h:panelGrid>
