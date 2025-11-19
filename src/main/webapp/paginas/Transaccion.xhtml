@@ -126,28 +126,29 @@
                    disabled="#{transaccionFrm.estado != 'MODIFICAR'}">
                 <h:panelGrid>
 
-                        <h:panelGroup id="pnlClasificacion">
+                    <h:panelGroup id="pnlClasificacion">
                         <h:form id="frmClasificacion">
                             <h:panelGrid columns="2">
-                            <h:outputLabel value="Tipo de Transacción:" />
-                                <p:selectOneMenu value="#{transaccionClasificacionFrm.registro.tipoTransaccion}"
-                                                 rendered="#{transaccionFrm.estado == 'MODIFICAR'}">
+                                <h:outputLabel value="Tipo de Transacción:"/>
+                                <p:selectOneMenu
+                                        value="#{transaccionFrm.transaccionClasificacionFrm.registro.tipoTransaccion}"
+                                        rendered="#{transaccionFrm.estado == 'MODIFICAR'}">
 
-                                    <f:selectItem itemLabel="Seleccione" itemValue="#{null}" />
-                                    <f:selectItem itemLabel="COMPRA" itemValue="COMPRA" />
-                                    <f:selectItem itemLabel="VENTA" itemValue="VENTA" />
+                                    <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                    <f:selectItem itemLabel="COMPRA" itemValue="COMPRA"/>
+                                    <f:selectItem itemLabel="VENTA" itemValue="VENTA"/>
                                 </p:selectOneMenu>
 
-                                <h:outputLabel value="Nombre de Categoría:" />
+                                <h:outputLabel value="Nombre de Categoría:"/>
 
 
+                                <h:panelGrid>
+                                    <h:outputLabel value="Descripción de Categoría:"/>
+                                    <h:outputText
+                                            value="#{transaccionFrm.transaccionClasificacionFrm.registro.categoria.descripcion}"/>
+                                </h:panelGrid>
 
-
-
-                                <h:outputLabel value="Descripción de Categoría:" />
-                            <h:outputText value="#{transaccionClasificacionFrm.registro.categoriaId.descripcion}" />
                             </h:panelGrid>
-
 
 
                             <p:column headerText="Naturaleza de la cuenta"/>
@@ -156,40 +157,34 @@
                                     <h2>Cuenta Contable Debe</h2>
                                     <p:column headerText="Nombre de Cuenta: "/>
                                     <h:outputText
-                                            value="#{transaccionClasificacionFrm.registro.cuentaContableDebe.nombre}"/>
+                                            value="#{transaccionFrm.transaccionClasificacionFrm.registro.cuentaContableDebe.nombre}"/>
 
                                     <p:column headerText="Codigo de Cuenta: "/>
                                     <h:outputText
-                                            value="#{transaccionClasificacionFrm.registro.cuentaContableDebe.codigo}"/>
+                                            value="#{transaccionFrm.transaccionClasificacionFrm.registro.cuentaContableDebe.codigo}"/>
 
-                                    <p:column headerText="Codigo de Descripcion: "/>
+                                    <p:column headerText=" Descripcion: "/>
                                     <h:outputText
-                                            value="#{transaccionClasificacionFrm.registro.cuentaContableDebe.codigo}"/>
+                                            value="#{transaccionFrm.transaccionClasificacionFrm.registro.cuentaContableDebe.descripcion}"/>
                                 </h:panelGrid>
 
                                 <h:panelGrid>
                                     <h2>Cuenta Contable Haber</h2>
                                     <p:column headerText="Nombre de Cuenta: "/>
                                     <h:outputText
-                                            value="#{transaccionClasificacionFrm.registro.cuentaContableHaber.nombre}"/>
+                                            value="#{transaccionFrm.transaccionClasificacionFrm.registro.cuentaContableHaber.nombre}"/>
 
                                     <p:column headerText="Codigo de Cuenta: "/>
                                     <h:outputText
-                                            value="#{transaccionClasificacionFrm.registro.cuentaContableHaber.codigo}"/>
+                                            value="#{transaccionFrm.transaccionClasificacionFrm.registro.cuentaContableHaber.codigo}"/>
 
-                                    <p:column headerText="Codigo de Descripcion: "/>
+                                    <p:column headerText=" Descripcion: "/>
                                     <h:outputText
-                                            value="#{transaccionClasificacionFrm.registro.cuentaContableHaber.codigo}"/>
+                                            value="#{transaccionFrm.transaccionClasificacionFrm.registro.cuentaContableHaber.codigo}"/>
                                 </h:panelGrid>
                             </h:panelGrid>
 
                         </h:form>
-                    </h:panelGroup>
-
-
-                    <h:panelGroup id="pnlDetalleClasificacion">
-
-
                     </h:panelGroup>
 
                 </h:panelGrid>

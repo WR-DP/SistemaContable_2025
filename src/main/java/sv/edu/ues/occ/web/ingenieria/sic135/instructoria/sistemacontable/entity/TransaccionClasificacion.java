@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Date;
 
+
 @Entity
 @Table(name = "transaccion_clasificacion", schema = "public")
 public class TransaccionClasificacion {
